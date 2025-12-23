@@ -1,0 +1,113 @@
+---
+import { SEO } from 'astro-seo';
+import Header from '@/components/Header.astro';
+import SocialMedia from '@/components/SocialMedia.astro';
+import SponsorFooter from '@/components/SponsorFooter.astro';
+import '@/styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonical?: string;
+}
+
+const {
+  title = 'University of Michigan Mars Rover Team',
+  description = 'The Michigan Mars Rover Team (MRover) competes in the annual University Rover Challenge. In 2018, we placed 9th in the world and 3rd in the US. Our mission is to inspire students to pursue space exploration and engineering.',
+  image = 'https://mrover.org/logos/logo_short.svg',
+  canonical
+} = Astro.props;
+
+const isProd = import.meta.env.PROD;
+const siteUrl = 'https://mrover.org';
+const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString();
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <SEO
+    title={title}
+    description={description}
+    canonical={canonicalURL}
+    openGraph={{
+      basic: {
+        title: title,
+        type: 'website',
+        image: image,
+        url: canonicalURL,
+      },
+      optional: {
+        description: description,
+        siteName: 'University of Michigan Mars Rover Team',
+      },
+      image: {
+        alt: 'MRover Logo',
+      },
+    }}
+    twitter={{
+      card: 'summary_large_image',
+      site: '@umarsteam',
+      creator: '@umarsteam',
+      title: title,
+      description: description,
+      image: image,
+      imageAlt: 'MRover Logo',
+    }}
+    extend={{
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/icons/apple-touch-icon.png' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/icons/favicon-32x32.png' },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/icons/favicon-16x16.png' },
+        { rel: 'manifest', href: '/manifest.json' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Lato:400,300,700' },
+        { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' },
+      ],
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { httpEquiv: 'X-UA-Compatible', content: 'IE=edge' },
+      ],
+    }}
+  />
+
+  <!-- Dark mode script - runs before page render to prevent flash -->
+  <script is:inline>
+    const theme = (() => {
+      if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+        return localStorage.getItem('theme');
+      }
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+      }
+      return 'light';
+    })();
+
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+
+    window.localStorage.setItem('theme', theme);
+  </script>
+</head>
+
+<body class="font-lato text-base leading-normal text-michigan-blue antialiased">
+  {!isProd && (
+    <div class="fixed bottom-4 left-4 z-50 bg-yellow-500/20 backdrop-blur-sm text-text px-4 py-2 text-xs font-semibold rounded-full shadow-lg border border-orange-600/50">
+      DEV
+    </div>
+  )}
+
+  <Header />
+
+  <slot />
+
+  <footer class="p-0 m-0">
+    <SocialMedia />
+    <SponsorFooter />
+  </footer>
+</body>
+</html>

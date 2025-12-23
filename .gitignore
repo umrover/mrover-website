@@ -1,0 +1,23 @@
+# Build output
+dist/
+docs/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.production
+bun.lock
+
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*.swn
+.vscode/
+.idea/
+

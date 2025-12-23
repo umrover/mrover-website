@@ -1,0 +1,110 @@
+[
+  {
+    "name": "Ford",
+    "image_path": "sponsorImages/ford.png",
+    "rurl": "https://www.ford.com/",
+    "level": 4
+  },
+  {
+    "name": "Texas Instruments",
+    "image_path": "sponsorImages/ti.png",
+    "rurl": "http://www.ti.com/",
+    "level": 4
+  },
+  {
+    "name": "FUTEK",
+    "image_path": "sponsorImages/futek.png",
+    "rurl": "http://www.futek.com/",
+    "level": 4
+  },
+  {
+    "name": "College of Engineering",
+    "image_path": "sponsorImages/coe.png",
+    "rurl": "http://www.engin.umich.edu/",
+    "level": 4
+  },
+  {
+    "name": "Michigan IPE",
+    "image_path": "sponsorImages/IPE.png",
+    "rurl": "https://ipe.engin.umich.edu",
+    "level": 4
+  },
+  {
+    "name": "Umich Computer Science Engineering",
+    "image_path": "sponsorImages/cse2.png",
+    "rurl": "https://cse.umich.edu/",
+    "level": 3
+  },
+  {
+    "name": "Umich Electrical and Computer Engineering",
+    "image_path": "sponsorImages/ece.png",
+    "rurl": "https://ece.umich.edu/",
+    "level": 3
+  },
+  {
+    "name": "Aptiv",
+    "image_path": "sponsorImages/aptiv.png",
+    "rurl": "https://www.aptiv.com/",
+    "level": 2
+  },
+  {
+    "name": "Blue Origin",
+    "image_path": "sponsorImages/blue-origin.png",
+    "rurl": "https://www.blueorigin.com/",
+    "level": 2
+  },
+  {
+    "name": "Umich Mechanical Engineering",
+    "image_path": "sponsorImages/me.png",
+    "rurl": "https://me.engin.umich.edu/",
+    "level": 2
+  },
+  {
+    "name": "Raytheon",
+    "image_path": "sponsorImages/raytheon.png",
+    "rurl": "http://www.raytheon.com/",
+    "level": 2
+  },
+  {
+    "name": "Siemens",
+    "image_path": "sponsorImages/siemens.png",
+    "rurl": "https://www.siemens.com",
+    "level": 2
+  },
+  {
+    "name": "Swanton Welding Company",
+    "image_path": "sponsorImages/swanton.png",
+    "rurl": "https://swantonweld.com",
+    "level": 2
+  },
+  {
+    "name": "Aubrees",
+    "image_path": "sponsorImages/aubrees.png",
+    "rurl": "https://aubrees.com/",
+    "level": 1
+  },
+  {
+    "name": "Umich LSA Physics",
+    "image_path": "sponsorImages/lsaphysics.png",
+    "rurl": "https://lsa.umich.edu/physics",
+    "level": 1
+  },
+  {
+    "name": "Protocase",
+    "image_path": "sponsorImages/protocase.png",
+    "rurl": "http://www.protocase.com/",
+    "level": 1
+  },
+  {
+    "name": "Redbull",
+    "image_path": "sponsorImages/redbull_bg.png",
+    "rurl": "https://www.redbull.com/us-en/",
+    "level": 1
+  },
+  {
+    "name": "UM Robotics",
+    "image_path": "sponsorImages/um-robotics.png",
+    "rurl": "https://robotics.umich.edu/",
+    "level": 1
+  }
+]

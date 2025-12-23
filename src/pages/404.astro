@@ -1,0 +1,53 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="404 - Page Not Found - University of Michigan Mars Rover Team">
+  <div class="min-h-[80vh] flex items-center justify-center bg-background">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+      <!-- 404 Graphic -->
+      <div class="mb-8">
+        <h1 class="text-9xl font-bold text-mrover-blue mb-4">404</h1>
+        <div class="w-32 h-1 bg-mrover-orange mx-auto"></div>
+      </div>
+
+      <!-- Message -->
+      <h2 class="text-3xl md:text-4xl font-bold text-text mb-4">Page Not Found</h2>
+      <p class="text-lg text-grey-dark mb-8 leading-relaxed">
+        Looks like this rover got lost in the Mars desert. The page you're looking for doesn't exist or has been moved.
+      </p>
+
+      <!-- Navigation Options -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a href="/">
+          <button
+            class="px-8 py-3 text-base font-semibold uppercase bg-mrover-orange text-text rounded-lg hover:bg-mrover-orange/90 shadow-md hover:shadow-lg transition-all"
+          >
+            Go Home
+          </button>
+        </a>
+        <a href="/about">
+          <button
+            class="px-8 py-3 text-base font-semibold uppercase bg-white text-text border-2 border-mrover-blue rounded-lg hover:bg-mrover-blue hover:text-michigan-blue shadow-md hover:shadow-lg transition-all"
+          >
+            Learn About Us
+          </button>
+        </a>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="mt-12 pt-8 border-t border-grey-light">
+        <p class="text-sm text-grey-dark mb-4">Quick Links:</p>
+        <div class="flex flex-wrap gap-4 justify-center text-sm">
+          <a href="/rovers" class="text-mrover-blue hover:text-mrover-orange transition-colors">Rovers</a>
+          <span class="text-grey-light">|</span>
+          <a href="/sponsors" class="text-mrover-blue hover:text-mrover-orange transition-colors">Sponsors</a>
+          <span class="text-grey-light">|</span>
+          <a href="/join" class="text-mrover-blue hover:text-mrover-orange transition-colors">Join</a>
+          <span class="text-grey-light">|</span>
+          <a href="/contact" class="text-mrover-blue hover:text-mrover-orange transition-colors">Contact</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

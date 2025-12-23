@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+@theme {
+  /* MRover Brand Colors */
+  --color-michigan-blue: #00274c;
+  --color-michigan-maize: #fbc421;
+  --color-mrover-base: #003d6b;
+  --color-mrover-accent: #FF8C00;
+
+  /* Legacy colors (deprecated) */
+  --color-brand: #2a7ae2;
+  --color-text: #111;
+  --color-background: #fdfdfd;
+
+  --color-grey: #828282;
+  --color-grey-light: #d3d3d3;
+  --color-grey-dark: #3f3f3f;
+
+  --font-family-lato: Lato, Helvetica, Arial, sans-serif;
+
+  --max-width-content: 1200px;
+  --max-width-rovers: 1600px;
+
+  --spacing-unit: 30px;
+
+  --breakpoint-palm: 910px;
+  --breakpoint-rovers-max: 1050px;
+  --breakpoint-touchscreen: 500px;
+}
+
+
+body, h1, h2, h3, h4, h5, h6, p, blockquote, pre, hr, dl, dd, ol, ul, figure {
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+figure > img {
+  display: block;
+}
+
+ul, ol {
+  margin-left: 30px;
+}
+
+li > ul, li > ol {
+  margin-bottom: 0;
+}
+
+blockquote {
+  color: #828282;
+  border-left: 4px solid #d3d3d3;
+  padding-left: 15px;
+  font-size: 18px;
+  letter-spacing: -1px;
+  font-style: italic;
+}
+
+blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+pre, code {
+  font-size: 15px;
+  border: 1px solid #d3d3d3;
+  border-radius: 3px;
+  background-color: #eef;
+  color: #111;
+}
+
+code {
+  padding: 1px 5px;
+}
+
+pre {
+  padding: 8px 12px;
+  overflow-x: auto;
+}
+
+pre > code {
+  border: 0;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.fa {
+  color: inherit;
+  text-decoration: none;
+}
+
+.fa-instagram {
+  border-radius: 8px;
+  background-color: rgba(0,0,0,0);
+  padding: 2px 5px;
+}
+
+.fa-instagram:hover {
+  background: radial-gradient(circle at 33% 100%, #FED373 4%, #F15245 30%, #D92E7F 62%, #9B36B7 85%, #515ECF);
+  color: white;
+}
+
+.fa-twitter:hover {
+  color: #00aced;
+}
+
+.fa-youtube-play:hover {
+  color: #bb0000;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

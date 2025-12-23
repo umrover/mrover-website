@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>Assimp</author>
+      <authoring_tool>Blender (stable FBX IO) - 4.1.1 - 5.11.7</authoring_tool>
+    </contributor>
+    <created>2025-07-13T12:36:45</created>
+    <modified>2025-07-13T12:36:45</modified>
+    <unit name="meter" meter="1" />
+    <up_axis>Y_UP</up_axis>
+  </asset>
+  <library_images>
+    <image id="dust-diffuse-image">
+      <init_from>soil_base.png</init_from>
+    </image>
+    <image id="dust-normal-image">
+      <init_from>soil_normal.png</init_from>
+    </image>
+  </library_images>
+  <library_effects>
+    <effect id="dust-fx" name="dust">
+      <profile_COMMON>
+        <newparam sid="dust-diffuse-surface">
+          <surface type="2D">
+            <init_from>dust-diffuse-image</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="dust-diffuse-sampler">
+          <sampler2D>
+            <source>dust-diffuse-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="dust-normal-surface">
+          <surface type="2D">
+            <init_from>dust-normal-image</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="dust-normal-sampler">
+          <sampler2D>
+            <source>dust-normal-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="standard">
+          <phong>
+            <emission>
+              <color sid="emission">0   0   0   1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0   0   0   1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="dust-diffuse-sampler" texcoord="CHANNEL0" />
+            </diffuse>
+            <specular>
+              <color sid="specular">0.800000012   0.800000012   0.800000012   1</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">0.444444388</float>
+            </shininess>
+            <reflective>
+              <color sid="reflective">0.800000012   0.800000012   0.800000012   1</color>
+            </reflective>
+            <transparent>
+              <color sid="transparent">0   0   0   1</color>
+            </transparent>
+            <transparency>
+              <float sid="transparency">1</float>
+            </transparency>
+            <bump>
+              <texture texture="dust-normal-sampler" texcoord="CHANNEL0" />
+            </bump>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_materials>
+    <material id="dust" name="dust">
+      <instance_effect url="#dust-fx"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="ground_1" name="ground" >
+      <mesh>
+        <source id="ground_1-positions" name="ground_1-positions">
+          <float_array id="ground_1-positions-array" count="12"> -20 -20 0 20 -20 0 20 20 0 -20 20 0 </float_array>
+          <technique_common>
+            <accessor count="4" offset="0" source="#ground_1-positions-array" stride="3">
+              <param name="X" type="float" />
+              <param name="Y" type="float" />
+              <param name="Z" type="float" />
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="ground_1-normals" name="ground_1-normals">
+          <float_array id="ground_1-normals-array" count="12"> 0 0 1 0 0 1 0 0 1 0 0 1 </float_array>
+          <technique_common>
+            <accessor count="4" offset="0" source="#ground_1-normals-array" stride="3">
+              <param name="X" type="float" />
+              <param name="Y" type="float" />
+              <param name="Z" type="float" />
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="ground_1-tex0" name="ground_1-tex0">
+          <float_array id="ground_1-tex0-array" count="8"> -1.5 -1.5 2.5 -1.5 2.5 2.5 -1.5 2.5 </float_array>
+          <technique_common>
+            <accessor count="4" offset="0" source="#ground_1-tex0-array" stride="2">
+              <param name="S" type="float" />
+              <param name="T" type="float" />
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="ground_1-vertices">
+          <input semantic="POSITION" source="#ground_1-positions" />
+        </vertices>
+        <polylist count="2" material="defaultMaterial">
+          <input offset="0" semantic="VERTEX" source="#ground_1-vertices" />
+          <input offset="0" semantic="NORMAL" source="#ground_1-normals" />
+          <input offset="0" semantic="TEXCOORD" source="#ground_1-tex0" set="0" />
+          <vcount>3 3 </vcount>
+          <p>0 1 2 0 2 3 </p>
+        </polylist>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers>
+  </library_controllers>
+  <library_visual_scenes>
+    <visual_scene id="RootNode" name="RootNode">
+      <node id="ground" name="ground" type="NODE">
+        <matrix sid="matrix">100 0 0 0 0 100 0 0 0 0 100 0 0 0 0 1</matrix>
+        <instance_geometry url="#ground_1">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="defaultMaterial" target="#dust">
+                <bind_vertex_input semantic="CHANNEL0" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#RootNode" />
+  </scene>
+</COLLADA>

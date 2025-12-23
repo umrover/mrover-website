@@ -1,0 +1,314 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="About 3D - University of Michigan Mars Rover Team">
+  <!-- Hero Section -->
+  <section class="hero-section h-screen flex items-center justify-center relative overflow-hidden">
+    <div class="absolute inset-0 bg-linear-to-br from-mrover-dark-blue via-mrover-blue to-black"></div>
+    <div
+      class="absolute inset-0 opacity-20"
+      style="background-image: url('/images/rover-on-ridge.jpg'); background-size: cover; background-position: center;"
+    >
+    </div>
+    <div class="relative z-10 text-center px-6 max-w-5xl">
+      <h1 class="text-6xl md:text-8xl font-extrabold text-michigan-blue mb-6 opacity-0 hero-title">About MRover</h1>
+      <p class="text-xl md:text-2xl text-gray-200 opacity-0 hero-subtitle">
+        Building the future of Mars exploration, one rover at a time
+      </p>
+    </div>
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <svg class="w-6 h-6 text-michigan-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+      </svg>
+    </div>
+  </section>
+
+  <!-- The Challenge Section -->
+  <section class="section min-h-screen flex items-center py-24 bg-background">
+    <div class="max-w-6xl mx-auto px-6 lg:px-8">
+      <div class="section-header mb-12">
+        <h2 class="text-5xl md:text-6xl font-bold text-text mb-4">The Challenge</h2>
+        <div class="w-24 h-1 bg-mrover-orange"></div>
+      </div>
+
+      <div class="section-content space-y-8">
+        <div class="challenge-card p-8 bg-white rounded-2xl shadow-xl">
+          <h3 class="text-3xl font-bold text-mrover-blue mb-4">University Rover Challenge (URC)</h3>
+          <p class="text-grey-dark text-lg leading-relaxed mb-6">
+            MRover's primary goal is to win the University Rover Challenge (URC). Student teams from all over the world
+            compete in the URC to design and build the best rover for assisting future astronauts. The URC is hosted by
+            The Mars Society, the largest advocacy group for the exploration and settlement of Mars, and it takes place
+            at the Mars Research Station in the Utah Desert.
+          </p>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="mission-item p-4 bg-mrover-blue/10 rounded-lg">
+              <h4 class="font-bold text-mrover-blue mb-2">Extreme Retrieval and Delivery</h4>
+              <p class="text-sm text-grey-dark">Traveling over tough terrain</p>
+            </div>
+            <div class="mission-item p-4 bg-mrover-blue/10 rounded-lg">
+              <h4 class="font-bold text-mrover-blue mb-2">Equipment Servicing</h4>
+              <p class="text-sm text-grey-dark">Manipulating various pieces of equipment with the robotic arm</p>
+            </div>
+            <div class="mission-item p-4 bg-mrover-blue/10 rounded-lg">
+              <h4 class="font-bold text-mrover-blue mb-2">Science</h4>
+              <p class="text-sm text-grey-dark">Acquiring soil samples and evaluating for signs of life</p>
+            </div>
+            <div class="mission-item p-4 bg-mrover-blue/10 rounded-lg">
+              <h4 class="font-bold text-mrover-blue mb-2">Autonomous Navigation</h4>
+              <p class="text-sm text-grey-dark">Driving to GPS coordinates and searching for markers</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="challenge-card p-8 bg-white rounded-2xl shadow-xl">
+          <h3 class="text-3xl font-bold text-mrover-blue mb-4">Canadian International Rover Challenge (CIRC)</h3>
+          <p class="text-grey-dark text-lg leading-relaxed mb-6">
+            CIRC is hosted by the Canadian Space Technology Advancement Group and takes place in Drumheller, Alberta.
+          </p>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="mission-item p-4 bg-mrover-orange/10 rounded-lg">
+              <h4 class="font-bold text-mrover-dark-blue mb-2">Boneyard Salvage</h4>
+              <p class="text-sm text-grey-dark">Assess reactor site location, damage, radiation and hazards</p>
+            </div>
+            <div class="mission-item p-4 bg-mrover-orange/10 rounded-lg">
+              <h4 class="font-bold text-mrover-dark-blue mb-2">Reactor Maintenance</h4>
+              <p class="text-sm text-grey-dark">Replace depleted reactor rods</p>
+            </div>
+            <div class="mission-item p-4 bg-mrover-orange/10 rounded-lg">
+              <h4 class="font-bold text-mrover-dark-blue mb-2">Arm Dexterity</h4>
+              <p class="text-sm text-grey-dark">Manipulate equipment and carry cargo</p>
+            </div>
+            <div class="mission-item p-4 bg-mrover-orange/10 rounded-lg">
+              <h4 class="font-bold text-mrover-dark-blue mb-2">Traversal</h4>
+              <p class="text-sm text-grey-dark">Autonomously locate stations</p>
+            </div>
+            <div class="mission-item p-4 bg-mrover-orange/10 rounded-lg md:col-span-2 lg:col-span-1">
+              <h4 class="font-bold text-mrover-dark-blue mb-2">Mars Murder Mystery</h4>
+              <p class="text-sm text-grey-dark">Photograph crime scene, scan ArUco tags</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mechanical Team Section -->
+  <section class="section min-h-screen flex items-center py-24 bg-grey-light/10">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="section-header mb-12 text-center">
+        <h2 class="text-5xl md:text-6xl font-bold text-text mb-4">Mechanical Team</h2>
+        <div class="w-24 h-1 bg-mrover-orange mx-auto"></div>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="team-card bg-white p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-transform">
+          <div class="w-full h-48 mb-6 bg-grey-light/30 rounded-lg overflow-hidden">
+            <img src="/RA_2025.png" alt="Robotic Arm" class="w-full h-full object-cover" />
+          </div>
+          <h3 class="text-2xl font-bold text-mrover-blue mb-4">Robotic Arm</h3>
+          <p class="text-grey-dark leading-relaxed">
+            The Robotic Arm subteam designs and builds a five degree-of-freedom robotic arm responsible for completing
+            tasks in the "Equipment Servicing" and "Extreme Retrieval and Delivery" portions of the competition. The arm
+            is able to lift objects, open drawers, push buttons, type on a keyboard, and accomplish other precise
+            movements.
+          </p>
+        </div>
+
+        <div class="team-card bg-white p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-transform">
+          <div class="w-full h-48 mb-6 bg-grey-light/30 rounded-lg overflow-hidden">
+            <img src="/MOB_2025.png" alt="Mobility" class="w-full h-full object-cover" />
+          </div>
+          <h3 class="text-2xl font-bold text-mrover-blue mb-4">Mobility</h3>
+          <p class="text-grey-dark leading-relaxed">
+            The Mobility subteam develops and builds the drive and suspension systems to navigate through rocks and
+            rough terrain in each competition mission. They work to provide reliable driving and agile maneuvering,
+            while also protecting sensitive onboard equipment from impacts and vibration.
+          </p>
+        </div>
+
+        <div class="team-card bg-white p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-transform">
+          <div class="w-full h-48 mb-6 bg-grey-light/30 rounded-lg overflow-hidden">
+            <img src="/CHASSIS_2025.jpg" alt="Chassis" class="w-full h-full object-cover" />
+          </div>
+          <h3 class="text-2xl font-bold text-mrover-blue mb-4">Chassis and Mounts</h3>
+          <p class="text-grey-dark leading-relaxed">
+            The Chassis and Mounts subteam develops a lightweight and strong chassis that is optimized for the
+            integration of all our sub-systems. They also develop our gimbal camera for operation, physical enclosures
+            for electrical components and wire management for a professional-looking rover.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section
+    class="section min-h-screen flex items-center justify-center py-24 bg-linear-to-br from-mrover-blue to-mrover-dark-blue relative overflow-hidden"
+  >
+    <div
+      class="absolute inset-0 opacity-10"
+      style="background-image: url('/images/rover-on-ridge.jpg'); background-size: cover; background-position: center;"
+    >
+    </div>
+    <div class="relative z-10 text-center px-6 max-w-4xl">
+      <h2 class="text-5xl md:text-7xl font-bold text-michigan-blue mb-8">Join Our Mission</h2>
+      <p class="text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed">
+        Be part of a team that's pushing the boundaries of space robotics and engineering excellence.
+      </p>
+      <div class="flex flex-wrap gap-6 justify-center">
+        <a href="/join">
+          <button
+            class="px-10 py-4 text-lg font-semibold uppercase bg-mrover-orange text-text rounded-lg hover:bg-mrover-orange/90 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
+          >
+            Join the Team
+          </button>
+        </a>
+        <a href="/rovers">
+          <button
+            class="px-10 py-4 text-lg font-semibold uppercase bg-white text-mrover-blue rounded-lg hover:bg-gray-100 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
+          >
+            View Our Rovers
+          </button>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    import Lenis from "lenis";
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Initialize Lenis
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    // Connect Lenis with GSAP ScrollTrigger
+    lenis.on("scroll", ScrollTrigger.update);
+
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+
+    gsap.ticker.lagSmoothing(0);
+
+    // Hero animations
+    gsap.from(".hero-title", {
+      opacity: 0,
+      y: 100,
+      duration: 1,
+      delay: 0.3,
+    });
+
+    gsap.from(".hero-subtitle", {
+      opacity: 0,
+      y: 50,
+      duration: 1,
+      delay: 0.6,
+    });
+
+    // Section headers
+    gsap.utils.toArray(".section-header").forEach((header: any) => {
+      gsap.from(header, {
+        scrollTrigger: {
+          trigger: header,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
+        },
+        opacity: 0,
+        y: 50,
+        duration: 0.8,
+      });
+    });
+
+    // Challenge cards
+    gsap.utils.toArray(".challenge-card").forEach((card: any, index) => {
+      gsap.from(card, {
+        scrollTrigger: {
+          trigger: card,
+          start: "top 85%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
+        },
+        opacity: 0,
+        y: 60,
+        duration: 0.8,
+        delay: index * 0.2,
+      });
+    });
+
+    // Team cards
+    gsap.utils.toArray(".team-card").forEach((card: any, index) => {
+      gsap.from(card, {
+        scrollTrigger: {
+          trigger: card,
+          start: "top 85%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
+        },
+        opacity: 0,
+        y: 80,
+        scale: 0.9,
+        duration: 0.8,
+        delay: index * 0.15,
+      });
+    });
+
+    // Mission items stagger
+    gsap.utils.toArray(".mission-item").forEach((item: any, index) => {
+      gsap.from(item, {
+        scrollTrigger: {
+          trigger: item,
+          start: "top 90%",
+          toggleActions: "play none none reverse",
+        },
+        opacity: 0,
+        x: -30,
+        duration: 0.6,
+        delay: index * 0.05,
+      });
+    });
+  </script>
+
+  <style>
+    .section {
+      position: relative;
+    }
+
+    .hero-section {
+      position: relative;
+    }
+
+    /* Smooth scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #00274c;
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ff6b35;
+    }
+  </style>
+</BaseLayout>

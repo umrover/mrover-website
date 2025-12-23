@@ -1,0 +1,78 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Contact - University of Michigan Mars Rover Team">
+  <!-- Full Page Background with Content -->
+  <div
+    class="relative min-h-screen bg-cover bg-center bg-fixed"
+    style="background-image: url('/images/festifall2022.jpg');"
+  >
+    <div class="absolute inset-0 bg-black/60"></div>
+
+    <!-- Contact Info -->
+    <section class="relative z-10 py-16 md:py-20">
+      <div class="max-w-4xl mx-auto px-6 text-center">
+        <!-- Team Contact -->
+        <div class="mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">The Team</h2>
+          <div class="space-y-2 text-gray-200">
+            <p><a href="mailto:rover@umich.edu" class="text-mrover-accent hover:text-mrover-accent/80 font-semibold">rover@umich.edu</a></p>
+            <p>University of Michigan</p>
+            <p>Wilson Student Team Project Center</p>
+            <p>2603 Draper, Ann Arbor, MI 48109-2101</p>
+          </div>
+        </div>
+
+        <!-- Executive Board -->
+        <div>
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-12">Executive Board</h2>
+
+          <div class="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto">
+            <!-- President -->
+            <div class="space-y-2 bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-mrover-accent/30 w-64">
+              <h3 class="text-xl font-semibold text-mrover-accent">President</h3>
+              <p class="text-gray-200">Isabel Boncher</p>
+              <p>
+                <a href="mailto:iboncher@umich.edu" class="text-michigan-maize hover:text-michigan-maize/80 text-sm"
+                  >iboncher@umich.edu</a>
+              </p>
+            </div>
+
+            <!-- Vice President -->
+            <div class="space-y-2 bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-mrover-accent/30 w-64">
+              <h3 class="text-xl font-semibold text-mrover-accent">Vice President</h3>
+              <p class="text-gray-200">Caden Burkhardt</p>
+              <p>
+                <a href="mailto:cadenb@umich.edu" class="text-michigan-maize hover:text-michigan-maize/80 text-sm">cadenb@umich.edu</a>
+              </p>
+            </div>
+
+            <!-- Chief Engineer -->
+            <div class="space-y-2 bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-mrover-accent/30 w-64">
+              <h3 class="text-xl font-semibold text-mrover-accent">Chief Engineer</h3>
+              <p class="text-gray-200">Neven Johnson</p>
+              <p><a href="mailto:neven@umich.edu" class="text-michigan-maize hover:text-michigan-maize/80 text-sm">neven@umich.edu</a></p>
+            </div>
+
+            <!-- External Relations Officer -->
+            <div class="space-y-2 bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-mrover-accent/30 w-64">
+              <h3 class="text-xl font-semibold text-mrover-accent">External Relations Officer</h3>
+              <p class="text-gray-200">Riya Desai</p>
+              <p><a href="mailto:riyad@umich.edu" class="text-michigan-maize hover:text-michigan-maize/80 text-sm">riyad@umich.edu</a></p>
+            </div>
+
+            <!-- Treasurer -->
+            <div class="space-y-2 bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-mrover-accent/30 w-64">
+              <h3 class="text-xl font-semibold text-mrover-accent">Treasurer</h3>
+              <p class="text-gray-200">Vanya Krishna</p>
+              <p>
+                <a href="mailto:vanyak@umich.edu" class="text-michigan-maize hover:text-michigan-maize/80 text-sm">vanyak@umich.edu</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

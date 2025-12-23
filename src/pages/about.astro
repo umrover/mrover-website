@@ -1,0 +1,328 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { SceneManager } from "@/components/about/SceneManager";
+
+const teams = [
+  {
+    name: "Mechanical",
+    color: "#00274C",
+    accent: "#FFCB05",
+    subteams: [
+      { id: "robotic-arm", name: "Robotic Arm", desc: "Designs and builds a five degree-of-freedom robotic arm for Equipment Servicing and Extreme Retrieval missions." },
+      { id: "mobility", name: "Mobility", desc: "Develops drive and suspension systems to navigate rocks and rough terrain in each competition mission." },
+      { id: "chassis", name: "Chassis and Mounts", desc: "Develops a lightweight and strong chassis optimized for integration of all sub-systems." },
+    ]
+  },
+  {
+    name: "Science-Mechanical",
+    color: "#FF6B35",
+    accent: "#FFE0D4",
+    subteams: [
+      { id: "spi", name: "Science Payload Instrumentation", desc: "Brings together sensors and tests for in-situ sampling with on-board life-detection tests." },
+      { id: "spa", name: "Science Payload Acquisition", desc: "Develops and tests soil collection mechanics with a linear actuator-driven auger system." },
+    ]
+  },
+  {
+    name: "Science",
+    color: "#4CAF50",
+    accent: "#C8E6C9",
+    subteams: [
+      { id: "astrobiology", name: "Astrobiology", desc: "Develops tests to analyze soil and rock samples for signs of past or present life." },
+    ]
+  },
+  {
+    name: "Software",
+    color: "#2196F3",
+    accent: "#BBDEFB",
+    subteams: [
+      { id: "autonomy", name: "Autonomy", desc: "Handles Navigation, Perception, and Localization. Uses A* to path plan around obstacles." },
+      { id: "esw", name: "Embedded Software", desc: "Writes low-level driver code for other programming subteams to utilize electronic equipment." },
+      { id: "teleop", name: "Teleoperation", desc: "Creates the interface between driver and rover, maintaining GUIs and control solutions." },
+      { id: "drone", name: "Drone", desc: "Develops a drone for collaboration with the Rover, capable of manual and autonomous operation." },
+    ]
+  },
+  {
+    name: "Electrical",
+    color: "#9C27B0",
+    accent: "#E1BEE7",
+    subteams: [
+      { id: "power", name: "Power", desc: "Provides power to the rover and manages the electronics box with custom distribution solutions." },
+      { id: "ehw", name: "Embedded Hardware", desc: "Controls actuators, receives sensor signals, and designs custom PCBs for motor control." },
+      { id: "comms", name: "Communications", desc: "Ensures strong wireless RF communication link between base station and rover." },
+    ]
+  },
+];
+---
+
+<BaseLayout title="About - University of Michigan Mars Rover Team">
+  <div class="about-content-wrapper">
+    <SceneManager client:only="react" />
+
+    <main class="relative z-10">
+    {teams.map((team, teamIndex) => (
+      <section
+        class="team-section"
+        data-team={team.name.toLowerCase()}
+        data-subteam-count={team.subteams.length}
+        style={`--team-color: ${team.color}; --team-accent: ${team.accent}`}
+      >
+        <div class="sticky-container">
+          <div class="team-header">
+            <div class="team-header-content">
+              <span class="team-label">Team</span>
+              <h2>{team.name}</h2>
+            </div>
+            <div class="team-header-line"></div>
+          </div>
+          <div class="horizontal-wrapper">
+            <div class="horizontal-track">
+              {team.subteams.map((subteam, subIndex) => (
+                <div class="subteam-panel" data-subteam={subteam.id}>
+                  <div class="panel-content">
+                    <div class="text-block">
+                      <span class="subteam-number">0{subIndex + 1}</span>
+                      <h3>{subteam.name}</h3>
+                      <p>{subteam.desc}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    ))}
+  </main>
+  </div>
+</BaseLayout>
+
+<script>
+  import { useStore } from "../lib/store";
+
+  function clamp(min: number, input: number, max: number) {
+    return Math.max(min, Math.min(input, max));
+  }
+
+  function mapRange(in_min: number, in_max: number, input: number, out_min: number, out_max: number) {
+    return ((input - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
+  }
+
+  function setupHorizontalScroll() {
+    const sections = document.querySelectorAll(".team-section");
+
+    sections.forEach((section) => {
+      const wrapper = section as HTMLElement;
+      const track = wrapper.querySelector(".horizontal-track") as HTMLElement;
+      const numPanels = parseInt(wrapper.dataset.subteamCount || "1");
+
+      if (numPanels <= 1) {
+        wrapper.style.height = "100vh";
+        return;
+      }
+
+      wrapper.style.height = `${numPanels * 100}vh`;
+    });
+
+    const unsubscribe = useStore.subscribe((state) => {
+      const lenis = state.lenis;
+      if (!lenis) return;
+
+      lenis.on("scroll", ({ scroll }: { scroll: number }) => {
+        sections.forEach((section) => {
+          const wrapper = section as HTMLElement;
+          const track = wrapper.querySelector(".horizontal-track") as HTMLElement;
+          const numPanels = parseInt(wrapper.dataset.subteamCount || "1");
+
+          if (numPanels <= 1) return;
+
+          const rect = wrapper.getBoundingClientRect();
+          const wrapperTop = scroll + rect.top;
+          const wrapperHeight = wrapper.offsetHeight;
+          const windowHeight = window.innerHeight;
+
+          const start = wrapperTop;
+          const end = wrapperTop + wrapperHeight - windowHeight;
+
+          let progress = mapRange(start, end, scroll, 0, 1);
+          progress = clamp(0, progress, 1);
+
+          const x = progress * (numPanels - 1) * window.innerWidth;
+
+          track.style.transform = `translate3d(${-x}px, 0, 0)`;
+        });
+      });
+
+      unsubscribe();
+    });
+  }
+
+  setupHorizontalScroll();
+</script>
+
+<style>
+  .about-content-wrapper {
+    position: relative;
+    clip-path: inset(0);
+  }
+
+  :global(footer) {
+    position: relative;
+    z-index: 20;
+    background: var(--color-bg);
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+  }
+
+  .team-section {
+    position: relative;
+  }
+
+  .sticky-container {
+    position: sticky;
+    top: var(--header-height, 80px);
+    height: calc(100vh - var(--header-height, 80px));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .team-header {
+    flex-shrink: 0;
+    padding: 1.5rem 3rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .team-header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .team-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--team-accent);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  }
+
+  .team-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: 0.05em;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9), 0 0 40px var(--team-color);
+  }
+
+  .team-header-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, var(--team-accent), transparent);
+    opacity: 0.6;
+    box-shadow: 0 0 10px var(--team-color);
+  }
+
+  .horizontal-wrapper {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .horizontal-track {
+    display: flex;
+    height: 100%;
+    will-change: transform;
+  }
+
+  .subteam-panel {
+    flex: 0 0 100vw;
+    width: 100vw;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .panel-content {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 3rem;
+  }
+
+  .text-block {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 100%);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .subteam-number {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--team-accent);
+    margin-bottom: 1rem;
+    font-family: monospace;
+    text-shadow: 0 0 10px var(--team-color);
+  }
+
+  .text-block h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  .text-block p {
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.8;
+    margin: 0;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  :global(html) {
+    overscroll-behavior: none;
+  }
+
+  @media (max-width: 768px) {
+    .team-header {
+      padding: 1rem 1.5rem;
+    }
+
+    .team-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .panel-content {
+      grid-template-columns: 1fr;
+      padding: 0 1rem;
+    }
+
+    .text-block {
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .text-block h3 {
+      font-size: 1.75rem;
+    }
+
+    .text-block p {
+      font-size: 1rem;
+    }
+  }
+</style>

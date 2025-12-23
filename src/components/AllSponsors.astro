@@ -1,0 +1,63 @@
+---
+import sponsors from "@/data/sponsors.json";
+import donors from "@/data/donors.json";
+
+// Separate sponsors by level
+const platinumSponsors = sponsors.filter((sponsor) => sponsor.level >= 4);
+const goldSponsors = sponsors.filter((sponsor) => sponsor.level === 3);
+const silverSponsors = sponsors.filter((sponsor) => sponsor.level === 2);
+const bronzeSponsors = sponsors.filter((sponsor) => sponsor.level === 1);
+
+const sponsorTiers = [
+  { name: "Platinum Sponsors", sponsors: platinumSponsors },
+  { name: "Gold Sponsors", sponsors: goldSponsors },
+  { name: "Silver Sponsors", sponsors: silverSponsors },
+  { name: "Bronze Sponsors", sponsors: bronzeSponsors },
+];
+---
+
+{
+  sponsorTiers.map(
+    (tier) =>
+      tier.sponsors.length > 0 && (
+        <div class="mb-8">
+          <div class="w-full bg-grey-light/30 py-4 mb-8">
+            <h3 class="text-3xl md:text-4xl text-center uppercase text-text font-bold">{tier.name}</h3>
+          </div>
+          <div class="flex flex-wrap justify-center items-center gap-8 mx-auto max-w-6xl px-6">
+            {tier.sponsors.map((sponsor) => (
+              <div class="w-32 md:w-40 shrink-0">
+                <a
+                  href={sponsor.rurl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block hover:opacity-75 transition-opacity"
+                >
+                  <img src={`/${sponsor.image_path}`} alt={`${sponsor.name} logo`} class="w-full h-auto" />
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+  )
+}
+
+<!-- Donors -->
+<div class="w-full bg-grey-light/30 py-4 mt-8">
+  <h3 class="text-3xl md:text-4xl text-center uppercase text-text font-bold">Donors</h3>
+</div>
+
+<section class="py-12 md:py-16 bg-background">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {
+        donors.map((donor) => (
+          <div class="text-center py-3 px-4 bg-grey-light/10 rounded-lg">
+            <h4 class="text-base font-semibold text-text">{donor}</h4>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

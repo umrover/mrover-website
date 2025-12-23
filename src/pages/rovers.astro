@@ -1,0 +1,236 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import roverInfo from '@/data/roverInfo.json';
+
+// Reverse to show newest rovers first
+const reversedRovers = [...roverInfo].reverse();
+---
+
+<BaseLayout title="Rovers - University of Michigan Mars Rover Team">
+  <!-- Hero -->
+  <div class="relative h-96 md:h-[500px] lg:h-[600px] bg-cover bg-center" style="background-image: url('/images/RosieDunes.jpg');">
+    <div class="absolute inset-0 bg-black/40"></div>
+  </div>
+
+  <!-- Section Divider -->
+  <div class="w-full bg-grey-light/30 py-4">
+    <h2 class="text-3xl md:text-4xl text-center uppercase text-text font-bold">Our Rovers</h2>
+  </div>
+
+  <!-- Rover Tiles Grid -->
+  <section class="py-12 md:py-16 bg-background">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {reversedRovers.map(rover => (
+          <a
+            href="#content"
+            id={rover.year}
+            class="relative group block aspect-4/3 bg-cover bg-center rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+            style={`background-image: url('/${rover.image_path}');`}
+          >
+            <!-- Hidden data -->
+            <span class="hidden year">{rover.year}</span>
+            <span class="hidden name">{rover.name}</span>
+            <span class="hidden imageURL">{rover.image_path}</span>
+            {rover.desc.map(para => (
+              <span class="hidden desc">{para}</span>
+            ))}
+            {rover.slideshow.map(slide => (
+              <span class="hidden slide">{slide}</span>
+            ))}
+
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-mrover-blue/0 group-hover:bg-mrover-blue/90 transition-all duration-300 flex items-center justify-center">
+              <div class="text-michigan-blue text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <h3 class="text-4xl font-bold mb-2">{rover.year}</h3>
+                <p class="text-xl text-grey-light">{rover.name}</p>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Content Display Area -->
+  <div id="content" class="scroll-mt-20">
+    <div class="bg-grey-light/20 py-12 md:py-16">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 gap-12">
+          <!-- Text Content -->
+          <div class="space-y-6">
+            <div id="content-title"></div>
+            <div id="content-text" class="space-y-4 text-grey-dark leading-relaxed"></div>
+          </div>
+
+          <!-- Slideshow -->
+          <div class="relative">
+            <div id="content-slideshow" class="slideshow rounded-lg overflow-hidden shadow-lg"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts - Vanilla JavaScript slideshow functionality -->
+  <script is:inline>
+    let slideIndex = 0;
+
+    function initSlides() {
+      slideIndex = 0;
+      showSlides(slideIndex);
+
+      const slides = document.querySelectorAll('#content-slideshow .slide');
+      const prevBtn = document.querySelector('.prev');
+      const nextBtn = document.querySelector('.next');
+
+      if (slides.length === 1) {
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+      } else {
+        if (prevBtn) prevBtn.style.display = 'block';
+        if (nextBtn) nextBtn.style.display = 'block';
+      }
+    }
+
+    function plusSlides(n) {
+      showSlides(slideIndex += n);
+    }
+
+    function showSlides(n) {
+      const slides = document.querySelectorAll('#content-slideshow .slide');
+
+      if (n >= slides.length) {
+        slideIndex = 0;
+        n = 0;
+      }
+      if (n < 0) {
+        slideIndex = slides.length - 1;
+        n = slides.length - 1;
+      }
+
+      slides.forEach((slide, index) => {
+        slide.style.display = index === n ? 'block' : 'none';
+      });
+    }
+
+    // Check if element is visible in viewport
+    function isElementVisible(element) {
+      const rect = element.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      );
+    }
+
+    // Smooth scroll to element
+    function smoothScrollTo(element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+
+      // Update hash after scroll completes
+      setTimeout(() => {
+        window.location.hash = element.id;
+      }, 800);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add click handlers to all rover tiles
+      document.querySelectorAll('a[href="#content"][id]').forEach(tile => {
+        tile.addEventListener('click', function(event) {
+          if (this.hash !== '') {
+            event.preventDefault();
+
+            // Get data from clicked tile
+            const year = this.querySelector('.year').textContent;
+            const name = this.querySelector('.name').textContent;
+            const descElements = this.querySelectorAll('.desc');
+            const slideElements = this.querySelectorAll('.slide');
+
+            // Update title
+            const contentTitle = document.getElementById('content-title');
+            contentTitle.innerHTML = `<h2 class="text-3xl md:text-4xl font-bold text-text">${year} - ${name}</h2>`;
+
+            // Update description text
+            const contentText = document.getElementById('content-text');
+            contentText.innerHTML = '';
+            descElements.forEach(desc => {
+              contentText.insertAdjacentHTML('beforeend', `<p>${desc.textContent}</p>`);
+            });
+
+            // Build slideshow
+            const contentSlideshow = document.getElementById('content-slideshow');
+            contentSlideshow.innerHTML = '';
+            slideElements.forEach(slide => {
+              contentSlideshow.insertAdjacentHTML('beforeend',
+                `<img class="slide fade w-full h-auto" src="/${slide.textContent}" style="display: none;">`
+              );
+            });
+            contentSlideshow.insertAdjacentHTML('beforeend', '<a class="prev" onclick="plusSlides(-1)">&#10094;</a>');
+            contentSlideshow.insertAdjacentHTML('beforeend', '<a class="next" onclick="plusSlides(1)">&#10095;</a>');
+
+            // Initialize slideshow
+            initSlides();
+
+            // Scroll to content if not visible
+            const contentElement = document.querySelector(this.hash);
+            if (contentElement && !isElementVisible(contentText)) {
+              smoothScrollTo(contentElement);
+            }
+          }
+        });
+      });
+    });
+  </script>
+
+  <style>
+    /* Slideshow controls styling */
+    .slide {
+      display: none;
+    }
+
+    .prev, .next {
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      width: auto;
+      margin-top: -22px;
+      padding: 16px;
+      color: white;
+      font-weight: bold;
+      font-size: 25px;
+      transition: 0.3s ease;
+      border-radius: 0 3px 3px 0;
+      text-decoration: none;
+      background-color: rgba(0,0,0,0.3);
+      user-select: none;
+    }
+
+    .next {
+      right: 0;
+      border-radius: 3px 0 0 3px;
+    }
+
+    .prev {
+      left: 0;
+    }
+
+    .prev:hover, .next:hover {
+      background-color: rgba(0,0,0,0.8);
+    }
+
+    .fade {
+      animation: fade 0.75s;
+    }
+
+    @keyframes fade {
+      from {opacity: .6}
+      to {opacity: 1}
+    }
+  </style>
+</BaseLayout>

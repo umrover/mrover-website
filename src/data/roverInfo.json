@@ -1,0 +1,223 @@
+[
+  {
+    "year": "2025",
+    "name": "Kiwi",
+    "image_path": "roverImages/2025/KIWI.jpg",
+    "desc": [
+      "This year's rover was extensively redesigned to overcome previous challenges and enhance performance across all mission areas. Key improvements include a lightweight torsion box chassis, a novel double-lambda rocker-bogie suspension for better obstacle handling, and upgraded 3D-printed wheels with custom gearboxes for improved mobility. The five-degree-of-freedom robotic arm features two new end effectors and increased durability for harsh conditions. A new electronics architecture centralizes power and control through custom PCBs, while the Jetson AGX Orin enables advanced autonomy, including object detection, visual servoing, and RTK GPS-based navigation. The science system introduces a sheathed auger for soil collection and dual life-detection assays, supported by environmental sensors and geological imaging.",
+      "Kiwi earned 11th place at URC and 12th place at CIRC."
+    ],
+    "slideshow": ["roverImages/2025/KIWI.jpg"]
+  },
+  {
+    "year": "2024",
+    "name": "Perry",
+    "image_path": "roverImages/2024/PERRY.jpg",
+    "desc": [
+      "Perry was designed for mobility, precision, and mission success. Its lightweight aluminum chassis and rocker-bogie suspension ensure smooth navigation over rough terrain, while custom 3D-printed wheels provide traction and stability. The robotic arm, with five degrees of freedom, can lift up to 10kg and is controlled via inverse kinematics for intuitive operation. Powered by a 36V battery, the rover's modular electronics include custom PCBs and real-time monitoring for reliable performance. Communications use a 2.4 GHz wireless network, enabling data transfer at speeds up to 60 Mbps.",
+      "Autonomy is enhanced by RTK GPS and advanced object detection, with a GUI that provides camera views and a 3D model for precise control. The rover is designed for tasks like Delivery and Equipment Servicing, with capabilities like obstacle navigation and arm manipulation. Rigorous testing ensures robust performance across all systems, preparing the rover for the University Rover Challenge.",
+      "MRover placed 9th at URC and 2nd at CIRC this year!"
+    ],
+    "slideshow": ["roverImages/2024/PERRY.jpg"]
+  },
+  {
+    "year": "2023",
+    "name": "Dahlia",
+    "image_path": "roverImages/2023/DAHLIA.png",
+    "desc": [
+      "After competing at CIRC for the very first time and URC for the first time since COVID-19 our team was back and ready to work hard to build our best rover yet! Similar to previous years, Dahlia's electrical system remains accessible and serviceable. A battery and BMS provide power and protection to the rover, while the electrical box contains electronics needed for operation. A custom built power distribution PCB steps down voltages for various rover operations, and the custom built MCU board controls signals to the arm motors, instruments and sample handling box, and LEDs to successfully carry out mission tasks. Two radio configurations at different frequencies ensures efficient operation for different missions up to 2km. In terms of new software developments; Dahlia uses an extended Kalman filter (EKF) consuming IMU orientation and multi-band GPS translation updates to predict and refine a smooth global transform. Visual odometry is used to produce 25 hz transform for localized tasks where accuracy is paramount, such as traversing the gate. Moteus brushless controllers have been integrated to provide reliable velocity control to the wheelbase. Our mechanical branch also made many new design decisions. Including a modified the welded torsion box to highly optimize for mass and load cases, a redesigned arm cycloidal gearboxes to efficiently transfer torque across joints using brushless motors, implementing a slip ring to allow infinite rotations of the end effector, and adding a sample acquisition subsystem that consists of a 3 degree of freedom robotic arm and end effector to scoop soil. Dahlia also features a optimized carousel system by modifying actuators and camera mounting, designed for a new chemical test, and added a sample cache to ISH. Finally the mechanical team tested new tire treads for increasing traction and reduced slop in mobility joints on Dahlia. The astrobiology team implemented 3 new tests to determine extant, extinct, and no life presence in soil samples. These tests included a ninhydrin test which tests for amino acids, ethanol autofluorescence test which tests for chlorophyll, and emulsion test which tests for lipids.",
+      "Dahlia received an SAR score of 92.21 and finished fourth at URC with an overall score of 343.08!"
+    ],
+    "slideshow": ["roverImages/2023/DAHLIA.png"]
+  },
+  {
+    "year": "2022",
+    "name": "Rosie",
+    "image_path": "roverImages/2022/ROSIE.jpg",
+    "desc": [
+      "In 2022 our team of roughly 80 members was back in person and ready to build our greatest rover yet! New 3D printed wheels are powerful and highly durable, allowing Rosie to traverse rough terrain with great agility. The rocker-bogie wheel configuration and differential bar work together to keep the lightweight chassis level, and her robotic arm switches easily between different segment and end effector combinations to serve specific missions. In addition to manual, open-loop control, the robotic arm utilizes our closed-loop inverse kinematics algorithm to move itself to precise positions. Rosie's electrical box is highly organized and serviceable, equipped with a strong battery to power through long missions. The electrical system is well-interfaced with the mechanical system through careful wire-routing and EBox dampening measures, and her communications system allows for remote operation from distances up to 2km even with line-of-sight obstructions and elevation changes. Our embedded hardware and software systems utilize custom PCBs to control sensors and mechanisms, and onboard processors monitor functions to protect against potential electrical issues. A base station real-time kinematics program monitors and corrects Rosie's position to direct her to distant locations with centimeter-level precision, and a rotating gimbal and camera system provide camera input to quickly determine obstacle-free paths. Even further, Rosie can use this capability to identify and travel to targets and through gates in a specified order. Rosie's science system consists of eight different tests to determine the presence of extinct, extant, and absent life. In addition to chemical tests of collected soil samples, Rosie utilizes an actuated microscope and spectrophotometer, and a custom-built Raman spectrometer.",
+      "Rosie received an SAR score of 90.97 and finished FIRST at URC with an overall score of 388.97!"
+    ],
+    "slideshow": ["roverImages/2022/ROSIE.jpg"]
+  },
+  {
+    "year": "2021",
+    "name": "Blue",
+    "image_path": "roverImages/2021/Blue-Cropped.jpg",
+    "desc": [
+      "Logistical challenges presented by this highly-remote school year influenced our rover's design, with an added emphasis on making all systems highly manufacturable and easily serviceable. We switched to a welded-aluminum chassis this year, as opposed to carbon fiber, and incorporated a rocker-bogie suspension system and 3D-printed wheels to make it more suited to rocky and uneven terrain. We built upon our Robotic Arm's custom cycloid transmission system and enhanced usability by adding lasers for depth perception and multiple camera views, and implementing more user-friendly controllers. Blue houses our most advanced electrical system yet with an extendable signal range via custom radio repeater, PCB designs that provide additional system monitoring capabilities and a custom, rechargeable battery. Our science system features numerous life determination methods including Raman spectroscopy, amino acid, chlorophyll, protein and pH chemical tests and an actuated microscope. Furthermore, our soil acquisition system is designed to precisely deliver three separate soil samples without cross-contamination of samples or site.",
+      "Though URC was cancelled this year due to the ongoing Covid-19 pandemic, we were still judged on our SAR submission, receiving a score of 93.09/100!"
+    ],
+    "slideshow": ["roverImages/2021/SAR-Blue.jpg", "roverImages/2021/Blue-Snow.jpg"]
+  },
+  {
+    "year": "2020",
+    "name": "Lucy",
+    "image_path": "roverImages/2020/2020.jpg",
+    "desc": [
+      "This year, we focused our attention to the durability and reliability of our four-wheeled rover, while continuing our previous successes. We developed our mobility system with a carbon-fiber chassis to allow for a strong, lightweight foundation. We also revamped the system with more powerful brushless DC motors to climb steeper slopes, and a suspension that is optimized to better absorb impact on all the wheels. We continued our improvements from last year's arm by developing an in-house cycloidal transmission, increasing end effector precision while reducing overall mass of the rover.",
+      "Additionally, we completely overhauled the rover's electrical system to support the mechanical and software updates, while giving us reliable communication and power. We developed our own 10-Series battery back to provide ample power to the rover. To ensure constant communication with the base station, we developed an autonomously deployable radio repeater for our long-range mission.",
+      "Due to COVID-19, URC 2020 was cancelled after SAR submission. Based on SAR results, Lucy was the top URC 2020 qualifier."
+    ],
+    "slideshow": ["roverImages/2020/2020.jpg", "roverImages/2020/outside-hills.jpg"]
+  },
+  {
+    "year": "2020-IRDC",
+    "name": "SPIDER",
+    "image_path": "roverImages/IRDC-2020/IRDC.png",
+    "desc": [
+      "In summer 2020, Mars Society South Asia hosted the first ever Indian Rover Design Challenge.  This was a completely virtual design competition with the goal of designing a Mars-worthy rover.  A portion of our team woked over the course of 3 months to research the surface of Mars and apply the research to design a rover worthy of operating on the surface of the planet.",
+      "With things like dust, temperature, and radiation to take into account, we have designed an enclosed chassis with pannel specfically designed to protect all key systems from dust and extreme temperatures.  We chose a rocker-bogey suspension to better handle the surface.  We have also revamped our servicing and science arm designs with new transimissions.  Our software team has designed a state machine to continually track the condition of the rover and autonomously adjust to dangers it may encounter during it's 15 sol mission.",
+      "If you would like to read our final design report, please email the team Public relations officer.  We placed 5th of 28 teams and recieved an innovation award for our power system!  Our 5th place finish made us the highest placing team from outside of India."
+    ],
+    "slideshow": ["roverImages/IRDC-2020/IRDC.png"]
+  },
+  {
+    "year": "2019",
+    "name": "Bowser",
+    "image_path": "roverImages/2019/2019.jpeg",
+    "desc": [
+      "This year, we continued with the success of our four-wheeled rover from last year with shock absorbing systems. We developed heavy-duty rockers that allowed our rover to easily traverse rocky or uneven terrain. We decided to completely redo our arm to utilize inverse kinematics to take full advantage of the seven degrees of freedom we had available to us, allowing our operators to have a much more seamless experience. We also upgraded our sample acquisition system to have two individual science boxes, with associated separate drills and tubing in order to ensure that any soil samples we collected remained separated.",
+      "We made many steps forward on the science front that eventually allowed us to get a perfect score on science at URC. As a partnership between mechanical and science, we designed and fabricated a Raman spectrometer to analyze soil samples without needing to collect them. We also installed a microscope to identify life without collection as well. For the soil we collected, we included ammonia and chlorophyll based tests to detect signs of life.",
+      "At URC 2019, Bowser placed 7th overall."
+    ],
+    "slideshow": ["roverImages/2019/2019.jpeg", "roverImages/2019/outside-1.jpg"]
+  },
+  {
+    "year": "2018",
+    "name": "Phoebe",
+    "image_path": "roverImages/2018/2018.jpg",
+    "desc": [
+      "This year, we decided to give our subsystems a major overhaul. We abandoned the six-wheeled \"rocker-bogie\" suspension system in favor of a system that would allow us to travel faster - four independent shock absorbers and a differential bar. To give us more room for subsystems, we substantially increased the size of the chassis. Additionally, we designed our sample acquisition drill and robotic arm from the ground up, applying lessons learned in past years to produce brand new designs.",
+      "With the largest number of programmers in MRover history, we undertook the task of rewriting the entire codebase to create a maintainable codebase to use for years to come. This time, instead of using the Robot Operating System, we developed simpler software more focused on our needs. This included developing our own simulators to rapidly test code. We also implemented an \"edge computing\" approach, dividing up computing between many small computers and microcontrollers on the rover.",
+      "At URC 2018, Phoebe placed 9th overall."
+    ],
+    "slideshow": [
+      "roverImages/2018/2018.jpg",
+      "roverImages/2018/eq_servicing.jpg",
+      "roverImages/2018/frc_worlds.jpg",
+      "roverImages/2018/cad.png",
+      "roverImages/2018/team_2018_2.jpg"
+    ]
+  },
+  {
+    "year": "2017",
+    "name": "Hughey",
+    "image_path": "roverImages/2017/2017.jpg",
+    "desc": [
+      "In 2017, the URC introduced the autonomous navigation task, adding an entirely new dimension to the competition. To test autonomy code          without having a fully equipped rover, we used the simulation features of the Robot Operating System.",
+      "Mechanically speaking, Hughey was an improved version of the previous model, using a similar chassis and rocker-bogie suspension. Most changes were small adjustments, such as upgrading the frame from aluminum to carbon fiber. The most significant change was the separation of the sample acquisition subsystem from the robotic arm. We alse replaced the large linear actuator on the upper arm with motor and geartrain, completing our transition from linear actuation of the arm.",
+      "At URC 2017, Hughey placed 26th overall."
+    ],
+    "slideshow": [
+      "roverImages/2017/2017.jpg",
+      "roverImages/2017/task.jpg",
+      "roverImages/2017/testing.jpg",
+      "roverImages/2017/team_2017.jpg"
+    ]
+  },
+  {
+    "year": "2016",
+    "name": "Golu Golu",
+    "image_path": "roverImages/2016/2016.jpg",
+    "desc": [
+      "Starting with the designs from the 2015 rover, Golu Golu's mechanical systems innovated on the prior year's in several ways. Golu Golu marked the start of a transition away from a linearly actuated arm, using motors and geartrains for all segments except the upper arm.",
+      "Our software this year was an improved version of the previous year's as well. With Golu Golu's more complex arm, the team had to develop a more advanced control scheme for the robotic arm.",
+      "At URC 2016, Golu Golu placed 13th overall."
+    ],
+    "slideshow": ["roverImages/2016/2016.jpg"]
+  },
+  {
+    "year": "2015",
+    "name": "Grover",
+    "image_path": "roverImages/2015/2015.jpg",
+    "desc": [
+      "Grover featured many designs that would be signatures of MRover for the next few years. The six-wheeled rocker-bogie mechanism allowed the rover to remain stable on uneven terrain, and the rectangular chassis allowed the electronics to be housed in the back and the subsystems in the front.",
+      "With an entirely new set of programmers, it was decided that the previous year's software was outdated and that the best move was to start from scratch. Starting with a simple set of programs for encoding joystick data at the base station and decoding it onboard the rover, our programmers began developing code that would be used in future years and learning lessons in developing a maintainable codebase.",
+      "Grover did not qualify to compete in URC 2015."
+    ],
+    "slideshow": ["roverImages/2015/2015.jpg"]
+  },
+  {
+    "year": "2014",
+    "name": "",
+    "image_path": "roverImages/2014/2014.jpg",
+    "desc": [
+      "Our 2014 design made large strides from our 2013 design, and is the first rover to have the apperance of our current rovers. We began using boxes from Protocase to house our electrical components and shifted from pneumatic tires to the rubber tread tires we would use for years to come.",
+      "At URC 2014, our rover placed 16th overall."
+    ],
+    "slideshow": ["roverImages/2014/2014.jpg", "roverImages/2014/2014_2.jpg"]
+  },
+  {
+    "year": "2013",
+    "name": "Tharsis",
+    "image_path": "roverImages/2013/2013.jpg",
+    "desc": [
+      "Our 2013 model was an upgraded version of our effective 2012 model. We changed our rover back to a six-wheeled design once again, employing a modified version of our 2011 suspension system. We began constucting our electrical boxes out of lighter material, allowing us to use more of our alotted mass on other subsystems."
+    ],
+    "slideshow": [
+      "roverImages/2013/2013.jpg",
+      "roverImages/2013/2013_2.jpg",
+      "roverImages/2013/trooper.jpg",
+      "roverImages/2013/metalM.jpg",
+      "roverImages/2013/hail_2013.jpg"
+    ]
+  },
+  {
+    "year": "2012",
+    "name": "Cydonia",
+    "image_path": "roverImages/2012/2012-team.jpg",
+    "desc": [
+      "Our 2012 design innovated upon the 2011 design in several ways. It featured a return to a four-wheeled design and a new suspension system with independent shocks for each wheel. We also upgraded to much larger pneumatic tires for increased stability."
+    ],
+    "slideshow": ["roverImages/2012/2012-team.jpg"]
+  },
+  {
+    "year": "2011",
+    "name": "Leonardo",
+    "image_path": "roverImages/2011/2011-1.png",
+    "desc": [
+      "With the experience from 2010 and a tripled budget, we put together a larger, more competitive rover in 2011. Continuing our separation of mechanical and electrical teams, we broke the team down further into 6 core project systems - base station and control, communication, navigation and cameras, frame design, mobility, and arm design. Our team was still relatively small, consisiting of about 10 people.",
+      "Leonardo was still pretty rudimentary, though a sizeable step forward from Walle. It consisted of 6 motors directly driving 6 wheels, a semi-articulated platform for 4 of the wheels to better navigate the terrain, several cameras, and a robotic arm. We gave it the name \"Leonardo\" due to the outer the frame's similarity to a turtle shell."
+    ],
+    "slideshow": ["roverImages/2011/2011-1.png"]
+  },
+  {
+    "year": "2010",
+    "name": "Walle",
+    "image_path": "roverImages/2010/2010-1.png",
+    "desc": [
+      "In 2010, MRover competed in our first URC, deciding that an annual competition would give our team a more well-defined goal and an incentive to design, build, and test on a regular schedule. We designed a simple rover consisting of an open-top steel frame, 2 motors with chain drive,  4 wheels, no suspension, an onboard laptop, and a rudimentary arm.",
+      "At this phase of URC there were no more than 10 teams in the competition, though the field was still international.  We got to see the tasks and other rovers firsthand, learning what we could do in coming years to improve our performance."
+    ],
+    "slideshow": ["roverImages/2010/2010-1.png"]
+  },
+  {
+    "year": "2005",
+    "name": "Universal Chassis",
+    "image_path": "roverImages/UniversalChassis/UniversalChassis.jpg",
+    "desc": [
+      "Our next project after Everest took our team back to our origin in concept development. We were thinking about a chassis that was more modular - a platform that was all set up with power, communications, control, etc and could be outfitted as necessary for a given task, such as storage, scientific analysis, or crew transport.",
+      "We evaluated tasks that Mars rovers would have to complete based on estimated mass and energy requirements and grouped them based on the size of chassis that would be required to meet those requirements. In the end, we developed small, medium, and large versions of our Universal Chassis. We went to the RASCAL Forum in 2005 and got 2nd place for the concept. Overall, the idea was to experiment with and develop ideas for systems involving radio communication, autonomy, robot arms, and chassis frames."
+    ],
+    "slideshow": ["roverImages/UniversalChassis/UniversalChassis.jpg"]
+  },
+  {
+    "year": "2003",
+    "name": "Everest",
+    "image_path": "roverImages/Everest/everest-1.jpg",
+    "desc": [
+      "Our next step after Olympus was to turn our design into a prototype. The team acquired a 4x4 military truck platform and retrofitted it to realize our manned rover design. Essentially, the design consisted of a box cabin on the back of the truck that was outfitted with bunks, a bathroom, a lab bench, and other scientific equipment. They called the prototype Everest, and they drove it to the Mars Desert Research Station to test it."
+    ],
+    "slideshow": ["roverImages/Everest/everest-1.jpg"]
+  },
+  {
+    "year": "2000",
+    "name": "Olympus",
+    "image_path": "roverImages/Olympus/Olympus-1.jpg",
+    "desc": [
+      "MRover was founded in 2000, then known as the Michigan Mars Rover Design Project. Our purpose was to design, build, and test a prototype of a pressurized rover for a manned Mars expedition while inspiring and educating people about space expoloration. We named our original concept Olympus after the highest point on Mars, and the team explored key elements of design - powering, propulsion, life support, etc. The design was entered into a Mars Society competition, and team won $10,000 to build a prototype."
+    ],
+    "slideshow": ["roverImages/Olympus/Olympus-1.jpg"]
+  }
+]

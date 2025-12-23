@@ -1,0 +1,116 @@
+---
+interface Page {
+  url: string;
+  title: string;
+  weight: number;
+  hideInHeader?: boolean;
+}
+
+// Define navigation pages with their properties
+const navPages: Page[] = [
+  { url: "/about", title: "About", weight: 1, hideInHeader: false },
+  { url: "/rovers", title: "Rovers", weight: 2, hideInHeader: false },
+  // { url: "/sponsors", title: "Sponsors", weight: 3, hideInHeader: false },
+  { url: "/sponsor_us", title: "Sponsor", weight: 4, hideInHeader: false },
+  { url: "/join", title: "Join", weight: 5, hideInHeader: false },
+  { url: "/contact", title: "Contact", weight: 6, hideInHeader: false },
+  { url: "/memory", title: "Memory", weight: 7, hideInHeader: false },
+];
+
+// Filter and sort pages for navigation
+const visiblePages = navPages.filter((page) => !page.hideInHeader).sort((a, b) => a.weight - b.weight);
+---
+
+<header class="sticky top-0 z-40 bg-michigan-blue border-b border-mrover-base/30 shadow-xl backdrop-blur-sm">
+  <div class="max-w-content mx-auto px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="/" class="flex items-center">
+        <img src="/logos/logo_light_trimmed.svg" alt="MRover Logo" class="h-8 md:h-10" />
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-6">
+        {
+          visiblePages.map((page) => (
+            <a
+              href={page.url}
+              class="text-sm font-semibold uppercase text-michigan-maize transition-colors"
+            >
+              {page.title}
+            </a>
+          ))
+        }
+      </nav>
+
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <div class="relative">
+          <button id="mobile-menu-button" class="p-2 text-gray-200 hover:text-michigan-maize cursor-pointer">
+            <svg viewBox="0 0 24 24" class="w-6 h-6" fill="currentColor">
+              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+            </svg>
+          </button>
+
+          <!-- Mobile Dropdown -->
+          <div
+            id="mobile-menu"
+            class="hidden absolute right-0 top-full mt-2 w-48 bg-michigan-blue/95 backdrop-blur-sm border border-mrover-base/30 rounded-lg shadow-xl overflow-hidden opacity-0 scale-95 transition-all duration-200 origin-top-right"
+          >
+            {
+              visiblePages.map((page) => (
+                <a
+                  href={page.url}
+                  class="block px-4 py-3 text-sm font-semibold uppercase text-michigan-maize hover:bg-mrover-base/20 transition-colors"
+                >
+                  {page.title}
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const button = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
+
+    if (button && menu) {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isHidden = menu.classList.contains('hidden');
+
+        if (isHidden) {
+          // Show menu with animation
+          menu.classList.remove('hidden');
+          setTimeout(() => {
+            menu.classList.remove('opacity-0', 'scale-95');
+            menu.classList.add('opacity-100', 'scale-100');
+          }, 10);
+        } else {
+          // Hide menu with animation
+          menu.classList.remove('opacity-100', 'scale-100');
+          menu.classList.add('opacity-0', 'scale-95');
+          setTimeout(() => {
+            menu.classList.add('hidden');
+          }, 200);
+        }
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!menu.contains(e.target as Node) && !button.contains(e.target as Node)) {
+          menu.classList.remove('opacity-100', 'scale-100');
+          menu.classList.add('opacity-0', 'scale-95');
+          setTimeout(() => {
+            menu.classList.add('hidden');
+          }, 200);
+        }
+      });
+    }
+  });
+</script>

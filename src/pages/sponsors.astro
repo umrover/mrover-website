@@ -1,0 +1,40 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AllSponsors from "@/components/AllSponsors.astro";
+---
+
+<BaseLayout title="Sponsors - University of Michigan Mars Rover Team">
+  <!-- Hero -->
+  <div
+    class="relative h-96 md:h-[500px] lg:h-[600px] bg-cover bg-center"
+    style="background-image: url('/images/circuit-boards.jpg');"
+  >
+    <div class="absolute inset-0 bg-black/50"></div>
+  </div>
+
+  <!-- All Sponsors Component -->
+  <section class="py-12 md:py-16 bg-background">
+    <AllSponsors />
+  </section>
+
+  <!-- Sponsor Us CTA -->
+  <div class="w-full bg-grey-light/30 py-4">
+    <h3 class="text-3xl md:text-4xl text-center uppercase text-text font-bold">Sponsor Us!</h3>
+  </div>
+
+  <section class="py-16 md:py-20 bg-grey-light/20">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+      <p class="text-grey-dark leading-relaxed mb-8">
+        Interested in helping us win the University Rover Challenge? Any donation helps. We would greatly appreciate
+        your support.
+      </p>
+      <a href="/donate">
+        <button
+          class="inline-block px-8 py-3 text-base font-medium uppercase bg-mrover-orange text-text rounded-lg hover:bg-mrover-orange/90 focus:ring-4 focus:ring-mrover-orange/50 transition-all shadow-md hover:shadow-lg"
+        >
+          Sponsor Us
+        </button>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
