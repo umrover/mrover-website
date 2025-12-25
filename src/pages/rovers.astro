@@ -93,9 +93,7 @@ const reversedRovers = [...roverInfo].reverse();
       }
     }
 
-    function plusSlides(n) {
-      showSlides(slideIndex += n);
-    }
+    window.currentSlide = currentSlide;
 
     function showSlides(n) {
       const slides = document.querySelectorAll('#content-slideshow .slide');

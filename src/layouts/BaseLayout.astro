@@ -19,7 +19,6 @@ const {
   canonical
 } = Astro.props;
 
-const isProd = import.meta.env.PROD;
 const siteUrl = 'https://mrover.org';
 const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString();
 ---
@@ -95,12 +94,6 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
 </head>
 
 <body class="font-lato text-base leading-normal text-michigan-blue antialiased">
-  {!isProd && (
-    <div class="fixed bottom-4 left-4 z-50 bg-yellow-500/20 backdrop-blur-sm text-text px-4 py-2 text-xs font-semibold rounded-full shadow-lg border border-orange-600/50">
-      DEV
-    </div>
-  )}
-
   <Header />
 
   <slot />

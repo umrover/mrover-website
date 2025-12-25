@@ -420,12 +420,12 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       });
 
       import("typed.js").then(({ default: Typed }) => {
-        const typed = new Typed("[data-typing-text]", {
+        new Typed("[data-typing-text]", {
           strings: ["./mrover"],
           typeSpeed: 80,
           showCursor: true,
           cursorChar: "█",
-          onComplete: (self) => {
+          onComplete: () => {
             // hide cursor
             setTimeout(() => {
               const cursor = document.querySelector(".typed-cursor") as HTMLElement;

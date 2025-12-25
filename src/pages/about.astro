@@ -1,57 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { SceneManager } from "@/components/about/SceneManager";
-
-const teams = [
-  {
-    name: "Mechanical",
-    color: "#00274C",
-    accent: "#FFCB05",
-    subteams: [
-      { id: "robotic-arm", name: "Robotic Arm", desc: "Designs and builds a five degree-of-freedom robotic arm for Equipment Servicing and Extreme Retrieval missions." },
-      { id: "mobility", name: "Mobility", desc: "Develops drive and suspension systems to navigate rocks and rough terrain in each competition mission." },
-      { id: "chassis", name: "Chassis and Mounts", desc: "Develops a lightweight and strong chassis optimized for integration of all sub-systems." },
-    ]
-  },
-  {
-    name: "Science-Mechanical",
-    color: "#FF6B35",
-    accent: "#FFE0D4",
-    subteams: [
-      { id: "spi", name: "Science Payload Instrumentation", desc: "Brings together sensors and tests for in-situ sampling with on-board life-detection tests." },
-      { id: "spa", name: "Science Payload Acquisition", desc: "Develops and tests soil collection mechanics with a linear actuator-driven auger system." },
-    ]
-  },
-  {
-    name: "Science",
-    color: "#4CAF50",
-    accent: "#C8E6C9",
-    subteams: [
-      { id: "astrobiology", name: "Astrobiology", desc: "Develops tests to analyze soil and rock samples for signs of past or present life." },
-    ]
-  },
-  {
-    name: "Software",
-    color: "#2196F3",
-    accent: "#BBDEFB",
-    subteams: [
-      { id: "autonomy", name: "Autonomy", desc: "Handles Navigation, Perception, and Localization. Uses A* to path plan around obstacles." },
-      { id: "esw", name: "Embedded Software", desc: "Writes low-level driver code for other programming subteams to utilize electronic equipment." },
-      { id: "teleop", name: "Teleoperation", desc: "Creates the interface between driver and rover, maintaining GUIs and control solutions." },
-      { id: "drone", name: "Drone", desc: "Develops a drone for collaboration with the Rover, capable of manual and autonomous operation." },
-    ]
-  },
-  {
-    name: "Electrical",
-    color: "#9C27B0",
-    accent: "#E1BEE7",
-    subteams: [
-      { id: "power", name: "Power", desc: "Provides power to the rover and manages the electronics box with custom distribution solutions." },
-      { id: "ehw", name: "Embedded Hardware", desc: "Controls actuators, receives sensor signals, and designs custom PCBs for motor control." },
-      { id: "comms", name: "Communications", desc: "Ensures strong wireless RF communication link between base station and rover." },
-    ]
-  },
-];
+import { SECTION_TARGETS } from "@/components/about/SceneConfig";
 ---
 
 <BaseLayout title="About - University of Michigan Mars Rover Team">
@@ -59,128 +9,53 @@ const teams = [
     <SceneManager client:only="react" />
 
     <main class="relative z-10">
-      <section class="mission-section">
-        <div class="mission-content">
-          <h1>The Mission</h1>
-          <p>
-            The Michigan Mars Rover Team designs, builds, and tests a Mars rover prototype
-            to compete in the University Rover Challenge. Our interdisciplinary team of
-            students pushes the boundaries of what's possible in student-led space exploration.
-          </p>
-        </div>
-      </section>
-
-    {teams.map((team, teamIndex) => (
-      <section
-        class="team-section"
-        data-team={team.name.toLowerCase()}
-        data-subteam-count={team.subteams.length}
-        style={`--team-color: ${team.color}; --team-accent: ${team.accent}`}
-      >
-        <div class="sticky-container">
-          <div class="team-header">
-            <div class="team-header-content">
-              <span class="team-label">Team</span>
-              <h2>{team.name}</h2>
+      {SECTION_TARGETS.map((section) => (
+        <section class="content-section" data-id={section.name}>
+          {section.name === 'mission' ? (
+            <div class="mission-content">
+              <h1>{section.label}</h1>
+              <p>{section.description}</p>
             </div>
-            <div class="team-header-line"></div>
-          </div>
-          <div class="horizontal-wrapper">
-            <div class="horizontal-track">
-              {team.subteams.map((subteam, subIndex) => (
-                <div class="subteam-panel" data-subteam={subteam.id}>
-                  <div class="panel-content">
-                    <div class="text-block">
-                      <span class="subteam-number">0{subIndex + 1}</span>
-                      <h3>{subteam.name}</h3>
-                      <p>{subteam.desc}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          ) : (
+            <div class="subteam-content">
+              <div class="team-eyebrow" style={`color: ${section.subteam?.accent}`}>
+                {section.subteam?.teamName}
+              </div>
+              <h2 class="section-title">
+                {section.subteam?.name}
+              </h2>
+              <div class="description-box">
+                <p>{section.subteam?.desc}</p>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
-    ))}
-  </main>
+          )}
+        </section>
+      ))}
+    </main>
   </div>
 </BaseLayout>
-
-<script>
-  import { useStore } from "../lib/store";
-
-  function clamp(min: number, input: number, max: number) {
-    return Math.max(min, Math.min(input, max));
-  }
-
-  function mapRange(in_min: number, in_max: number, input: number, out_min: number, out_max: number) {
-    return ((input - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
-  }
-
-  function setupHorizontalScroll() {
-    const sections = document.querySelectorAll(".team-section");
-
-    sections.forEach((section) => {
-      const wrapper = section as HTMLElement;
-      const track = wrapper.querySelector(".horizontal-track") as HTMLElement;
-      const numPanels = parseInt(wrapper.dataset.subteamCount || "1");
-
-      if (numPanels <= 1) {
-        wrapper.style.height = "100vh";
-        return;
-      }
-
-      wrapper.style.height = `${numPanels * 100}vh`;
-    });
-
-    const unsubscribe = useStore.subscribe((state) => {
-      const lenis = state.lenis;
-      if (!lenis) return;
-
-      lenis.on("scroll", ({ scroll }: { scroll: number }) => {
-        sections.forEach((section) => {
-          const wrapper = section as HTMLElement;
-          const track = wrapper.querySelector(".horizontal-track") as HTMLElement;
-          const numPanels = parseInt(wrapper.dataset.subteamCount || "1");
-
-          if (numPanels <= 1) return;
-
-          const rect = wrapper.getBoundingClientRect();
-          const wrapperTop = scroll + rect.top;
-          const wrapperHeight = wrapper.offsetHeight;
-          const windowHeight = window.innerHeight;
-
-          const start = wrapperTop;
-          const end = wrapperTop + wrapperHeight - windowHeight;
-
-          let progress = mapRange(start, end, scroll, 0, 1);
-          progress = clamp(0, progress, 1);
-
-          const x = progress * (numPanels - 1) * window.innerWidth;
-
-          track.style.transform = `translate3d(${-x}px, 0, 0)`;
-        });
-      });
-
-      unsubscribe();
-    });
-  }
-
-  setupHorizontalScroll();
-</script>
 
 <style>
   .about-content-wrapper {
     position: relative;
     clip-path: inset(0);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif; /* Ensure a clean font */
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   :global(footer) {
-    position: relative;
-    z-index: 20;
-    background: var(--color-bg);
+    display: none; /* Hide footer to fix scroll snapping logic */
+  }
+
+  /* Make header overlay for immersive experience and perfect scroll alignment */
+  :global(header) {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
   }
 
   main {
@@ -189,148 +64,20 @@ const teams = [
     color: white;
   }
 
-  .team-section {
-    position: relative;
-  }
-
-  .sticky-container {
-    position: sticky;
-    top: 0;
+  .content-section {
     height: 100vh;
-    overflow: hidden;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* Push content towards bottom/center */
-    padding-bottom: 4rem;
-    pointer-events: none; /* Let clicks pass through to canvas where possible */
-  }
-
-  /* Make header elements interactive */
-  .team-header, .horizontal-wrapper {
-    pointer-events: auto;
-  }
-
-  .team-header {
-    position: absolute;
-    top: var(--header-height, 80px);
-    left: 0;
-    width: 100%;
-    padding: 2rem 4rem;
-    display: flex;
-    align-items: baseline;
-    gap: 1.5rem;
-    /* mix-blend-mode: overlay; -- Removed for better visibility */
-  }
-
-  .team-header-content {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    gap: 1rem;
-  }
-
-  .team-label {
-    font-size: 0.875rem;
-    font-weight: 600; /* Bolder */
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-    color: rgba(255, 255, 255, 0.95); /* Brighter */
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8); /* Stronger shadow */
-  }
-
-  .team-header h2 {
-    font-size: 3rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: #ffffff;
-    margin: 0;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    opacity: 1; /* Full opacity */
-    text-shadow: 0 4px 12px rgba(0,0,0,0.8); /* Stronger shadow */
-  }
-
-  .team-header-line {
-    display: none;
-  }
-
-  .horizontal-wrapper {
-    width: 100%;
-    height: auto;
-  }
-
-  .horizontal-track {
-    display: flex;
-    will-change: transform;
-  }
-
-  .subteam-panel {
-    flex: 0 0 100vw;
-    width: 100vw;
-    padding: 0 4rem;
-    display: flex;
-    align-items: flex-end;
-    padding-bottom: 6vh;
-  }
-
-  .panel-content {
-    max-width: 600px;
-  }
-
-  .text-block {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background: transparent;
-    border: none;
-    backdrop-filter: none;
-    padding: 0;
-  }
-
-  .subteam-number {
-    font-size: 3rem;
-    font-weight: 200;
-    color: rgba(255, 255, 255, 0.6); /* More visible */
-    font-family: monospace;
-    line-height: 1;
-    margin-bottom: -0.5rem;
-    display: block;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-  }
-
-  .text-block h3 {
-    font-size: 4rem;
-    font-weight: 800; /* Bolder */
-    color: #ffffff;
-    margin: 0;
-    line-height: 0.9;
-    letter-spacing: -0.03em;
-    /* Removed transparent gradient text for solid white */
-    text-shadow: 0 4px 16px rgba(0,0,0,0.9); /* Heavy shadow */
-  }
-
-  .text-block p {
-    font-size: 1.125rem;
-    color: #ffffff; /* Pure white */
-    line-height: 1.6;
-    margin-top: 1rem;
-    max-width: 450px;
-    font-weight: 400; /* Thicker weight */
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8); /* Refined shadow */
-    /* Removed boxy background */
-  }
-
-  .mission-section {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    justify-content: flex-end; /* Align content to bottom */
+    padding: 0 4rem 6rem 4rem; /* Bottom padding for breathing room */
     position: relative;
-    pointer-events: none;
+    box-sizing: border-box;
+    pointer-events: none; /* Allow clicks to pass through to canvas */
   }
 
   /* Cinematic vignette for mission section */
-  .mission-section::before {
+  .content-section[data-id="mission"]::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -338,13 +85,16 @@ const teams = [
     z-index: -1;
   }
 
+  /* Mission Content Centered */
+  .content-section[data-id="mission"] {
+    justify-content: center;
+    align-items: center;
+  }
+
   .mission-content {
     text-align: center;
     max-width: 900px;
-    background: transparent;
-    border: none;
-    backdrop-filter: none;
-    padding: 2rem;
+    pointer-events: auto;
   }
 
   .mission-content h1 {
@@ -353,11 +103,8 @@ const teams = [
     text-transform: uppercase;
     color: #ffffff;
     margin: 0 0 2rem 0;
-    letter-spacing: -0.02em;
     line-height: 0.9;
-    mix-blend-mode: normal; /* Normal blend mode */
-    opacity: 1;
-    text-shadow: 0 4px 20px rgba(0,0,0,0.8); /* Heavy shadow */
+    text-shadow: 0 4px 20px rgba(0,0,0,0.8);
   }
 
   .mission-content p {
@@ -365,20 +112,41 @@ const teams = [
     color: #ffffff;
     line-height: 1.6;
     font-weight: 400;
-    max-width: 600px;
-    margin: 0 auto;
     text-shadow: 0 2px 10px rgba(0,0,0,0.9);
-    /* Removed boxy background */
   }
 
-  .sticky-container::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    /* Smooth gradient from bottom up to clear header area */
-    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 30%, transparent 60%);
-    z-index: -1;
+  /* Subteam Content Styling */
+  .subteam-content {
+    max-width: 800px;
+    pointer-events: auto;
+  }
+
+  .team-eyebrow {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  }
+
+  .section-title {
+    font-size: 4.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 1.5rem 0;
+    line-height: 1;
+    text-transform: uppercase;
+    text-shadow: 0 4px 16px rgba(0,0,0,0.9);
+  }
+
+  .description-box p {
+    font-size: 1.25rem;
+    color: #ffffff;
+    line-height: 1.6;
+    font-weight: 400;
+    max-width: 500px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
   }
 
   :global(html) {
@@ -386,24 +154,8 @@ const teams = [
   }
 
   @media (max-width: 768px) {
-    .team-header {
-      padding: 1rem 1.5rem;
-      flex-direction: column;
-      gap: 0.5rem;
-      align-items: flex-start;
-    }
-
-    .team-header h2 {
-      font-size: 2rem;
-    }
-
-    .subteam-panel {
-      padding: 0 1.5rem;
-      padding-bottom: 12vh;
-    }
-
-    .text-block h3 {
-      font-size: 2.5rem;
+    .content-section {
+      padding: 0 1.5rem 4rem 1.5rem;
     }
 
     .mission-content h1 {
@@ -412,6 +164,14 @@ const teams = [
     
     .mission-content p {
       font-size: 1.125rem;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+    }
+
+    .description-box p {
+      font-size: 1rem;
     }
   }
 </style>

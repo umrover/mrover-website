@@ -1,5 +1,5 @@
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { useGLTF, OrbitControls, Stars, useProgress, Environment } from '@react-three/drei'
+import { OrbitControls, Stars, Environment } from '@react-three/drei'
 import { EffectComposer, Vignette, Bloom } from '@react-three/postprocessing'
 import { useScroll } from '../../hooks/use-scroll'
 import { useStore } from '../../lib/store'
@@ -8,60 +8,12 @@ import * as THREE from 'three'
 import URDFLoader from 'urdf-loader'
 import GUI from 'lil-gui'
 import { lerp } from '../../lib/maths'
-
-let urdfLoaded = false
-
-interface SectionTarget {
-  name: string
-  camera: { x: number; y: number; z: number }
-  lookAt: { x: number; y: number; z: number }
-  roverRotation: number
-  joints?: Record<string, number>
-}
-
-const SECTION_TARGETS: SectionTarget[] = [
-  // The Mission - opening hero shot
-  { name: 'mission', camera: { x: 0, y: 80, z: 350 }, lookAt: { x: 0, y: 20, z: 0 }, roverRotation: 0 },
-  // Mechanical - Robotic Arm
-  { name: 'robotic-arm', camera: { x: 150, y: 80, z: 200 }, lookAt: { x: 50, y: 40, z: 0 }, roverRotation: -0.5, joints: { arm_a_to_arm_b: -0.4, arm_b_to_arm_c: 1.2, arm_c_to_arm_d: -0.8 } },
-  // Mechanical - Mobility
-  { name: 'mobility', camera: { x: -100, y: 30, z: 250 }, lookAt: { x: 0, y: -20, z: 0 }, roverRotation: 0.3 },
-  // Mechanical - Chassis
-  { name: 'chassis', camera: { x: 0, y: 150, z: 300 }, lookAt: { x: 0, y: 0, z: 0 }, roverRotation: 0 },
-  // Science-Mechanical - SPI
-  { name: 'spi', camera: { x: 80, y: 60, z: 180 }, lookAt: { x: 20, y: 20, z: 0 }, roverRotation: -0.8 },
-  // Science-Mechanical - SPA
-  { name: 'spa', camera: { x: 100, y: 40, z: 200 }, lookAt: { x: 30, y: 10, z: 0 }, roverRotation: -0.6 },
-  // Science - Astrobiology
-  { name: 'astrobiology', camera: { x: 60, y: 80, z: 220 }, lookAt: { x: 0, y: 30, z: 0 }, roverRotation: -0.4 },
-  // Software - Autonomy
-  { name: 'autonomy', camera: { x: 0, y: 120, z: 350 }, lookAt: { x: 0, y: 0, z: 0 }, roverRotation: 0 },
-  // Software - ESW
-  { name: 'esw', camera: { x: -80, y: 60, z: 200 }, lookAt: { x: 0, y: 20, z: 0 }, roverRotation: 0.5 },
-  // Software - Teleop
-  { name: 'teleop', camera: { x: 50, y: 100, z: 280 }, lookAt: { x: 0, y: 20, z: 0 }, roverRotation: -0.2 },
-  // Software - Drone
-  { name: 'drone', camera: { x: 0, y: 180, z: 400 }, lookAt: { x: 0, y: 50, z: 0 }, roverRotation: 0 },
-  // Electrical - Power
-  { name: 'power', camera: { x: -60, y: 80, z: 220 }, lookAt: { x: 0, y: 30, z: 0 }, roverRotation: 0.6 },
-  // Electrical - EHW
-  { name: 'ehw', camera: { x: 100, y: 50, z: 180 }, lookAt: { x: 20, y: 20, z: 0 }, roverRotation: -0.7 },
-  // Electrical - Comms
-  { name: 'comms', camera: { x: 0, y: 100, z: 300 }, lookAt: { x: 0, y: 40, z: 0 }, roverRotation: 0 },
-]
-
-const TOTAL_SECTIONS = SECTION_TARGETS.length
+import { SECTION_TARGETS, TOTAL_SECTIONS } from './SceneConfig'
+import { MarsTerrain } from './MarsTerrain'
 
 const debugConfig = {
   orbitControls: false,
   currentSection: 0,
-  landscape: {
-    x: -770,
-    y: -60,
-    z: 300,
-    rotationY: -0.87,
-    scale: 125,
-  },
   rover: {
     scale: 1,
     rotationY: -Math.PI/3,
@@ -125,7 +77,7 @@ function CameraController({ orbitEnabled }: { orbitEnabled: boolean }) {
   return null
 }
 
-function Rover({ onLoaded }: { onLoaded?: () => void }) {
+function Rover() {
   const groupRef = useRef<THREE.Group>(null)
   const scrollRef = useRef(0)
   const headerHeight = useStore((state) => state.headerHeight)
@@ -171,8 +123,6 @@ function Rover({ onLoaded }: { onLoaded?: () => void }) {
       }
 
       setRobot(loadedRobot)
-      urdfLoaded = true
-      onLoaded?.()
     })
   }, [])
 
@@ -226,42 +176,6 @@ function Rover({ onLoaded }: { onLoaded?: () => void }) {
   )
 }
 
-function MarsLandscape() {
-  const { scene } = useGLTF('/models/mars_landscape_m.glb')
-  const groupRef = useRef<THREE.Group>(null)
-
-  useEffect(() => {
-    scene.traverse((child: THREE.Object3D) => {
-      if (child instanceof THREE.Mesh) {
-        child.receiveShadow = true
-        child.castShadow = true
-        if (child.material instanceof THREE.MeshStandardMaterial) {
-          child.material.roughness = 0.85
-          child.material.metalness = 0.05
-        }
-      }
-    })
-  }, [scene])
-
-  useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.position.set(
-        debugConfig.landscape.x,
-        debugConfig.landscape.y,
-        debugConfig.landscape.z
-      )
-      groupRef.current.rotation.y = debugConfig.landscape.rotationY
-      groupRef.current.scale.setScalar(debugConfig.landscape.scale)
-    }
-  })
-
-  return (
-    <group ref={groupRef}>
-      <primitive object={scene} />
-    </group>
-  )
-}
-
 function DebugControls({ enabled }: { enabled: boolean }) {
   if (!enabled) return null
   return <OrbitControls makeDefault />
@@ -282,7 +196,7 @@ function Atmosphere() {
   return null
 }
 
-function Scene({ orbitEnabled, onRoverLoaded }: { orbitEnabled: boolean; onRoverLoaded?: () => void }) {
+function Scene({ orbitEnabled }: { orbitEnabled: boolean }) {
   return (
     <>
       <Atmosphere />
@@ -313,11 +227,9 @@ function Scene({ orbitEnabled, onRoverLoaded }: { orbitEnabled: boolean; onRover
       <CameraController orbitEnabled={orbitEnabled} />
       <DebugControls enabled={orbitEnabled} />
       
+      <MarsTerrain />
       <Suspense fallback={null}>
-        <MarsLandscape />
-      </Suspense>
-      <Suspense fallback={null}>
-        <Rover onLoaded={onRoverLoaded} />
+        <Rover />
       </Suspense>
       
       {/* Post-processing */}
@@ -329,99 +241,45 @@ function Scene({ orbitEnabled, onRoverLoaded }: { orbitEnabled: boolean; onRover
   )
 }
 
-function LoadingTracker({ onProgress, roverLoaded }: { onProgress: (p: number) => void; roverLoaded: boolean }) {
-  const { progress } = useProgress()
-
-  useEffect(() => {
-    const adjustedProgress = roverLoaded ? progress : Math.min(progress * 0.8, 80)
-    onProgress(adjustedProgress)
-  }, [progress, roverLoaded, onProgress])
-
-  return null
-}
-
-function LoadingOverlay({ progress, visible, onSkip }: { progress: number; visible: boolean; onSkip: () => void }) {
+function LoadingOverlay({ progress, visible }: { progress: number; visible: boolean }) {
   if (!visible) return null
-
   return (
     <div style={{
       position: 'fixed',
       inset: 0,
+      zIndex: 1000,
+      background: '#0a0808',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#0a0808',
-      zIndex: 100,
+      transition: 'opacity 0.5s ease',
+      pointerEvents: 'none',
     }}>
-      <div style={{
-        width: 48,
-        height: 48,
-        border: '3px solid rgba(255, 140, 0, 0.2)',
-        borderTop: '3px solid #FF8C00',
+      <div className="loader-spinner" style={{
+        width: '40px',
+        height: '40px',
+        border: '3px solid rgba(255, 140, 0, 0.3)',
+        borderTopColor: '#FF8C00',
         borderRadius: '50%',
-        animation: 'spin 1s linear infinite',
-        marginBottom: 24,
+        animation: 'spin 1s linear infinite'
       }} />
       <div style={{
-        color: '#FF8C00',
-        fontSize: 14,
-        fontFamily: 'monospace',
-        marginBottom: 16,
-      }}>
-        Loading 3D Scene...
-      </div>
-      <div style={{
-        width: 200,
-        height: 4,
-        background: 'rgba(255, 140, 0, 0.2)',
-        borderRadius: 2,
-        overflow: 'hidden',
+        marginTop: '20px',
+        width: '200px',
+        height: '2px',
+        background: 'rgba(255, 255, 255, 0.1)',
+        borderRadius: '1px',
+        overflow: 'hidden'
       }}>
         <div style={{
           width: `${progress}%`,
           height: '100%',
           background: '#FF8C00',
-          transition: 'width 0.3s ease',
+          transition: 'width 0.2s ease-out'
         }} />
       </div>
-      <div style={{
-        color: 'rgba(255, 255, 255, 0.5)',
-        fontSize: 12,
-        fontFamily: 'monospace',
-        marginTop: 8,
-      }}>
-        {Math.round(progress)}%
-      </div>
-      <button
-        onClick={onSkip}
-        style={{
-          marginTop: 32,
-          padding: '10px 20px',
-          background: 'transparent',
-          border: '1px solid rgba(255, 140, 0, 0.5)',
-          borderRadius: 6,
-          color: 'rgba(255, 255, 255, 0.7)',
-          fontSize: 13,
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.borderColor = '#FF8C00'
-          e.currentTarget.style.color = '#FF8C00'
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.borderColor = 'rgba(255, 140, 0, 0.5)'
-          e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'
-        }}
-      >
-        Disable WebGL
-      </button>
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
 }
@@ -429,32 +287,23 @@ function LoadingOverlay({ progress, visible, onSkip }: { progress: number; visib
 export function WebGL() {
   const [orbitEnabled, setOrbitEnabled] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [roverLoaded, setRoverLoaded] = useState(false)
   const [progress, setProgress] = useState(0)
-  const [staticMode, setStaticMode] = useState(false)
-
-  const handleRoverLoaded = useCallback(() => {
-    setRoverLoaded(true)
-    urdfLoaded = true
-  }, [])
-
-  const handleProgress = useCallback((p: number) => {
-    setProgress(p)
-    if (p >= 100 && roverLoaded) {
-      setTimeout(() => setLoading(false), 300)
-    }
-  }, [roverLoaded])
-
-  const handleSkipToStatic = useCallback(() => {
-    setStaticMode(true)
-    setLoading(false)
-  }, [])
 
   useEffect(() => {
-    if (progress >= 100 && roverLoaded) {
-      setTimeout(() => setLoading(false), 300)
+    THREE.DefaultLoadingManager.onStart = () => {
+      setLoading(true)
+      setProgress(0)
     }
-  }, [progress, roverLoaded])
+    
+    THREE.DefaultLoadingManager.onProgress = (_, itemsLoaded, itemsTotal) => {
+      setProgress((itemsLoaded / itemsTotal) * 100)
+    }
+
+    THREE.DefaultLoadingManager.onLoad = () => {
+      setProgress(100)
+      setTimeout(() => setLoading(false), 500) // Prevent dark flash
+    }
+  }, [])
 
   useEffect(() => {
     const gui = new GUI()
@@ -463,13 +312,6 @@ export function WebGL() {
     })
     gui.add(debugConfig, 'currentSection').name('Current Section').listen().disable()
     // gui.hide()
-
-    const landscape = gui.addFolder('Landscape')
-    landscape.add(debugConfig.landscape, 'x', -1000, 1000)
-    landscape.add(debugConfig.landscape, 'y', -500, 500)
-    landscape.add(debugConfig.landscape, 'z', -1000, 1000)
-    landscape.add(debugConfig.landscape, 'rotationY', -Math.PI, Math.PI).name('rotation Y')
-    landscape.add(debugConfig.landscape, 'scale', 1, 300)
 
     const rover = gui.addFolder('Rover')
     rover.add(debugConfig.rover, 'scale', 0.1, 5)
@@ -498,36 +340,16 @@ export function WebGL() {
     }
   }, [])
 
-  if (staticMode) {
-    return (
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 0,
-        background: 'linear-gradient(135deg, #0a0808 0%, #1a1410 50%, #0a0808 100%)',
-      }}>
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/images/KIWI_Landscape_URC.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.15,
-        }} />
-      </div>
-    )
-  }
-
   return (
     <>
-      <LoadingOverlay progress={progress} visible={loading} onSkip={handleSkipToStatic} />
+      <LoadingOverlay progress={progress} visible={loading} />
       <div style={{
         position: 'fixed',
         inset: 0,
         pointerEvents: orbitEnabled ? 'auto' : 'none',
         zIndex: 0,
         opacity: loading ? 0 : 1,
-        transition: 'opacity 0.5s ease',
+        transition: 'opacity 1s ease',
       }}>
         <Canvas
           gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.5 }}
@@ -535,9 +357,8 @@ export function WebGL() {
           shadows
           dpr={[1, 2]}
         >
-          <LoadingTracker onProgress={handleProgress} roverLoaded={roverLoaded} />
           <Suspense fallback={null}>
-            <Scene orbitEnabled={orbitEnabled} onRoverLoaded={handleRoverLoaded} />
+            <Scene orbitEnabled={orbitEnabled} />
           </Suspense>
         </Canvas>
       </div>
