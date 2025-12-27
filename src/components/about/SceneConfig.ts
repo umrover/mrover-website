@@ -14,13 +14,20 @@ export interface SectionTarget {
     joints?: Record<string, number>
   }
 export const SECTION_TARGETS: SectionTarget[] = [
-  // The Mission - opening hero shot
-  { 
-    name: 'mission', 
+  // Mission Intro - title only, camera far back
+  {
+    name: 'mission-intro',
+    label: 'The Mission',
+    camera: { x: 0, y: 200, z: 600 },
+    lookAt: { x: 0, y: 0, z: 0 },
+  },
+  // The Mission - rover slides in with description
+  {
+    name: 'mission',
     label: 'The Mission',
     description: "The Michigan Mars Rover Team designs, builds, and tests a Mars rover prototype to compete in the University Rover Challenge. Our interdisciplinary team of students pushes the boundaries of what's possible in student-led space exploration.",
-    camera: { x: 0, y: 80, z: 350 }, 
-    lookAt: { x: 0, y: 20, z: 0 }, 
+    camera: { x: 0, y: 80, z: 350 },
+    lookAt: { x: 0, y: 20, z: 0 },
   },
   // Mechanical - Robotic Arm
   { 
