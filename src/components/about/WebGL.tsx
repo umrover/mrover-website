@@ -201,10 +201,10 @@ function Scene({ orbitEnabled }: { orbitEnabled: boolean }) {
     <>
       <Atmosphere />
       <Stars radius={800} depth={150} count={5000} factor={6} fade speed={0.3} />
-      
+
       {/* Environment provides realistic fill light and reflections */}
       <Environment preset="sunset" environmentIntensity={0.7} />
-      
+
       {/* Main Sun Light */}
       <directionalLight
         position={[200, 300, 150]}
@@ -220,18 +220,18 @@ function Scene({ orbitEnabled }: { orbitEnabled: boolean }) {
         shadow-camera-top={200}
         shadow-camera-bottom={-200}
       />
-      
+
       {/* Subtle rim light for definition */}
       <directionalLight position={[-150, 50, -100]} intensity={0.5} color={0x445566} />
 
       <CameraController orbitEnabled={orbitEnabled} />
       <DebugControls enabled={orbitEnabled} />
-      
+
       <MarsTerrain />
       <Suspense fallback={null}>
         <Rover />
       </Suspense>
-      
+
       {/* Post-processing */}
       <EffectComposer enableNormalPass={false}>
         <Bloom luminanceThreshold={1} mipmapBlur intensity={0.5} radius={0.6} />
