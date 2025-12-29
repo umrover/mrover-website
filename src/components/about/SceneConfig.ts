@@ -210,39 +210,54 @@ export const SECTION_TARGETS: SectionTarget[] = [
 
 export const TOTAL_SECTIONS = SECTION_TARGETS.length
 
-export const BRANCHES: Branch[] = [
+export const BRANCH_SPACING = 800
+
+function offsetSections(sections: SectionTarget[], yOffset: number): SectionTarget[] {
+  return sections.map(s => ({
+    ...s,
+    camera: { ...s.camera, y: s.camera.y + yOffset },
+    lookAt: { ...s.lookAt, y: s.lookAt.y + yOffset },
+  }))
+}
+
+const BRANCH_DEFINITIONS = [
   {
     name: 'Mission',
     color: '#FF8C00',
     accent: '#FFE0B2',
-    sections: SECTION_TARGETS.filter(s => s.name === 'mission-intro' || s.name === 'mission'),
+    filter: (s: SectionTarget) => s.name === 'mission-intro' || s.name === 'mission',
   },
   {
     name: 'Mechanical',
     color: '#00274C',
     accent: '#FFCB05',
-    sections: SECTION_TARGETS.filter(s => s.subteam?.teamName === 'Mechanical'),
+    filter: (s: SectionTarget) => s.subteam?.teamName === 'Mechanical',
   },
   {
     name: 'Science',
     color: '#4CAF50',
     accent: '#C8E6C9',
-    sections: SECTION_TARGETS.filter(s =>
-      s.subteam?.teamName === 'Science-Mechanical' || s.subteam?.teamName === 'Science'
-    ),
+    filter: (s: SectionTarget) => s.subteam?.teamName === 'Science-Mechanical' || s.subteam?.teamName === 'Science',
   },
   {
     name: 'Software',
     color: '#2196F3',
     accent: '#BBDEFB',
-    sections: SECTION_TARGETS.filter(s => s.subteam?.teamName === 'Software'),
+    filter: (s: SectionTarget) => s.subteam?.teamName === 'Software',
   },
   {
     name: 'Electrical',
     color: '#9C27B0',
     accent: '#E1BEE7',
-    sections: SECTION_TARGETS.filter(s => s.subteam?.teamName === 'Electrical'),
+    filter: (s: SectionTarget) => s.subteam?.teamName === 'Electrical',
   },
 ]
+
+export const BRANCHES: Branch[] = BRANCH_DEFINITIONS.map((def, i) => ({
+  name: def.name,
+  color: def.color,
+  accent: def.accent,
+  sections: offsetSections(SECTION_TARGETS.filter(def.filter), -BRANCH_SPACING * i),
+}))
 
 export const TOTAL_BRANCHES = BRANCHES.length

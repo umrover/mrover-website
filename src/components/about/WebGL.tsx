@@ -7,13 +7,12 @@ import { useRef, Suspense, useCallback, useEffect, useState } from 'react'
 import * as THREE from 'three'
 import URDFLoader from 'urdf-loader'
 import GUI from 'lil-gui'
-import { lerp, smoothstep } from '../../lib/maths'
-import { BRANCHES } from './SceneConfig'
+import { lerp } from '../../lib/maths'
+import { BRANCHES, BRANCH_SPACING } from './SceneConfig'
 import { MarsTerrain } from './MarsTerrain'
 
 const debugConfig = {
   currentSection: 0,
-  currentBranch: 0,
   rover: {
     scale: 1,
     rotationY: -Math.PI/3,
@@ -24,93 +23,66 @@ const debugConfig = {
 let robotRef: any = null
 let guiJointsFolder: GUI | null = null
 
-interface ScrollState {
-  branchIndex: number
-  sectionIndex: number
-  sectionProgress: number
-  branchProgress: number
-}
+const ALL_SECTIONS = BRANCHES.flatMap(b => b.sections)
 
-function getGlobalSectionProgress(scroll: number, headerHeight: number, windowHeight: number) {
-  const totalSections = BRANCHES.reduce((sum, b) => sum + b.sections.length, 0)
-  const totalHeight = totalSections * windowHeight
-  const scrollFromStart = Math.max(0, scroll - headerHeight)
-  const globalProgress = Math.min(1, scrollFromStart / (totalHeight - windowHeight))
-  return globalProgress * (totalSections - 1)
-}
+function getScrollState(scroll: number, windowHeight: number) {
+  let globalSectionOffset = 0
+  let accumulatedHeight = 0
 
-function getSectionByGlobalIndex(index: number): typeof BRANCHES[0]['sections'][0] {
-  let accumulated = 0
-  for (const branch of BRANCHES) {
-    if (index < accumulated + branch.sections.length) {
-      return branch.sections[index - accumulated]
-    }
-    accumulated += branch.sections.length
-  }
-  const lastBranch = BRANCHES[BRANCHES.length - 1]
-  return lastBranch.sections[lastBranch.sections.length - 1]
-}
-
-function getBranchAndProgress(scroll: number, headerHeight: number, windowHeight: number): ScrollState & {
-  branch: typeof BRANCHES[0]
-  currentSection: typeof BRANCHES[0]['sections'][0]
-  nextSection: typeof BRANCHES[0]['sections'][0]
-  globalSectionFloat: number
-} {
-  let accumulatedHeight = headerHeight
-  const globalSectionFloat = getGlobalSectionProgress(scroll, headerHeight, windowHeight)
-
-  for (let i = 0; i < BRANCHES.length; i++) {
-    const branch = BRANCHES[i]
+  for (let branchIdx = 0; branchIdx < BRANCHES.length; branchIdx++) {
+    const branch = BRANCHES[branchIdx]
     const branchHeight = branch.sections.length * windowHeight
-    const branchStart = accumulatedHeight
     const branchEnd = accumulatedHeight + branchHeight
 
-    if (scroll < branchEnd || i === BRANCHES.length - 1) {
-      const scrollInBranch = Math.max(0, scroll - branchStart)
-      const branchProgress = Math.min(1, scrollInBranch / (branchHeight - windowHeight))
+    if (scroll < branchEnd) {
+      const scrolledIntoBranch = Math.max(0, scroll - accumulatedHeight)
+      const scrollableDistance = branchHeight - windowHeight
 
-      const sectionFloat = branchProgress * (branch.sections.length - 1)
-      const sectionIndex = Math.floor(sectionFloat)
-      const sectionProgress = sectionFloat - sectionIndex
+      let fromSection, toSection, sectionProgress, globalIndex
 
-      return {
-        branchIndex: i,
-        branch,
-        sectionIndex,
-        sectionProgress,
-        branchProgress,
-        globalSectionFloat,
-        currentSection: branch.sections[Math.min(sectionIndex, branch.sections.length - 1)],
-        nextSection: branch.sections[Math.min(sectionIndex + 1, branch.sections.length - 1)],
+      if (scrolledIntoBranch <= scrollableDistance) {
+        // Normal scrolling within branch sections
+        const branchProgress = scrollableDistance > 0
+          ? scrolledIntoBranch / scrollableDistance
+          : 0
+
+        const sectionFloat = branchProgress * (branch.sections.length - 1)
+        const localIndex = Math.floor(sectionFloat)
+        sectionProgress = sectionFloat - localIndex
+
+        globalIndex = globalSectionOffset + localIndex
+        fromSection = ALL_SECTIONS[globalIndex]
+        toSection = ALL_SECTIONS[Math.min(globalIndex + 1, ALL_SECTIONS.length - 1)]
+      } else {
+        // Transition zone: last windowHeight of branch, animate to next branch
+        const transitionProgress = (scrolledIntoBranch - scrollableDistance) / windowHeight
+
+        globalIndex = globalSectionOffset + branch.sections.length - 1
+        const nextBranchFirstIndex = globalSectionOffset + branch.sections.length
+
+        fromSection = ALL_SECTIONS[globalIndex]
+        toSection = nextBranchFirstIndex < ALL_SECTIONS.length
+          ? ALL_SECTIONS[nextBranchFirstIndex]
+          : fromSection
+        sectionProgress = transitionProgress
       }
+
+      return { sectionIndex: globalIndex, sectionProgress, fromSection, toSection }
     }
 
     accumulatedHeight = branchEnd
+    globalSectionOffset += branch.sections.length
   }
 
-  const lastBranch = BRANCHES[BRANCHES.length - 1]
-  const totalSections = BRANCHES.reduce((sum, b) => sum + b.sections.length, 0)
+  const lastIndex = ALL_SECTIONS.length - 1
   return {
-    branchIndex: BRANCHES.length - 1,
-    branch: lastBranch,
-    sectionIndex: lastBranch.sections.length - 1,
+    sectionIndex: lastIndex,
     sectionProgress: 0,
-    branchProgress: 1,
-    globalSectionFloat: totalSections - 1,
-    currentSection: lastBranch.sections[lastBranch.sections.length - 1],
-    nextSection: lastBranch.sections[lastBranch.sections.length - 1],
+    fromSection: ALL_SECTIONS[lastIndex],
+    toSection: ALL_SECTIONS[lastIndex],
   }
 }
 
-const BRANCH_SPACING = 800
-const BRANCH_POSITIONS = [
-  { x: 0, y: 0 },                        // Mission
-  { x: 0, y: -BRANCH_SPACING },          // Mechanical
-  { x: 0, y: -BRANCH_SPACING * 2 },      // Science
-  { x: 0, y: -BRANCH_SPACING * 3 },      // Software
-  { x: 0, y: -BRANCH_SPACING * 4 },      // Electrical
-]
 
 function useScrollState() {
   const scrollRef = useRef(0)
@@ -135,70 +107,38 @@ function useScrollState() {
 
 function CameraController() {
   const { camera } = useThree()
-  const { scrollRef, headerHeight, windowHeight } = useScrollState()
+  const { scrollRef, windowHeight } = useScrollState()
   const lookAtTarget = useRef(new THREE.Vector3())
 
   useFrame(() => {
     if (!windowHeight) return
 
-    const scroll = scrollRef.current
-    const { sectionIndex, branchIndex, globalSectionFloat } =
-      getBranchAndProgress(scroll, headerHeight, windowHeight)
+    const { sectionIndex, sectionProgress, fromSection, toSection } =
+      getScrollState(scrollRef.current, windowHeight)
 
     debugConfig.currentSection = sectionIndex
-    debugConfig.currentBranch = branchIndex
 
-    // Calculate branchY based on global section position
-    let accumulatedSections = 0
-    let branchY = BRANCH_POSITIONS[0].y
+    const camX = lerp(fromSection.camera.x, toSection.camera.x, sectionProgress)
+    const camY = lerp(fromSection.camera.y, toSection.camera.y, sectionProgress)
+    const camZ = lerp(fromSection.camera.z, toSection.camera.z, sectionProgress)
 
-    for (let i = 0; i < BRANCHES.length; i++) {
-      const branchSections = BRANCHES[i].sections.length
-      const branchEnd = accumulatedSections + branchSections
+    camera.position.set(camX, camY, camZ)
 
-      if (globalSectionFloat < branchEnd || i === BRANCHES.length - 1) {
-        const currentPos = BRANCH_POSITIONS[i]
-        const nextPos = BRANCH_POSITIONS[Math.min(i + 1, BRANCH_POSITIONS.length - 1)]
+    const lookX = lerp(fromSection.lookAt.x, toSection.lookAt.x, sectionProgress)
+    const lookY = lerp(fromSection.lookAt.y, toSection.lookAt.y, sectionProgress)
+    const lookZ = lerp(fromSection.lookAt.z, toSection.lookAt.z, sectionProgress)
 
-        const lastSectionIndex = branchEnd - 1
-        if (globalSectionFloat >= lastSectionIndex && i < BRANCHES.length - 1) {
-          const transitionProgress = smoothstep(globalSectionFloat - lastSectionIndex)
-          branchY = lerp(currentPos.y, nextPos.y, transitionProgress)
-        } else {
-          branchY = currentPos.y
-        }
-        break
-      }
-
-      accumulatedSections += branchSections
-    }
-
-    // Use global section index for smooth cross-branch camera interpolation
-    const globalIndex = Math.floor(globalSectionFloat)
-    const t = smoothstep(globalSectionFloat - globalIndex)
-    const fromSection = getSectionByGlobalIndex(globalIndex)
-    const toSection = getSectionByGlobalIndex(globalIndex + 1)
-
-    const camX = lerp(fromSection.camera.x, toSection.camera.x, t)
-    const camY = lerp(fromSection.camera.y, toSection.camera.y, t)
-    const camZ = lerp(fromSection.camera.z, toSection.camera.z, t)
-
-    camera.position.set(camX, camY + branchY, camZ)
-
-    const lookX = lerp(fromSection.lookAt.x, toSection.lookAt.x, t)
-    const lookY = lerp(fromSection.lookAt.y, toSection.lookAt.y, t)
-    const lookZ = lerp(fromSection.lookAt.z, toSection.lookAt.z, t)
-
-    lookAtTarget.current.set(lookX, lookY + branchY, lookZ)
+    lookAtTarget.current.set(lookX, lookY, lookZ)
     camera.lookAt(lookAtTarget.current)
   })
 
   return null
 }
 
-function Rover() {
+function Rover({ yOffset = 0 }: { yOffset?: number }) {
   const groupRef = useRef<THREE.Group>(null)
   const [robot, setRobot] = useState<THREE.Object3D | null>(null)
+  const robotInstanceRef = useRef<any>(null)
 
   useEffect(() => {
     const loader = new URDFLoader()
@@ -214,30 +154,32 @@ function Rover() {
           }
         }
       })
-      robotRef = loadedRobot
+      robotInstanceRef.current = loadedRobot
 
-      const robot = loadedRobot as any
-      if (guiJointsFolder && robot.joints) {
-        Object.entries(robot.joints).forEach(([name, joint]: [string, any]) => {
-          if (joint.jointType === 'revolute' || joint.jointType === 'continuous' || joint.jointType === 'prismatic') {
-            const min = joint.limit?.lower ?? -Math.PI
-            const max = joint.limit?.upper ?? Math.PI
-            const initial = Array.isArray(joint.jointValue) ? joint.jointValue[0] : (joint.jointValue ?? 0)
-            debugConfig.joints[name] = initial
-            guiJointsFolder!.add(debugConfig.joints, name, min, max).onChange((v: number) => {
-              joint.setJointValue(v)
-            })
-          }
-        })
+      if (yOffset === 0) {
+        robotRef = loadedRobot
+        const robot = loadedRobot as any
+        if (guiJointsFolder && robot.joints) {
+          Object.entries(robot.joints).forEach(([name, joint]: [string, any]) => {
+            if (joint.jointType === 'revolute' || joint.jointType === 'continuous' || joint.jointType === 'prismatic') {
+              const min = joint.limit?.lower ?? -Math.PI
+              const max = joint.limit?.upper ?? Math.PI
+              const initial = Array.isArray(joint.jointValue) ? joint.jointValue[0] : (joint.jointValue ?? 0)
+              debugConfig.joints[name] = initial
+              guiJointsFolder!.add(debugConfig.joints, name, min, max).onChange((v: number) => {
+                joint.setJointValue(v)
+              })
+            }
+          })
+        }
       }
 
       setRobot(loadedRobot)
     })
-  }, [])
+  }, [yOffset])
 
   useFrame(() => {
-    if (!groupRef.current || !robotRef) return
-
+    if (!groupRef.current || !robotInstanceRef.current) return
     groupRef.current.rotation.y = debugConfig.rover.rotationY
     groupRef.current.scale.setScalar(debugConfig.rover.scale)
   })
@@ -245,15 +187,16 @@ function Rover() {
   if (!robot) return null
 
   return (
-    <group ref={groupRef} position={[BRANCH_POSITIONS[0].x, BRANCH_POSITIONS[0].y, 0]}>
+    <group ref={groupRef} position={[0, yOffset, 0]}>
       <primitive object={robot} />
     </group>
   )
 }
 
-function BranchCube({ branchIndex }: { branchIndex: number }) {
+
+function BranchPlaceholder({ branchIndex }: { branchIndex: number }) {
   const meshRef = useRef<THREE.Mesh>(null)
-  const pos = BRANCH_POSITIONS[branchIndex]
+  const yOffset = -BRANCH_SPACING * branchIndex
 
   useFrame(() => {
     if (!meshRef.current) return
@@ -262,10 +205,31 @@ function BranchCube({ branchIndex }: { branchIndex: number }) {
   })
 
   return (
-    <mesh ref={meshRef} position={[pos.x, pos.y + 40, 0]}>
-      <boxGeometry args={[60, 60, 60]} />
-      <meshBasicMaterial wireframe color="#ffffff" />
-    </mesh>
+    <group position={[0, yOffset, 0]}>
+      <mesh ref={meshRef}>
+        <boxGeometry args={[60, 60, 60]} />
+        <meshBasicMaterial wireframe color="#ffffff" />
+      </mesh>
+      <sprite position={[0, 0, 35]} scale={[30, 30, 1]}>
+        <spriteMaterial color="#ffffff" opacity={0.8} transparent>
+          <canvasTexture
+            attach="map"
+            image={(() => {
+              const canvas = document.createElement('canvas')
+              canvas.width = 64
+              canvas.height = 64
+              const ctx = canvas.getContext('2d')!
+              ctx.fillStyle = '#ffffff'
+              ctx.font = 'bold 48px Arial'
+              ctx.textAlign = 'center'
+              ctx.textBaseline = 'middle'
+              ctx.fillText(String(branchIndex), 32, 32)
+              return canvas
+            })()}
+          />
+        </spriteMaterial>
+      </sprite>
+    </group>
   )
 }
 
@@ -316,11 +280,10 @@ function Scene() {
 
       <MarsTerrain />
       <Suspense fallback={null}>
-        <Rover />
-        <BranchCube branchIndex={1} />
-        <BranchCube branchIndex={2} />
-        <BranchCube branchIndex={3} />
-        <BranchCube branchIndex={4} />
+        <Rover yOffset={0} />
+        {BRANCHES.slice(1).map((_, i) => (
+          <BranchPlaceholder key={i + 1} branchIndex={i + 1} />
+        ))}
       </Suspense>
 
       {/* Post-processing */}
