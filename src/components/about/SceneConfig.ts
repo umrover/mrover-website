@@ -9,10 +9,17 @@ export interface SectionTarget {
     accent: string
     teamName: string
   }
-    camera: { x: number; y: number; z: number }
-    lookAt: { x: number; y: number; z: number }
-    joints?: Record<string, number>
-  }
+  camera: { x: number; y: number; z: number }
+  lookAt: { x: number; y: number; z: number }
+  joints?: Record<string, number>
+}
+
+export interface Branch {
+  name: string
+  color: string
+  accent: string
+  sections: SectionTarget[]
+}
 export const SECTION_TARGETS: SectionTarget[] = [
   // Mission Intro - title only, camera far back
   {
@@ -202,3 +209,40 @@ export const SECTION_TARGETS: SectionTarget[] = [
 ]
 
 export const TOTAL_SECTIONS = SECTION_TARGETS.length
+
+export const BRANCHES: Branch[] = [
+  {
+    name: 'Mission',
+    color: '#FF8C00',
+    accent: '#FFE0B2',
+    sections: SECTION_TARGETS.filter(s => s.name === 'mission-intro' || s.name === 'mission'),
+  },
+  {
+    name: 'Mechanical',
+    color: '#00274C',
+    accent: '#FFCB05',
+    sections: SECTION_TARGETS.filter(s => s.subteam?.teamName === 'Mechanical'),
+  },
+  {
+    name: 'Science',
+    color: '#4CAF50',
+    accent: '#C8E6C9',
+    sections: SECTION_TARGETS.filter(s =>
+      s.subteam?.teamName === 'Science-Mechanical' || s.subteam?.teamName === 'Science'
+    ),
+  },
+  {
+    name: 'Software',
+    color: '#2196F3',
+    accent: '#BBDEFB',
+    sections: SECTION_TARGETS.filter(s => s.subteam?.teamName === 'Software'),
+  },
+  {
+    name: 'Electrical',
+    color: '#9C27B0',
+    accent: '#E1BEE7',
+    sections: SECTION_TARGETS.filter(s => s.subteam?.teamName === 'Electrical'),
+  },
+]
+
+export const TOTAL_BRANCHES = BRANCHES.length

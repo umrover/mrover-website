@@ -4,7 +4,9 @@ import Lenis from 'lenis'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { WebGL } from './WebGL'
-import { TOTAL_SECTIONS } from './SceneConfig'
+import { BRANCHES } from './SceneConfig'
+
+const TOTAL_SCROLL_SECTIONS = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
 
 export function SceneManager() {
   const setLenis = useStore((state) => state.setLenis)
@@ -40,14 +42,14 @@ export function SceneManager() {
     gsap.ticker.add(update)
     gsap.ticker.lagSmoothing(0)
 
-    // Snap to sections
+    // Snap to sections within branches
     const main = document.querySelector('main')
     ScrollTrigger.create({
       trigger: main,
       start: 'top top',
       end: 'bottom bottom',
       snap: {
-        snapTo: 1 / (TOTAL_SECTIONS - 1),
+        snapTo: 1 / (TOTAL_SCROLL_SECTIONS - 1),
         duration: { min: 0.2, max: 0.8 },
         delay: 0.1,
         ease: 'power2.inOut'

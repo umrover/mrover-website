@@ -8,12 +8,13 @@ import * as THREE from 'three'
 import URDFLoader from 'urdf-loader'
 import GUI from 'lil-gui'
 import { lerp } from '../../lib/maths'
-import { SECTION_TARGETS, TOTAL_SECTIONS } from './SceneConfig'
+import { BRANCHES } from './SceneConfig'
 import { MarsTerrain } from './MarsTerrain'
 
 const debugConfig = {
   orbitControls: false,
   currentSection: 0,
+  currentBranch: 0,
   rover: {
     scale: 1,
     rotationY: -Math.PI/3,
@@ -24,12 +25,86 @@ const debugConfig = {
 let robotRef: any = null
 let guiJointsFolder: GUI | null = null
 
-function CameraController({ orbitEnabled }: { orbitEnabled: boolean }) {
-  const { camera } = useThree()
+interface ScrollState {
+  branchIndex: number
+  sectionIndex: number
+  sectionProgress: number
+  branchProgress: number
+}
+
+function getGlobalSectionProgress(scroll: number, headerHeight: number, windowHeight: number) {
+  const totalSections = BRANCHES.reduce((sum, b) => sum + b.sections.length, 0)
+  const totalHeight = totalSections * windowHeight
+  const scrollFromStart = Math.max(0, scroll - headerHeight)
+  const globalProgress = Math.min(1, scrollFromStart / (totalHeight - windowHeight))
+  return globalProgress * (totalSections - 1)
+}
+
+function getBranchAndProgress(scroll: number, headerHeight: number, windowHeight: number): ScrollState & {
+  branch: typeof BRANCHES[0]
+  currentSection: typeof BRANCHES[0]['sections'][0]
+  nextSection: typeof BRANCHES[0]['sections'][0]
+  globalSectionFloat: number
+} {
+  let accumulatedHeight = headerHeight
+  const globalSectionFloat = getGlobalSectionProgress(scroll, headerHeight, windowHeight)
+
+  for (let i = 0; i < BRANCHES.length; i++) {
+    const branch = BRANCHES[i]
+    const branchHeight = branch.sections.length * windowHeight
+    const branchStart = accumulatedHeight
+    const branchEnd = accumulatedHeight + branchHeight
+
+    if (scroll < branchEnd || i === BRANCHES.length - 1) {
+      const scrollInBranch = Math.max(0, scroll - branchStart)
+      const branchProgress = Math.min(1, scrollInBranch / (branchHeight - windowHeight))
+
+      const sectionFloat = branchProgress * (branch.sections.length - 1)
+      const sectionIndex = Math.floor(sectionFloat)
+      const sectionProgress = sectionFloat - sectionIndex
+
+      return {
+        branchIndex: i,
+        branch,
+        sectionIndex,
+        sectionProgress,
+        branchProgress,
+        globalSectionFloat,
+        currentSection: branch.sections[Math.min(sectionIndex, branch.sections.length - 1)],
+        nextSection: branch.sections[Math.min(sectionIndex + 1, branch.sections.length - 1)],
+      }
+    }
+
+    accumulatedHeight = branchEnd
+  }
+
+  const lastBranch = BRANCHES[BRANCHES.length - 1]
+  const totalSections = BRANCHES.reduce((sum, b) => sum + b.sections.length, 0)
+  return {
+    branchIndex: BRANCHES.length - 1,
+    branch: lastBranch,
+    sectionIndex: lastBranch.sections.length - 1,
+    sectionProgress: 0,
+    branchProgress: 1,
+    globalSectionFloat: totalSections - 1,
+    currentSection: lastBranch.sections[lastBranch.sections.length - 1],
+    nextSection: lastBranch.sections[lastBranch.sections.length - 1],
+  }
+}
+
+const BRANCH_SPACING = 800
+const BRANCH_POSITIONS = [
+  { x: 0, y: 0 },                        // Mission
+  { x: 0, y: -BRANCH_SPACING },          // Mechanical
+  { x: 0, y: -BRANCH_SPACING * 2 },      // Science
+  { x: 0, y: -BRANCH_SPACING * 3 },      // Software
+  { x: 0, y: -BRANCH_SPACING * 4 },      // Electrical
+]
+
+function useScrollState() {
   const scrollRef = useRef(0)
   const headerHeight = useStore((state) => state.headerHeight)
   const [windowHeight, setWindowHeight] = useState(0)
-  const lookAtTarget = useRef(new THREE.Vector3())
 
   useEffect(() => {
     const updateSize = () => setWindowHeight(window.innerHeight)
@@ -44,33 +119,64 @@ function CameraController({ orbitEnabled }: { orbitEnabled: boolean }) {
 
   useScroll(scrollCallback)
 
+  return { scrollRef, headerHeight, windowHeight }
+}
+
+function CameraController({ orbitEnabled }: { orbitEnabled: boolean }) {
+  const { camera } = useThree()
+  const { scrollRef, headerHeight, windowHeight } = useScrollState()
+  const lookAtTarget = useRef(new THREE.Vector3())
+
   useFrame(() => {
     if (orbitEnabled || !windowHeight) return
 
     const scroll = scrollRef.current
-    const totalHeight = windowHeight * TOTAL_SECTIONS
-    const progress = Math.max(0, (scroll - headerHeight) / (totalHeight - windowHeight))
-
-    const sectionFloat = progress * (TOTAL_SECTIONS - 1)
-    const sectionIndex = Math.floor(sectionFloat)
-    const sectionProgress = sectionFloat - sectionIndex
-
-    const currentTarget = SECTION_TARGETS[Math.min(sectionIndex, TOTAL_SECTIONS - 1)]
-    const nextTarget = SECTION_TARGETS[Math.min(sectionIndex + 1, TOTAL_SECTIONS - 1)]
+    const { currentSection, nextSection, sectionProgress, sectionIndex, branchIndex, globalSectionFloat } =
+      getBranchAndProgress(scroll, headerHeight, windowHeight)
 
     debugConfig.currentSection = sectionIndex
+    debugConfig.currentBranch = branchIndex
 
-    const camX = lerp(currentTarget.camera.x, nextTarget.camera.x, sectionProgress)
-    const camY = lerp(currentTarget.camera.y, nextTarget.camera.y, sectionProgress)
-    const camZ = lerp(currentTarget.camera.z, nextTarget.camera.z, sectionProgress)
+    // Calculate branchY based on global section position
+    // Sections: Mission(0,1), Mechanical(2,3,4), Science(5,6,7), Software(8,9,10,11), Electrical(12,13,14)
+    let accumulatedSections = 0
+    let branchY = BRANCH_POSITIONS[0].y
 
-    camera.position.set(camX, camY, camZ)
+    for (let i = 0; i < BRANCHES.length; i++) {
+      const branchSections = BRANCHES[i].sections.length
+      const branchStart = accumulatedSections
+      const branchEnd = accumulatedSections + branchSections
 
-    lookAtTarget.current.set(
-      lerp(currentTarget.lookAt.x, nextTarget.lookAt.x, sectionProgress),
-      lerp(currentTarget.lookAt.y, nextTarget.lookAt.y, sectionProgress),
-      lerp(currentTarget.lookAt.z, nextTarget.lookAt.z, sectionProgress)
-    )
+      if (globalSectionFloat < branchEnd || i === BRANCHES.length - 1) {
+        const currentPos = BRANCH_POSITIONS[i]
+        const nextPos = BRANCH_POSITIONS[Math.min(i + 1, BRANCH_POSITIONS.length - 1)]
+
+        // Transition happens in the last section of this branch
+        const lastSectionIndex = branchEnd - 1
+        if (globalSectionFloat >= lastSectionIndex && i < BRANCHES.length - 1) {
+          const transitionProgress = globalSectionFloat - lastSectionIndex
+          branchY = lerp(currentPos.y, nextPos.y, transitionProgress)
+        } else {
+          branchY = currentPos.y
+        }
+        break
+      }
+
+      accumulatedSections += branchSections
+    }
+
+    // Interpolate camera within section
+    const camX = lerp(currentSection.camera.x, nextSection.camera.x, sectionProgress)
+    const camY = lerp(currentSection.camera.y, nextSection.camera.y, sectionProgress)
+    const camZ = lerp(currentSection.camera.z, nextSection.camera.z, sectionProgress)
+
+    camera.position.set(camX, camY + branchY, camZ)
+
+    const lookX = lerp(currentSection.lookAt.x, nextSection.lookAt.x, sectionProgress)
+    const lookY = lerp(currentSection.lookAt.y, nextSection.lookAt.y, sectionProgress)
+    const lookZ = lerp(currentSection.lookAt.z, nextSection.lookAt.z, sectionProgress)
+
+    lookAtTarget.current.set(lookX, lookY + branchY, lookZ)
     camera.lookAt(lookAtTarget.current)
   })
 
@@ -79,17 +185,7 @@ function CameraController({ orbitEnabled }: { orbitEnabled: boolean }) {
 
 function Rover() {
   const groupRef = useRef<THREE.Group>(null)
-  const scrollRef = useRef(0)
-  const headerHeight = useStore((state) => state.headerHeight)
-  const [windowHeight, setWindowHeight] = useState(0)
   const [robot, setRobot] = useState<THREE.Object3D | null>(null)
-
-  useEffect(() => {
-    const updateSize = () => setWindowHeight(window.innerHeight)
-    updateSize()
-    window.addEventListener('resize', updateSize)
-    return () => window.removeEventListener('resize', updateSize)
-  }, [])
 
   useEffect(() => {
     const loader = new URDFLoader()
@@ -126,53 +222,37 @@ function Rover() {
     })
   }, [])
 
-  const scrollCallback = useCallback(({ scroll }: { scroll: number }) => {
-    scrollRef.current = scroll
-  }, [])
-
-  useScroll(scrollCallback)
-
   useFrame(() => {
-    if (!groupRef.current || !windowHeight || !robotRef) return
-
-    const scroll = scrollRef.current
-    const totalHeight = windowHeight * TOTAL_SECTIONS
-    const progress = Math.max(0, (scroll - headerHeight) / (totalHeight - windowHeight))
-
-    const sectionFloat = progress * (TOTAL_SECTIONS - 1)
-    const sectionIndex = Math.floor(sectionFloat)
-    const sectionProgress = sectionFloat - sectionIndex
-
-    const currentTarget = SECTION_TARGETS[Math.min(sectionIndex, TOTAL_SECTIONS - 1)]
-    const nextTarget = SECTION_TARGETS[Math.min(sectionIndex + 1, TOTAL_SECTIONS - 1)]
+    if (!groupRef.current || !robotRef) return
 
     groupRef.current.rotation.y = debugConfig.rover.rotationY
     groupRef.current.scale.setScalar(debugConfig.rover.scale)
-
-    // Animate joints if defined
-    if (robotRef.joints) {
-      const currentJoints = currentTarget.joints || {}
-      const nextJoints = nextTarget.joints || {}
-      const allJointNames = new Set([...Object.keys(currentJoints), ...Object.keys(nextJoints)])
-
-      allJointNames.forEach((jointName) => {
-        const joint = robotRef.joints[jointName]
-        if (joint) {
-          const currentVal = currentJoints[jointName] ?? 0
-          const nextVal = nextJoints[jointName] ?? 0
-          const val = lerp(currentVal, nextVal, sectionProgress)
-          joint.setJointValue(val)
-        }
-      })
-    }
   })
 
   if (!robot) return null
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} position={[BRANCH_POSITIONS[0].x, BRANCH_POSITIONS[0].y, 0]}>
       <primitive object={robot} />
     </group>
+  )
+}
+
+function BranchCube({ branchIndex }: { branchIndex: number }) {
+  const meshRef = useRef<THREE.Mesh>(null)
+  const pos = BRANCH_POSITIONS[branchIndex]
+
+  useFrame(() => {
+    if (!meshRef.current) return
+    meshRef.current.rotation.y += 0.003
+    meshRef.current.rotation.x += 0.002
+  })
+
+  return (
+    <mesh ref={meshRef} position={[pos.x, pos.y + 40, 0]}>
+      <boxGeometry args={[60, 60, 60]} />
+      <meshBasicMaterial wireframe color="#ffffff" />
+    </mesh>
   )
 }
 
@@ -230,6 +310,10 @@ function Scene({ orbitEnabled }: { orbitEnabled: boolean }) {
       <MarsTerrain />
       <Suspense fallback={null}>
         <Rover />
+        <BranchCube branchIndex={1} />
+        <BranchCube branchIndex={2} />
+        <BranchCube branchIndex={3} />
+        <BranchCube branchIndex={4} />
       </Suspense>
 
       {/* Post-processing */}

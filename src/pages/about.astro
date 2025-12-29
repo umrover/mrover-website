@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { SceneManager } from "@/components/about/SceneManager";
-import { SECTION_TARGETS } from "@/components/about/SceneConfig";
+import { BRANCHES } from "@/components/about/SceneConfig";
 ---
 
 <BaseLayout title="About - University of Michigan Mars Rover Team">
@@ -9,69 +9,102 @@ import { SECTION_TARGETS } from "@/components/about/SceneConfig";
     <SceneManager client:only="react" />
 
     <main class="relative z-10">
-      {SECTION_TARGETS.map((section) => (
-        <section class="content-section" data-id={section.name}>
-          {section.name === 'mission-intro' ? (
-            <div class="mission-intro-content">
-              <h1>{section.label}</h1>
+      {BRANCHES.map((branch) => (
+        <div
+          class="branch-wrapper"
+          data-branch={branch.name}
+          style={`--branch-sections: ${branch.sections.length}; --branch-color: ${branch.color}; --branch-accent: ${branch.accent};`}
+        >
+          <div class="branch-inner">
+            <div class="branch-label">{branch.name}</div>
+            <div class="branch-slides">
+              {branch.sections.map((section) => (
+                <section class="content-section" data-id={section.name}>
+                  {section.name === 'mission-intro' ? (
+                    <div class="mission-intro-content">
+                      <h1>{section.label}</h1>
+                    </div>
+                  ) : section.name === 'mission' ? (
+                    <div class="mission-content">
+                      <p class="mission-description">{section.description}</p>
+                    </div>
+                  ) : (
+                    <div class="subteam-content">
+                      <h2 class="section-title">
+                        {section.subteam?.name}
+                      </h2>
+                      <div class="description-box">
+                        <p>{section.subteam?.desc}</p>
+                      </div>
+                    </div>
+                  )}
+                </section>
+              ))}
             </div>
-          ) : section.name === 'mission' ? (
-            <div class="mission-content">
-              <p class="mission-description">{section.description}</p>
-            </div>
-          ) : (
-            <div class="subteam-content">
-              <div class="team-eyebrow" style={`color: ${section.subteam?.accent}`}>
-                {section.subteam?.teamName}
-              </div>
-              <h2 class="section-title">
-                {section.subteam?.name}
-              </h2>
-              <div class="description-box">
-                <p>{section.subteam?.desc}</p>
-              </div>
-            </div>
-          )}
-        </section>
+          </div>
+        </div>
       ))}
     </main>
 
     <script>
-      import { gsap } from 'gsap'
-      import { ScrollTrigger } from 'gsap/ScrollTrigger'
+      function clamp(min: number, input: number, max: number) {
+        return Math.max(min, Math.min(input, max))
+      }
 
-      gsap.registerPlugin(ScrollTrigger)
+      document.querySelectorAll('.branch-wrapper').forEach((wrapper) => {
+        const slides = wrapper.querySelector('.branch-slides') as HTMLElement
+        const sections = slides?.querySelectorAll('.content-section')
 
-      const introSection = document.querySelector('[data-id="mission-intro"]')
-      const missionSection = document.querySelector('[data-id="mission"]')
-      const introTitle = document.querySelector('.mission-intro-content h1')
-      const missionDesc = document.querySelector('.mission-description')
+        if (!slides || !sections || sections.length <= 1) return
 
-      if (introSection && missionSection && introTitle && missionDesc) {
-        gsap.set(missionDesc, { opacity: 0, x: -100 })
+        const updateHorizontalScroll = () => {
+          const rect = wrapper.getBoundingClientRect()
+          const wrapperHeight = wrapper.clientHeight
+          const windowHeight = window.innerHeight
 
-        gsap.to(introTitle, {
-          scrollTrigger: {
-            trigger: missionSection,
-            start: 'top bottom',
-            end: 'top center',
-            scrub: 1,
-          },
-          opacity: 0,
-          scale: 0.8,
-          y: -50,
-        })
+          const scrolledIntoWrapper = -rect.top
+          const scrollableDistance = wrapperHeight - windowHeight
 
-        gsap.to(missionDesc, {
-          scrollTrigger: {
-            trigger: missionSection,
-            start: 'top 80%',
-            end: 'top 30%',
-            scrub: 1,
-          },
-          opacity: 1,
-          x: 0,
-        })
+          let progress = scrolledIntoWrapper / scrollableDistance
+          progress = clamp(0, progress, 1)
+
+          const slidesWidth = slides.scrollWidth
+          const maxX = slidesWidth - window.innerWidth
+          const x = progress * maxX
+
+          slides.style.transform = `translateX(${-x}px)`
+        }
+
+        window.addEventListener('scroll', updateHorizontalScroll, { passive: true })
+        window.addEventListener('resize', updateHorizontalScroll)
+        updateHorizontalScroll()
+      })
+
+      const missionBranch = document.querySelector('[data-branch="Mission"]')
+      const introTitle = document.querySelector('.mission-intro-content h1') as HTMLElement
+      const missionDesc = document.querySelector('.mission-description') as HTMLElement
+
+      if (missionBranch && introTitle && missionDesc) {
+        const updateMissionAnimations = () => {
+          const rect = missionBranch.getBoundingClientRect()
+          const wrapperHeight = missionBranch.clientHeight
+          const windowHeight = window.innerHeight
+
+          const scrolledIntoWrapper = -rect.top
+          const scrollableDistance = wrapperHeight - windowHeight
+
+          let progress = scrolledIntoWrapper / scrollableDistance
+          progress = clamp(0, progress, 1)
+
+          introTitle.style.opacity = String(1 - progress)
+          introTitle.style.transform = `scale(${1 - progress * 0.2}) translateY(${-progress * 50}px)`
+
+          missionDesc.style.opacity = String(progress)
+          missionDesc.style.transform = `translateX(${(1 - progress) * -100}px)`
+        }
+
+        window.addEventListener('scroll', updateMissionAnimations, { passive: true })
+        updateMissionAnimations()
       }
     </script>
   </div>
@@ -88,10 +121,9 @@ import { SECTION_TARGETS } from "@/components/about/SceneConfig";
   }
 
   :global(footer) {
-    display: none; /* Hide footer to fix scroll snapping logic */
+    display: none;
   }
 
-  /* Make header overlay for immersive experience and perfect scroll alignment */
   :global(header) {
     position: fixed !important;
     top: 0;
@@ -109,19 +141,53 @@ import { SECTION_TARGETS } from "@/components/about/SceneConfig";
     color: white;
   }
 
-  .content-section {
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end; /* Align content to bottom */
-    padding: 0 4rem 6rem 4rem; /* Bottom padding for breathing room */
+  .branch-wrapper {
+    height: calc(var(--branch-sections) * 100vh);
     position: relative;
-    box-sizing: border-box;
-    pointer-events: none; /* Allow clicks to pass through to canvas */
   }
 
-  /* Mission Intro - centered title only */
+  .branch-inner {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .branch-label {
+    position: absolute;
+    top: 80px;
+    left: 4rem;
+    font-family: 'Panchang', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--branch-accent);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    z-index: 10;
+  }
+
+  .branch-slides {
+    display: flex;
+    flex: 1;
+    align-items: stretch;
+  }
+
+  .content-section {
+    min-width: 100vw;
+    width: 100vw;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 4rem 6rem 4rem;
+    box-sizing: border-box;
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+
   .content-section[data-id="mission-intro"] {
     justify-content: center;
     align-items: center;
@@ -143,7 +209,6 @@ import { SECTION_TARGETS } from "@/components/about/SceneConfig";
     letter-spacing: 0.02em;
   }
 
-  /* Mission section - description slides in */
   .content-section[data-id="mission"] {
     justify-content: flex-end;
     align-items: flex-start;
@@ -169,19 +234,9 @@ import { SECTION_TARGETS } from "@/components/about/SceneConfig";
     margin: 0;
   }
 
-  /* Subteam Content Styling */
   .subteam-content {
     max-width: 800px;
     pointer-events: auto;
-  }
-
-  .team-eyebrow {
-    font-size: 1rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
   }
 
   .section-title {
@@ -208,6 +263,12 @@ import { SECTION_TARGETS } from "@/components/about/SceneConfig";
   }
 
   @media (max-width: 768px) {
+    .branch-label {
+      left: 1rem;
+      top: 70px;
+      font-size: 0.75rem;
+    }
+
     .content-section {
       padding: 0 1rem 3rem 1rem;
     }
