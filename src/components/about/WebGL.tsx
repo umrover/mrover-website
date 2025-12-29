@@ -1,5 +1,5 @@
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { OrbitControls, Stars, Environment } from '@react-three/drei'
+import { Stars, Environment } from '@react-three/drei'
 import { EffectComposer, Vignette, Bloom } from '@react-three/postprocessing'
 import { useScroll } from '../../hooks/use-scroll'
 import { useStore } from '../../lib/store'
@@ -7,12 +7,11 @@ import { useRef, Suspense, useCallback, useEffect, useState } from 'react'
 import * as THREE from 'three'
 import URDFLoader from 'urdf-loader'
 import GUI from 'lil-gui'
-import { lerp } from '../../lib/maths'
+import { lerp, smoothstep } from '../../lib/maths'
 import { BRANCHES } from './SceneConfig'
 import { MarsTerrain } from './MarsTerrain'
 
 const debugConfig = {
-  orbitControls: false,
   currentSection: 0,
   currentBranch: 0,
   rover: {
@@ -38,6 +37,18 @@ function getGlobalSectionProgress(scroll: number, headerHeight: number, windowHe
   const scrollFromStart = Math.max(0, scroll - headerHeight)
   const globalProgress = Math.min(1, scrollFromStart / (totalHeight - windowHeight))
   return globalProgress * (totalSections - 1)
+}
+
+function getSectionByGlobalIndex(index: number): typeof BRANCHES[0]['sections'][0] {
+  let accumulated = 0
+  for (const branch of BRANCHES) {
+    if (index < accumulated + branch.sections.length) {
+      return branch.sections[index - accumulated]
+    }
+    accumulated += branch.sections.length
+  }
+  const lastBranch = BRANCHES[BRANCHES.length - 1]
+  return lastBranch.sections[lastBranch.sections.length - 1]
 }
 
 function getBranchAndProgress(scroll: number, headerHeight: number, windowHeight: number): ScrollState & {
@@ -122,39 +133,36 @@ function useScrollState() {
   return { scrollRef, headerHeight, windowHeight }
 }
 
-function CameraController({ orbitEnabled }: { orbitEnabled: boolean }) {
+function CameraController() {
   const { camera } = useThree()
   const { scrollRef, headerHeight, windowHeight } = useScrollState()
   const lookAtTarget = useRef(new THREE.Vector3())
 
   useFrame(() => {
-    if (orbitEnabled || !windowHeight) return
+    if (!windowHeight) return
 
     const scroll = scrollRef.current
-    const { currentSection, nextSection, sectionProgress, sectionIndex, branchIndex, globalSectionFloat } =
+    const { sectionIndex, branchIndex, globalSectionFloat } =
       getBranchAndProgress(scroll, headerHeight, windowHeight)
 
     debugConfig.currentSection = sectionIndex
     debugConfig.currentBranch = branchIndex
 
     // Calculate branchY based on global section position
-    // Sections: Mission(0,1), Mechanical(2,3,4), Science(5,6,7), Software(8,9,10,11), Electrical(12,13,14)
     let accumulatedSections = 0
     let branchY = BRANCH_POSITIONS[0].y
 
     for (let i = 0; i < BRANCHES.length; i++) {
       const branchSections = BRANCHES[i].sections.length
-      const branchStart = accumulatedSections
       const branchEnd = accumulatedSections + branchSections
 
       if (globalSectionFloat < branchEnd || i === BRANCHES.length - 1) {
         const currentPos = BRANCH_POSITIONS[i]
         const nextPos = BRANCH_POSITIONS[Math.min(i + 1, BRANCH_POSITIONS.length - 1)]
 
-        // Transition happens in the last section of this branch
         const lastSectionIndex = branchEnd - 1
         if (globalSectionFloat >= lastSectionIndex && i < BRANCHES.length - 1) {
-          const transitionProgress = globalSectionFloat - lastSectionIndex
+          const transitionProgress = smoothstep(globalSectionFloat - lastSectionIndex)
           branchY = lerp(currentPos.y, nextPos.y, transitionProgress)
         } else {
           branchY = currentPos.y
@@ -165,16 +173,21 @@ function CameraController({ orbitEnabled }: { orbitEnabled: boolean }) {
       accumulatedSections += branchSections
     }
 
-    // Interpolate camera within section
-    const camX = lerp(currentSection.camera.x, nextSection.camera.x, sectionProgress)
-    const camY = lerp(currentSection.camera.y, nextSection.camera.y, sectionProgress)
-    const camZ = lerp(currentSection.camera.z, nextSection.camera.z, sectionProgress)
+    // Use global section index for smooth cross-branch camera interpolation
+    const globalIndex = Math.floor(globalSectionFloat)
+    const t = smoothstep(globalSectionFloat - globalIndex)
+    const fromSection = getSectionByGlobalIndex(globalIndex)
+    const toSection = getSectionByGlobalIndex(globalIndex + 1)
+
+    const camX = lerp(fromSection.camera.x, toSection.camera.x, t)
+    const camY = lerp(fromSection.camera.y, toSection.camera.y, t)
+    const camZ = lerp(fromSection.camera.z, toSection.camera.z, t)
 
     camera.position.set(camX, camY + branchY, camZ)
 
-    const lookX = lerp(currentSection.lookAt.x, nextSection.lookAt.x, sectionProgress)
-    const lookY = lerp(currentSection.lookAt.y, nextSection.lookAt.y, sectionProgress)
-    const lookZ = lerp(currentSection.lookAt.z, nextSection.lookAt.z, sectionProgress)
+    const lookX = lerp(fromSection.lookAt.x, toSection.lookAt.x, t)
+    const lookY = lerp(fromSection.lookAt.y, toSection.lookAt.y, t)
+    const lookZ = lerp(fromSection.lookAt.z, toSection.lookAt.z, t)
 
     lookAtTarget.current.set(lookX, lookY + branchY, lookZ)
     camera.lookAt(lookAtTarget.current)
@@ -256,11 +269,6 @@ function BranchCube({ branchIndex }: { branchIndex: number }) {
   )
 }
 
-function DebugControls({ enabled }: { enabled: boolean }) {
-  if (!enabled) return null
-  return <OrbitControls makeDefault />
-}
-
 function Atmosphere() {
   const { scene } = useThree()
 
@@ -276,7 +284,7 @@ function Atmosphere() {
   return null
 }
 
-function Scene({ orbitEnabled }: { orbitEnabled: boolean }) {
+function Scene() {
   return (
     <>
       <Atmosphere />
@@ -304,8 +312,7 @@ function Scene({ orbitEnabled }: { orbitEnabled: boolean }) {
       {/* Subtle rim light for definition */}
       <directionalLight position={[-150, 50, -100]} intensity={0.5} color={0x445566} />
 
-      <CameraController orbitEnabled={orbitEnabled} />
-      <DebugControls enabled={orbitEnabled} />
+      <CameraController />
 
       <MarsTerrain />
       <Suspense fallback={null}>
@@ -369,7 +376,6 @@ function LoadingOverlay({ progress, visible }: { progress: number; visible: bool
 }
 
 export function WebGL() {
-  const [orbitEnabled, setOrbitEnabled] = useState(false)
   const [loading, setLoading] = useState(true)
   const [progress, setProgress] = useState(0)
 
@@ -391,9 +397,6 @@ export function WebGL() {
 
   useEffect(() => {
     const gui = new GUI()
-    gui.add(debugConfig, 'orbitControls').name('Orbit Controls').onChange((v: boolean) => {
-      setOrbitEnabled(v)
-    })
     gui.add(debugConfig, 'currentSection').name('Current Section').listen().disable()
     // gui.hide()
 
@@ -430,7 +433,7 @@ export function WebGL() {
       <div style={{
         position: 'fixed',
         inset: 0,
-        pointerEvents: orbitEnabled ? 'auto' : 'none',
+        pointerEvents: 'none',
         zIndex: 0,
         opacity: loading ? 0 : 1,
         transition: 'opacity 1s ease',
@@ -442,7 +445,7 @@ export function WebGL() {
           dpr={[1, 2]}
         >
           <Suspense fallback={null}>
-            <Scene orbitEnabled={orbitEnabled} />
+            <Scene />
           </Suspense>
         </Canvas>
       </div>

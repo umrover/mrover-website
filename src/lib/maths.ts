@@ -9,3 +9,7 @@ export function mapRange(in_min: number, in_max: number, input: number, out_min:
 export function lerp(x: number, y: number, t: number) {
   return (1 - t) * x + t * y
 }
+
+export function smoothstep(t: number) {
+  return t * t * (3 - 2 * t)
+}
