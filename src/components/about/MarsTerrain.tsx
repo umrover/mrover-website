@@ -1,22 +1,17 @@
-import { useRef, useMemo, useState, useEffect } from 'react'
+import { useRef, useMemo } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { createNoise2D } from 'simplex-noise'
 
 export function MarsTerrain() {
   const meshRef = useRef<THREE.Mesh>(null)
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window)
-    check()
-  }, [])
 
   const { positions, indices } = useMemo(() => {
+    const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
     const noise2D = createNoise2D()
     const width = 1000
     const depth = 1000
-    const segments = isMobile ? 40 : 80
+    const segments = isMobile ? 40 : 60
 
     const positions = []
     const indices = []
@@ -78,7 +73,7 @@ export function MarsTerrain() {
       positions: new Float32Array(positions),
       indices: new Uint16Array(indices)
     }
-  }, [isMobile])
+  }, [])
 
   useFrame(() => {
     if (!meshRef.current) return

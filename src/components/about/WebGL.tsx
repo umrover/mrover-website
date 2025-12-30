@@ -26,6 +26,7 @@ const ALL_SECTIONS = BRANCHES.flatMap(b => b.sections)
 function getScrollState(scroll: number, windowHeight: number) {
   let sectionOffset = 0
   let heightOffset = 0
+  const transitionZone = windowHeight * 0.6
 
   for (const branch of BRANCHES) {
     const branchHeight = branch.sections.length * windowHeight
@@ -34,9 +35,10 @@ function getScrollState(scroll: number, windowHeight: number) {
     if (scroll < branchEnd) {
       const scrolled = Math.max(0, scroll - heightOffset)
       const scrollable = branchHeight - windowHeight
+      const transitionStart = scrollable + windowHeight - transitionZone
 
-      if (scrolled <= scrollable) {
-        const progress = scrollable > 0 ? scrolled / scrollable : 0
+      if (scrolled <= transitionStart) {
+        const progress = scrollable > 0 ? Math.min(scrolled / scrollable, 1) : 0
         const sectionFloat = progress * (branch.sections.length - 1)
         const localIdx = Math.floor(sectionFloat)
         const globalIdx = sectionOffset + localIdx
@@ -50,10 +52,11 @@ function getScrollState(scroll: number, windowHeight: number) {
       } else {
         const globalIdx = sectionOffset + branch.sections.length - 1
         const nextIdx = sectionOffset + branch.sections.length
+        const transitionProgress = (scrolled - transitionStart) / transitionZone
 
         return {
           sectionIndex: globalIdx,
-          sectionProgress: (scrolled - scrollable) / windowHeight,
+          sectionProgress: transitionProgress,
           fromSection: ALL_SECTIONS[globalIdx],
           toSection: nextIdx < ALL_SECTIONS.length ? ALL_SECTIONS[nextIdx] : ALL_SECTIONS[globalIdx],
         }
@@ -71,13 +74,9 @@ function getScrollState(scroll: number, windowHeight: number) {
 function useScrollState() {
   const scrollRef = useRef(0)
   const [windowHeight, setWindowHeight] = useState(0)
-  const [windowWidth, setWindowWidth] = useState(0)
 
   useEffect(() => {
-    const updateSize = () => {
-      setWindowHeight(window.innerHeight)
-      setWindowWidth(window.innerWidth)
-    }
+    const updateSize = () => setWindowHeight(window.innerHeight)
     updateSize()
     window.addEventListener('resize', updateSize)
     return () => window.removeEventListener('resize', updateSize)
@@ -87,34 +86,34 @@ function useScrollState() {
     scrollRef.current = scroll
   }, []))
 
-  return { scrollRef, windowHeight, windowWidth }
+  return { scrollRef, windowHeight }
 }
 
-const DESKTOP_WIDTH = 1280
-
 function CameraController() {
-  const { camera } = useThree()
-  const { scrollRef, windowHeight, windowWidth } = useScrollState()
+  const { camera, size } = useThree()
+  const { scrollRef, windowHeight } = useScrollState()
   const lookAtTarget = useRef(new THREE.Vector3())
 
   useFrame(() => {
-    if (!windowHeight || !windowWidth) return
+    if (!windowHeight) return
 
     const { sectionIndex, sectionProgress, fromSection, toSection } =
       getScrollState(scrollRef.current, windowHeight)
 
     debugConfig.currentSection = sectionIndex
 
-    const widthRatio = Math.min(1, windowWidth / DESKTOP_WIDTH)
-    const distanceScale = 1 + (1 - widthRatio) * 0.6
+    const aspect = size.width / size.height
+    const isMobileAspect = aspect < 0.8
+    const xScale = isMobileAspect ? 0.3 : 1
+    const zScale = isMobileAspect ? 1.4 : 1
 
-    const camX = lerp(fromSection.camera.x, toSection.camera.x, sectionProgress)
+    const camX = lerp(fromSection.camera.x, toSection.camera.x, sectionProgress) * xScale
     const camY = lerp(fromSection.camera.y, toSection.camera.y, sectionProgress)
-    const camZ = lerp(fromSection.camera.z, toSection.camera.z, sectionProgress) * distanceScale
+    const camZ = lerp(fromSection.camera.z, toSection.camera.z, sectionProgress) * zScale
 
     camera.position.set(camX, camY, camZ)
 
-    const lookX = lerp(fromSection.lookAt.x, toSection.lookAt.x, sectionProgress)
+    const lookX = lerp(fromSection.lookAt.x, toSection.lookAt.x, sectionProgress) * xScale
     const lookY = lerp(fromSection.lookAt.y, toSection.lookAt.y, sectionProgress)
     const lookZ = lerp(fromSection.lookAt.z, toSection.lookAt.z, sectionProgress)
 

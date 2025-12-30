@@ -19,23 +19,20 @@ import { BRANCHES } from "@/components/about/SceneConfig";
             <div class="branch-label">{branch.name}</div>
             <div class="branch-slides">
               {branch.sections.map((section) => (
-                <section class="content-section" data-id={section.name}>
+                <section class="slide" data-id={section.name}>
                   {section.name === 'mission-intro' ? (
-                    <div class="mission-intro-content">
+                    <div class="slide-intro">
                       <h1>{section.label}</h1>
                     </div>
                   ) : section.name === 'mission' ? (
-                    <div class="mission-content">
-                      <p class="mission-description">{section.description}</p>
+                    <div class="card">
+                      <h2 class="card-title">Our Mission</h2>
+                      <p class="card-desc">{section.description}</p>
                     </div>
                   ) : (
-                    <div class="subteam-content">
-                      <h2 class="section-title">
-                        {section.subteam?.name}
-                      </h2>
-                      <div class="description-box">
-                        <p>{section.subteam?.desc}</p>
-                      </div>
+                    <div class="card">
+                      <h2 class="card-title">{section.subteam?.name}</h2>
+                      <p class="card-desc">{section.subteam?.desc}</p>
                     </div>
                   )}
                 </section>
@@ -51,13 +48,21 @@ import { BRANCHES } from "@/components/about/SceneConfig";
         return Math.max(min, Math.min(input, max))
       }
 
+      function lerp(start: number, end: number, factor: number) {
+        return start + (end - start) * factor
+      }
+
       document.querySelectorAll('.branch-wrapper').forEach((wrapper) => {
         const slides = wrapper.querySelector('.branch-slides') as HTMLElement
-        const sections = slides?.querySelectorAll('.content-section')
+        const sections = slides?.querySelectorAll('.slide') as NodeListOf<HTMLElement>
 
         if (!slides || !sections || sections.length <= 1) return
 
-        const updateHorizontalScroll = () => {
+        let currentX = 0
+        let targetX = 0
+        const damping = 0.1
+
+        const updateTarget = () => {
           const rect = wrapper.getBoundingClientRect()
           const wrapperHeight = wrapper.clientHeight
           const windowHeight = window.innerHeight
@@ -70,42 +75,20 @@ import { BRANCHES } from "@/components/about/SceneConfig";
 
           const slidesWidth = slides.scrollWidth
           const maxX = slidesWidth - window.innerWidth
-          const x = progress * maxX
-
-          slides.style.transform = `translateX(${-x}px)`
+          targetX = progress * maxX
         }
 
-        window.addEventListener('scroll', updateHorizontalScroll, { passive: true })
-        window.addEventListener('resize', updateHorizontalScroll)
-        updateHorizontalScroll()
+        const animate = () => {
+          currentX = lerp(currentX, targetX, damping)
+          slides.style.transform = `translateX(${-currentX}px)`
+          requestAnimationFrame(animate)
+        }
+
+        window.addEventListener('scroll', updateTarget, { passive: true })
+        window.addEventListener('resize', updateTarget)
+        updateTarget()
+        animate()
       })
-
-      const missionBranch = document.querySelector('[data-branch="Mission"]')
-      const introTitle = document.querySelector('.mission-intro-content h1') as HTMLElement
-      const missionDesc = document.querySelector('.mission-description') as HTMLElement
-
-      if (missionBranch && introTitle && missionDesc) {
-        const updateMissionAnimations = () => {
-          const rect = missionBranch.getBoundingClientRect()
-          const wrapperHeight = missionBranch.clientHeight
-          const windowHeight = window.innerHeight
-
-          const scrolledIntoWrapper = -rect.top
-          const scrollableDistance = wrapperHeight - windowHeight
-
-          let progress = scrolledIntoWrapper / scrollableDistance
-          progress = clamp(0, progress, 1)
-
-          introTitle.style.opacity = String(1 - progress)
-          introTitle.style.transform = `scale(${1 - progress * 0.2}) translateY(${-progress * 50}px)`
-
-          missionDesc.style.opacity = String(progress)
-          missionDesc.style.transform = `translateX(${(1 - progress) * -100}px)`
-        }
-
-        window.addEventListener('scroll', updateMissionAnimations, { passive: true })
-        updateMissionAnimations()
-      }
     </script>
   </div>
 </BaseLayout>
@@ -175,30 +158,26 @@ import { BRANCHES } from "@/components/about/SceneConfig";
     align-items: stretch;
   }
 
-  .content-section {
+  .slide {
     min-width: 100vw;
     width: 100vw;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 0 4rem 6rem 4rem;
+    align-items: flex-start;
+    padding: 0 4rem 4rem 4rem;
     box-sizing: border-box;
     pointer-events: none;
     flex-shrink: 0;
   }
 
-  .content-section[data-id="mission-intro"] {
+  .slide[data-id="mission-intro"] {
     justify-content: center;
     align-items: center;
   }
 
-  .mission-intro-content {
-    text-align: center;
-    pointer-events: none;
-  }
-
-  .mission-intro-content h1 {
+  .slide-intro h1 {
     font-family: 'Panchang', sans-serif;
     font-size: 8rem;
     font-weight: 700;
@@ -207,119 +186,68 @@ import { BRANCHES } from "@/components/about/SceneConfig";
     margin: 0;
     line-height: 0.9;
     letter-spacing: 0.02em;
+    text-align: center;
   }
 
-  .content-section[data-id="mission"] {
-    justify-content: flex-end;
-    align-items: flex-start;
-  }
-
-  .mission-content {
-    text-align: left;
-    max-width: 500px;
-    pointer-events: auto;
-    padding: 2rem;
-    background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 100%);
-    border-left: 2px solid rgba(255, 140, 0, 0.6);
+  .card {
+    width: 340px;
+    padding: 1.5rem;
+    background: rgba(14, 14, 14, 0.5);
     backdrop-filter: blur(8px);
-  }
-
-  .mission-description {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.15rem;
-    color: rgba(255, 255, 255, 0.9);
-    line-height: 1.7;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    margin: 0;
-  }
-
-  .subteam-content {
-    max-width: 800px;
+    border: 1px solid var(--branch-accent, rgba(255,255,255,0.3));
+    color: white;
     pointer-events: auto;
   }
 
-  .section-title {
-    font-size: 4.5rem;
-    font-weight: 800;
-    color: #ffffff;
-    margin: 0 0 1.5rem 0;
-    line-height: 1;
+  .card-title {
+    font-family: 'Panchang', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
     text-transform: uppercase;
-    text-shadow: 0 4px 16px rgba(0,0,0,0.9);
+    line-height: 1.1;
+    color: var(--branch-accent, #FF8C00);
+    margin: 0 0 1rem 0;
   }
 
-  .description-box p {
-    font-size: 1.25rem;
-    color: #ffffff;
+  .card-desc {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
     line-height: 1.6;
-    font-weight: 400;
-    max-width: 500px;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
   }
 
   :global(html) {
     overscroll-behavior: none;
   }
 
-
-  @media (max-width: 768px) {
+  @media (max-width: 800px) {
     .branch-label {
       left: 1rem;
       top: 70px;
-      font-size: 0.75rem;
-      letter-spacing: 0.2em;
-    }
-
-    .content-section {
-      padding: 0 1rem 2rem 1rem;
-    }
-
-    .mission-intro-content h1 {
-      font-size: 3rem;
-    }
-
-    .mission-content {
-      padding: 1.25rem;
-      max-width: 100%;
-    }
-
-    .mission-description {
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
-
-    .subteam-content {
-      max-width: 100%;
-    }
-
-    .section-title {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    .description-box p {
-      font-size: 0.95rem;
-      max-width: 100%;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .branch-label {
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       letter-spacing: 0.15em;
     }
 
-    .mission-intro-content h1 {
-      font-size: 2.25rem;
+    .slide {
+      padding: 0 1.5rem 2rem 1.5rem;
     }
 
-    .section-title {
-      font-size: 1.75rem;
+    .slide-intro h1 {
+      font-size: 2.5rem;
     }
 
-    .description-box p {
-      font-size: 0.9rem;
+    .card {
+      width: calc(100vw - 3rem);
+      max-width: 320px;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+    }
+
+    .card-desc {
+      font-size: 0.95rem;
     }
   }
 </style>
