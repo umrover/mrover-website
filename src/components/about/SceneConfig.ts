@@ -1,7 +1,7 @@
 export interface SectionTarget {
   name: string
-  label?: string // For UI display
-  description?: string // For Mission section
+  label?: string
+  description?: string
   subteam?: {
     name: string
     desc: string
@@ -11,7 +11,6 @@ export interface SectionTarget {
   }
   camera: { x: number; y: number; z: number }
   lookAt: { x: number; y: number; z: number }
-  joints?: Record<string, number>
 }
 
 export interface Branch {
@@ -20,7 +19,7 @@ export interface Branch {
   accent: string
   sections: SectionTarget[]
 }
-export const SECTION_TARGETS: SectionTarget[] = [
+const SECTION_TARGETS: SectionTarget[] = [
   // Mission Intro - title only, camera far back
   {
     name: 'mission-intro',
@@ -36,9 +35,8 @@ export const SECTION_TARGETS: SectionTarget[] = [
     camera: { x: 0, y: 80, z: 350 },
     lookAt: { x: 0, y: 20, z: 0 },
   },
-  // Mechanical - Robotic Arm
-  { 
-    name: 'robotic-arm', 
+  {
+    name: 'robotic-arm',
     subteam: {
       teamName: 'Mechanical',
       name: 'Robotic Arm',
@@ -46,9 +44,8 @@ export const SECTION_TARGETS: SectionTarget[] = [
       color: '#00274C',
       accent: '#FFCB05'
     },
-    camera: { x: 150, y: 80, z: 200 }, 
-    lookAt: { x: 50, y: 40, z: 0 }, 
-    joints: { arm_a_to_arm_b: -0.4, arm_b_to_arm_c: 1.2, arm_c_to_arm_d: -0.8 } 
+    camera: { x: 150, y: 80, z: 200 },
+    lookAt: { x: 50, y: 40, z: 0 },
   },
   // Mechanical - Mobility
   { 
@@ -208,8 +205,6 @@ export const SECTION_TARGETS: SectionTarget[] = [
   },
 ]
 
-export const TOTAL_SECTIONS = SECTION_TARGETS.length
-
 export const BRANCH_SPACING = 800
 
 function offsetSections(sections: SectionTarget[], yOffset: number): SectionTarget[] {
@@ -259,5 +254,3 @@ export const BRANCHES: Branch[] = BRANCH_DEFINITIONS.map((def, i) => ({
   accent: def.accent,
   sections: offsetSections(SECTION_TARGETS.filter(def.filter), -BRANCH_SPACING * i),
 }))
-
-export const TOTAL_BRANCHES = BRANCHES.length

@@ -2,7 +2,6 @@ import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { Stars, Environment } from '@react-three/drei'
 import { EffectComposer, Vignette, Bloom } from '@react-three/postprocessing'
 import { useScroll } from '../../hooks/use-scroll'
-import { useStore } from '../../lib/store'
 import { useRef, Suspense, useCallback, useEffect, useState } from 'react'
 import * as THREE from 'three'
 import URDFLoader from 'urdf-loader'
@@ -20,107 +19,98 @@ const debugConfig = {
   joints: {} as Record<string, number>,
 }
 
-let robotRef: any = null
 let guiJointsFolder: GUI | null = null
 
 const ALL_SECTIONS = BRANCHES.flatMap(b => b.sections)
 
 function getScrollState(scroll: number, windowHeight: number) {
-  let globalSectionOffset = 0
-  let accumulatedHeight = 0
+  let sectionOffset = 0
+  let heightOffset = 0
 
-  for (let branchIdx = 0; branchIdx < BRANCHES.length; branchIdx++) {
-    const branch = BRANCHES[branchIdx]
+  for (const branch of BRANCHES) {
     const branchHeight = branch.sections.length * windowHeight
-    const branchEnd = accumulatedHeight + branchHeight
+    const branchEnd = heightOffset + branchHeight
 
     if (scroll < branchEnd) {
-      const scrolledIntoBranch = Math.max(0, scroll - accumulatedHeight)
-      const scrollableDistance = branchHeight - windowHeight
+      const scrolled = Math.max(0, scroll - heightOffset)
+      const scrollable = branchHeight - windowHeight
 
-      let fromSection, toSection, sectionProgress, globalIndex
+      if (scrolled <= scrollable) {
+        const progress = scrollable > 0 ? scrolled / scrollable : 0
+        const sectionFloat = progress * (branch.sections.length - 1)
+        const localIdx = Math.floor(sectionFloat)
+        const globalIdx = sectionOffset + localIdx
 
-      if (scrolledIntoBranch <= scrollableDistance) {
-        // Normal scrolling within branch sections
-        const branchProgress = scrollableDistance > 0
-          ? scrolledIntoBranch / scrollableDistance
-          : 0
-
-        const sectionFloat = branchProgress * (branch.sections.length - 1)
-        const localIndex = Math.floor(sectionFloat)
-        sectionProgress = sectionFloat - localIndex
-
-        globalIndex = globalSectionOffset + localIndex
-        fromSection = ALL_SECTIONS[globalIndex]
-        toSection = ALL_SECTIONS[Math.min(globalIndex + 1, ALL_SECTIONS.length - 1)]
+        return {
+          sectionIndex: globalIdx,
+          sectionProgress: sectionFloat - localIdx,
+          fromSection: ALL_SECTIONS[globalIdx],
+          toSection: ALL_SECTIONS[Math.min(globalIdx + 1, ALL_SECTIONS.length - 1)],
+        }
       } else {
-        // Transition zone: last windowHeight of branch, animate to next branch
-        const transitionProgress = (scrolledIntoBranch - scrollableDistance) / windowHeight
+        const globalIdx = sectionOffset + branch.sections.length - 1
+        const nextIdx = sectionOffset + branch.sections.length
 
-        globalIndex = globalSectionOffset + branch.sections.length - 1
-        const nextBranchFirstIndex = globalSectionOffset + branch.sections.length
-
-        fromSection = ALL_SECTIONS[globalIndex]
-        toSection = nextBranchFirstIndex < ALL_SECTIONS.length
-          ? ALL_SECTIONS[nextBranchFirstIndex]
-          : fromSection
-        sectionProgress = transitionProgress
+        return {
+          sectionIndex: globalIdx,
+          sectionProgress: (scrolled - scrollable) / windowHeight,
+          fromSection: ALL_SECTIONS[globalIdx],
+          toSection: nextIdx < ALL_SECTIONS.length ? ALL_SECTIONS[nextIdx] : ALL_SECTIONS[globalIdx],
+        }
       }
-
-      return { sectionIndex: globalIndex, sectionProgress, fromSection, toSection }
     }
 
-    accumulatedHeight = branchEnd
-    globalSectionOffset += branch.sections.length
+    heightOffset = branchEnd
+    sectionOffset += branch.sections.length
   }
 
-  const lastIndex = ALL_SECTIONS.length - 1
-  return {
-    sectionIndex: lastIndex,
-    sectionProgress: 0,
-    fromSection: ALL_SECTIONS[lastIndex],
-    toSection: ALL_SECTIONS[lastIndex],
-  }
+  const lastIdx = ALL_SECTIONS.length - 1
+  return { sectionIndex: lastIdx, sectionProgress: 0, fromSection: ALL_SECTIONS[lastIdx], toSection: ALL_SECTIONS[lastIdx] }
 }
-
 
 function useScrollState() {
   const scrollRef = useRef(0)
-  const headerHeight = useStore((state) => state.headerHeight)
   const [windowHeight, setWindowHeight] = useState(0)
+  const [windowWidth, setWindowWidth] = useState(0)
 
   useEffect(() => {
-    const updateSize = () => setWindowHeight(window.innerHeight)
+    const updateSize = () => {
+      setWindowHeight(window.innerHeight)
+      setWindowWidth(window.innerWidth)
+    }
     updateSize()
     window.addEventListener('resize', updateSize)
     return () => window.removeEventListener('resize', updateSize)
   }, [])
 
-  const scrollCallback = useCallback(({ scroll }: { scroll: number }) => {
+  useScroll(useCallback(({ scroll }: { scroll: number }) => {
     scrollRef.current = scroll
-  }, [])
+  }, []))
 
-  useScroll(scrollCallback)
-
-  return { scrollRef, headerHeight, windowHeight }
+  return { scrollRef, windowHeight, windowWidth }
 }
+
+const DESKTOP_WIDTH = 1280
 
 function CameraController() {
   const { camera } = useThree()
-  const { scrollRef, windowHeight } = useScrollState()
+  const { scrollRef, windowHeight, windowWidth } = useScrollState()
   const lookAtTarget = useRef(new THREE.Vector3())
 
   useFrame(() => {
-    if (!windowHeight) return
+    if (!windowHeight || !windowWidth) return
 
     const { sectionIndex, sectionProgress, fromSection, toSection } =
       getScrollState(scrollRef.current, windowHeight)
 
     debugConfig.currentSection = sectionIndex
 
+    const widthRatio = Math.min(1, windowWidth / DESKTOP_WIDTH)
+    const distanceScale = 1 + (1 - widthRatio) * 0.6
+
     const camX = lerp(fromSection.camera.x, toSection.camera.x, sectionProgress)
     const camY = lerp(fromSection.camera.y, toSection.camera.y, sectionProgress)
-    const camZ = lerp(fromSection.camera.z, toSection.camera.z, sectionProgress)
+    const camZ = lerp(fromSection.camera.z, toSection.camera.z, sectionProgress) * distanceScale
 
     camera.position.set(camX, camY, camZ)
 
@@ -135,10 +125,9 @@ function CameraController() {
   return null
 }
 
-function Rover({ yOffset = 0 }: { yOffset?: number }) {
+function Rover() {
   const groupRef = useRef<THREE.Group>(null)
   const [robot, setRobot] = useState<THREE.Object3D | null>(null)
-  const robotInstanceRef = useRef<any>(null)
 
   useEffect(() => {
     const loader = new URDFLoader()
@@ -154,32 +143,25 @@ function Rover({ yOffset = 0 }: { yOffset?: number }) {
           }
         }
       })
-      robotInstanceRef.current = loadedRobot
 
-      if (yOffset === 0) {
-        robotRef = loadedRobot
-        const robot = loadedRobot as any
-        if (guiJointsFolder && robot.joints) {
-          Object.entries(robot.joints).forEach(([name, joint]: [string, any]) => {
-            if (joint.jointType === 'revolute' || joint.jointType === 'continuous' || joint.jointType === 'prismatic') {
-              const min = joint.limit?.lower ?? -Math.PI
-              const max = joint.limit?.upper ?? Math.PI
-              const initial = Array.isArray(joint.jointValue) ? joint.jointValue[0] : (joint.jointValue ?? 0)
-              debugConfig.joints[name] = initial
-              guiJointsFolder!.add(debugConfig.joints, name, min, max).onChange((v: number) => {
-                joint.setJointValue(v)
-              })
-            }
-          })
-        }
+      if (guiJointsFolder) {
+        const r = loadedRobot as any
+        Object.entries(r.joints || {}).forEach(([name, joint]: [string, any]) => {
+          if (['revolute', 'continuous', 'prismatic'].includes(joint.jointType)) {
+            const min = joint.limit?.lower ?? -Math.PI
+            const max = joint.limit?.upper ?? Math.PI
+            debugConfig.joints[name] = joint.jointValue?.[0] ?? joint.jointValue ?? 0
+            guiJointsFolder!.add(debugConfig.joints, name, min, max).onChange((v: number) => joint.setJointValue(v))
+          }
+        })
       }
 
       setRobot(loadedRobot)
     })
-  }, [yOffset])
+  }, [])
 
   useFrame(() => {
-    if (!groupRef.current || !robotInstanceRef.current) return
+    if (!groupRef.current) return
     groupRef.current.rotation.y = debugConfig.rover.rotationY
     groupRef.current.scale.setScalar(debugConfig.rover.scale)
   })
@@ -187,12 +169,11 @@ function Rover({ yOffset = 0 }: { yOffset?: number }) {
   if (!robot) return null
 
   return (
-    <group ref={groupRef} position={[0, yOffset, 0]}>
+    <group ref={groupRef}>
       <primitive object={robot} />
     </group>
   )
 }
-
 
 function BranchPlaceholder({ branchIndex }: { branchIndex: number }) {
   const meshRef = useRef<THREE.Mesh>(null)
@@ -248,49 +229,45 @@ function Atmosphere() {
   return null
 }
 
-function Scene() {
+function Scene({ isMobile }: { isMobile: boolean }) {
   return (
     <>
       <Atmosphere />
-      <Stars radius={800} depth={150} count={5000} factor={6} fade speed={0.3} />
-
-      {/* Environment provides realistic fill light and reflections */}
+      <Stars radius={800} depth={150} count={isMobile ? 2000 : 5000} factor={6} fade speed={0.3} />
       <Environment preset="sunset" environmentIntensity={0.7} />
 
-      {/* Main Sun Light */}
       <directionalLight
         position={[200, 300, 150]}
         intensity={2.0}
         color={0xffeedd}
-        castShadow
+        castShadow={!isMobile}
         shadow-bias={-0.0005}
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+        shadow-mapSize-width={isMobile ? 512 : 1024}
+        shadow-mapSize-height={isMobile ? 512 : 1024}
         shadow-camera-far={800}
         shadow-camera-left={-200}
         shadow-camera-right={200}
         shadow-camera-top={200}
         shadow-camera-bottom={-200}
       />
-
-      {/* Subtle rim light for definition */}
       <directionalLight position={[-150, 50, -100]} intensity={0.5} color={0x445566} />
 
       <CameraController />
-
       <MarsTerrain />
+
       <Suspense fallback={null}>
-        <Rover yOffset={0} />
+        <Rover />
         {BRANCHES.slice(1).map((_, i) => (
           <BranchPlaceholder key={i + 1} branchIndex={i + 1} />
         ))}
       </Suspense>
 
-      {/* Post-processing */}
-      <EffectComposer enableNormalPass={false}>
-        <Bloom luminanceThreshold={1} mipmapBlur intensity={0.5} radius={0.6} />
-        <Vignette darkness={0.4} offset={0.3} />
-      </EffectComposer>
+      {!isMobile && (
+        <EffectComposer enableNormalPass={false}>
+          <Bloom luminanceThreshold={1} mipmapBlur intensity={0.5} radius={0.6} />
+          <Vignette darkness={0.4} offset={0.3} />
+        </EffectComposer>
+      )}
     </>
   )
 }
@@ -310,7 +287,7 @@ function LoadingOverlay({ progress, visible }: { progress: number; visible: bool
       transition: 'opacity 0.5s ease',
       pointerEvents: 'none',
     }}>
-      <div className="loader-spinner" style={{
+      <div style={{
         width: '40px',
         height: '40px',
         border: '3px solid rgba(255, 140, 0, 0.3)',
@@ -338,9 +315,21 @@ function LoadingOverlay({ progress, visible }: { progress: number; visible: bool
   )
 }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+  return isMobile
+}
+
 export function WebGL() {
   const [loading, setLoading] = useState(true)
   const [progress, setProgress] = useState(0)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     THREE.DefaultLoadingManager.onStart = () => {
@@ -354,14 +343,13 @@ export function WebGL() {
 
     THREE.DefaultLoadingManager.onLoad = () => {
       setProgress(100)
-      setTimeout(() => setLoading(false), 500) // Prevent dark flash
+      setTimeout(() => setLoading(false), 500)
     }
   }, [])
 
   useEffect(() => {
     const gui = new GUI()
     gui.add(debugConfig, 'currentSection').name('Current Section').listen().disable()
-    // gui.hide()
 
     const rover = gui.addFolder('Rover')
     rover.add(debugConfig.rover, 'scale', 0.1, 5)
@@ -369,20 +357,6 @@ export function WebGL() {
 
     guiJointsFolder = gui.addFolder('Joints')
     guiJointsFolder.close()
-
-    if (robotRef?.joints) {
-      Object.entries(robotRef.joints).forEach(([name, joint]: [string, any]) => {
-        if (joint.jointType === 'revolute' || joint.jointType === 'continuous' || joint.jointType === 'prismatic') {
-          const min = joint.limit?.lower ?? -Math.PI
-          const max = joint.limit?.upper ?? Math.PI
-          const initial = Array.isArray(joint.jointValue) ? joint.jointValue[0] : (joint.jointValue ?? 0)
-          debugConfig.joints[name] = initial
-          guiJointsFolder!.add(debugConfig.joints, name, min, max).onChange((v: number) => {
-            joint.setJointValue(v)
-          })
-        }
-      })
-    }
 
     return () => {
       gui.destroy()
@@ -402,13 +376,13 @@ export function WebGL() {
         transition: 'opacity 1s ease',
       }}>
         <Canvas
-          gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.5 }}
+          gl={{ antialias: !isMobile, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.5 }}
           camera={{ fov: 50, near: 0.1, far: 10000, position: [0, 100, 400] }}
-          shadows
-          dpr={[1, 2]}
+          shadows={!isMobile}
+          dpr={isMobile ? 1 : [1, 2]}
         >
           <Suspense fallback={null}>
-            <Scene />
+            <Scene isMobile={isMobile} />
           </Suspense>
         </Canvas>
       </div>
