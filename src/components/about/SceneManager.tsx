@@ -45,12 +45,18 @@ export function SceneManager() {
       const swipeThreshold = 50
       const velocityThreshold = 0.5
 
+      const getViewportHeight = () => {
+        return window.visualViewport?.height || window.innerHeight
+      }
+
       const getScrollForSection = (section: number) => {
-        return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1)) * window.innerHeight
+        const vh = getViewportHeight()
+        return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1)) * vh
       }
 
       const getSectionFromScroll = () => {
-        const section = Math.round(window.scrollY / window.innerHeight)
+        const vh = getViewportHeight()
+        const section = Math.round(window.scrollY / vh)
         return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1))
       }
 

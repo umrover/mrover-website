@@ -65,10 +65,10 @@ import { BRANCHES } from "@/components/about/SceneConfig";
         const updateTarget = () => {
           const rect = wrapper.getBoundingClientRect()
           const wrapperHeight = wrapper.clientHeight
-          const windowHeight = window.innerHeight
+          const vh = window.visualViewport?.height || window.innerHeight
 
           const scrolledIntoWrapper = -rect.top
-          const scrollableDistance = wrapperHeight - windowHeight
+          const scrollableDistance = wrapperHeight - vh
 
           let progress = scrolledIntoWrapper / scrollableDistance
           progress = clamp(0, progress, 1)
@@ -125,14 +125,14 @@ import { BRANCHES } from "@/components/about/SceneConfig";
   }
 
   .branch-wrapper {
-    height: calc(var(--branch-sections) * 100vh);
+    height: calc(var(--branch-sections) * 100dvh);
     position: relative;
   }
 
   .branch-inner {
     position: sticky;
     top: 0;
-    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -161,7 +161,7 @@ import { BRANCHES } from "@/components/about/SceneConfig";
   .slide {
     min-width: 100vw;
     width: 100vw;
-    height: 100%;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
