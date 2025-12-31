@@ -26,7 +26,7 @@ const ALL_SECTIONS = BRANCHES.flatMap(b => b.sections)
 function getScrollState(scroll: number, windowHeight: number) {
   let sectionOffset = 0
   let heightOffset = 0
-  const transitionZone = windowHeight * 0.6
+  const transitionZone = windowHeight * 0.8
 
   for (const branch of BRANCHES) {
     const branchHeight = branch.sections.length * windowHeight
