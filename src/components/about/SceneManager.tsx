@@ -4,7 +4,7 @@ import Lenis from 'lenis'
 import { WebGL } from './WebGL'
 import { BRANCHES } from './SceneConfig'
 
-const ALL_SECTION_COUNT = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
+const TOTAL_SECTIONS = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
 
 export function SceneManager() {
   const setLenis = useStore((state) => state.setLenis)
@@ -42,24 +42,16 @@ export function SceneManager() {
     if (isMobile) {
       let touchStartY = 0
       let touchStartTime = 0
-      const swipeThreshold = 30
-      const velocityThreshold = 0.3
+      const swipeThreshold = 50
+      const velocityThreshold = 0.5
 
-      const getSectionScrollPosition = (sectionIndex: number) => {
-        const windowHeight = window.innerHeight
-        let scrollPos = 0
-        let sectionCount = 0
+      const getScrollForSection = (section: number) => {
+        return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1)) * window.innerHeight
+      }
 
-        for (const branch of BRANCHES) {
-          for (let i = 0; i < branch.sections.length; i++) {
-            if (sectionCount === sectionIndex) {
-              return scrollPos + i * windowHeight
-            }
-            sectionCount++
-          }
-          scrollPos += branch.sections.length * windowHeight
-        }
-        return scrollPos
+      const getSectionFromScroll = () => {
+        const section = Math.round(window.scrollY / window.innerHeight)
+        return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1))
       }
 
       const handleTouchStart = (e: TouchEvent) => {
@@ -84,35 +76,36 @@ export function SceneManager() {
         const isSwipe = Math.abs(deltaY) > swipeThreshold || velocity > velocityThreshold
 
         if (isSwipe) {
+          const current = getSectionFromScroll()
           const direction = deltaY > 0 ? 1 : -1
-          const nextSection = Math.max(0, Math.min(ALL_SECTION_COUNT - 1, currentSectionRef.current + direction))
+          const next = Math.max(0, Math.min(TOTAL_SECTIONS - 1, current + direction))
 
-          if (nextSection !== currentSectionRef.current) {
-            isAnimatingRef.current = true
-            currentSectionRef.current = nextSection
-            const targetScroll = getSectionScrollPosition(nextSection)
+          if (next === current) return
 
-            const startScroll = window.scrollY
-            const distance = targetScroll - startScroll
-            const duration = 800
-            const startTime = performance.now()
+          isAnimatingRef.current = true
+          currentSectionRef.current = next
 
-            const animateScroll = (currentTime: number) => {
-              const elapsed = currentTime - startTime
-              const progress = Math.min(elapsed / duration, 1)
-              const eased = 1 - Math.pow(1 - progress, 3)
+          const startScroll = window.scrollY
+          const targetScroll = getScrollForSection(next)
+          const distance = targetScroll - startScroll
+          const duration = 600
+          const startTime = performance.now()
 
-              window.scrollTo(0, startScroll + distance * eased)
+          const animate = (now: number) => {
+            const elapsed = now - startTime
+            const t = Math.min(elapsed / duration, 1)
+            const eased = 1 - Math.pow(1 - t, 3)
 
-              if (progress < 1) {
-                requestAnimationFrame(animateScroll)
-              } else {
-                isAnimatingRef.current = false
-              }
+            window.scrollTo(0, startScroll + distance * eased)
+
+            if (t < 1) {
+              requestAnimationFrame(animate)
+            } else {
+              isAnimatingRef.current = false
             }
-
-            requestAnimationFrame(animateScroll)
           }
+
+          requestAnimationFrame(animate)
         }
       }
 
