@@ -5,21 +5,9 @@ import { useScroll } from '../../hooks/use-scroll'
 import { useRef, Suspense, useCallback, useEffect, useState } from 'react'
 import * as THREE from 'three'
 import URDFLoader from 'urdf-loader'
-import GUI from 'lil-gui'
 import { lerp } from '../../lib/maths'
 import { BRANCHES, BRANCH_SPACING } from './SceneConfig'
 import { MarsTerrain } from './MarsTerrain'
-
-const debugConfig = {
-  currentSection: 0,
-  rover: {
-    scale: 1,
-    rotationY: -Math.PI/3,
-  },
-  joints: {} as Record<string, number>,
-}
-
-let guiJointsFolder: GUI | null = null
 
 const ALL_SECTIONS = BRANCHES.flatMap(b => b.sections)
 
@@ -97,10 +85,8 @@ function CameraController() {
   useFrame(() => {
     if (!windowHeight) return
 
-    const { sectionIndex, sectionProgress, fromSection, toSection } =
+    const { sectionProgress, fromSection, toSection } =
       getScrollState(scrollRef.current, windowHeight)
-
-    debugConfig.currentSection = sectionIndex
 
     const aspect = size.width / size.height
     const isMobileAspect = aspect < 0.8
@@ -125,7 +111,6 @@ function CameraController() {
 }
 
 function Rover() {
-  const groupRef = useRef<THREE.Group>(null)
   const [robot, setRobot] = useState<THREE.Object3D | null>(null)
 
   useEffect(() => {
@@ -142,33 +127,14 @@ function Rover() {
           }
         }
       })
-
-      if (guiJointsFolder) {
-        const r = loadedRobot as any
-        Object.entries(r.joints || {}).forEach(([name, joint]: [string, any]) => {
-          if (['revolute', 'continuous', 'prismatic'].includes(joint.jointType)) {
-            const min = joint.limit?.lower ?? -Math.PI
-            const max = joint.limit?.upper ?? Math.PI
-            debugConfig.joints[name] = joint.jointValue?.[0] ?? joint.jointValue ?? 0
-            guiJointsFolder!.add(debugConfig.joints, name, min, max).onChange((v: number) => joint.setJointValue(v))
-          }
-        })
-      }
-
       setRobot(loadedRobot)
     })
   }, [])
 
-  useFrame(() => {
-    if (!groupRef.current) return
-    groupRef.current.rotation.y = debugConfig.rover.rotationY
-    groupRef.current.scale.setScalar(debugConfig.rover.scale)
-  })
-
   if (!robot) return null
 
   return (
-    <group ref={groupRef}>
+    <group rotation-y={-Math.PI / 3}>
       <primitive object={robot} />
     </group>
   )
@@ -343,23 +309,6 @@ export function WebGL() {
     THREE.DefaultLoadingManager.onLoad = () => {
       setProgress(100)
       setTimeout(() => setLoading(false), 500)
-    }
-  }, [])
-
-  useEffect(() => {
-    const gui = new GUI()
-    gui.add(debugConfig, 'currentSection').name('Current Section').listen().disable()
-
-    const rover = gui.addFolder('Rover')
-    rover.add(debugConfig.rover, 'scale', 0.1, 5)
-    rover.add(debugConfig.rover, 'rotationY', -Math.PI, Math.PI).name('rotation Y')
-
-    guiJointsFolder = gui.addFolder('Joints')
-    guiJointsFolder.close()
-
-    return () => {
-      gui.destroy()
-      guiJointsFolder = null
     }
   }, [])
 

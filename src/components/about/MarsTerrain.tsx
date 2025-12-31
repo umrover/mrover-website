@@ -1,10 +1,8 @@
-import { useRef, useMemo } from 'react'
+import { useMemo } from 'react'
 import * as THREE from 'three'
-import { useFrame } from '@react-three/fiber'
 import { createNoise2D } from 'simplex-noise'
 
 export function MarsTerrain() {
-  const meshRef = useRef<THREE.Mesh>(null)
 
   const { positions, indices } = useMemo(() => {
     const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
@@ -75,13 +73,8 @@ export function MarsTerrain() {
     }
   }, [])
 
-  useFrame(() => {
-    if (!meshRef.current) return
-    // meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.01
-  })
-
   return (
-    <mesh ref={meshRef} position={[0, -40, 0]}>
+    <mesh position={[0, -40, 0]}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
@@ -92,7 +85,6 @@ export function MarsTerrain() {
           args={[indices, 1]}
         />
       </bufferGeometry>
-      {/* Wireframe Material */}
       <meshBasicMaterial 
         color="#FF8C00" 
         wireframe={true} 

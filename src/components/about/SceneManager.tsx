@@ -8,16 +8,13 @@ const TOTAL_SECTIONS = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
 
 export function SceneManager() {
   const setLenis = useStore((state) => state.setLenis)
-  const setHeaderHeight = useStore((state) => state.setHeaderHeight)
   const currentSectionRef = useRef(0)
   const isAnimatingRef = useRef(false)
 
   useEffect(() => {
     const header = document.querySelector('header')
     if (header) {
-      const height = header.offsetHeight
-      setHeaderHeight(height)
-      document.documentElement.style.setProperty('--header-height', `${height}px`)
+      document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`)
     }
 
     window.scrollTo(0, 0)
@@ -26,7 +23,7 @@ export function SceneManager() {
     const lenis = new Lenis({
       duration: isMobile ? 0.8 : 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
+      smoothWheel: false,
       syncTouch: true,
       touchMultiplier: isMobile ? 1 : 2,
     })
@@ -39,26 +36,51 @@ export function SceneManager() {
       requestAnimationFrame(raf)
     })
 
+    const getScrollForSection = (section: number) => {
+      return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1)) * window.innerHeight
+    }
+
+    const getSectionFromScroll = () => {
+      const section = Math.round(window.scrollY / window.innerHeight)
+      return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1))
+    }
+
+    const animateToSection = (targetSection: number) => {
+      if (isAnimatingRef.current) return
+      const current = getSectionFromScroll()
+      if (targetSection === current) return
+
+      isAnimatingRef.current = true
+      currentSectionRef.current = targetSection
+
+      const startScroll = window.scrollY
+      const targetScroll = getScrollForSection(targetSection)
+      const distance = targetScroll - startScroll
+      const duration = isMobile ? 600 : 800
+      const startTime = performance.now()
+
+      const animate = (now: number) => {
+        const elapsed = now - startTime
+        const t = Math.min(elapsed / duration, 1)
+        const eased = 1 - Math.pow(1 - t, 3)
+
+        window.scrollTo(0, startScroll + distance * eased)
+
+        if (t < 1) {
+          requestAnimationFrame(animate)
+        } else {
+          isAnimatingRef.current = false
+        }
+      }
+
+      requestAnimationFrame(animate)
+    }
+
     if (isMobile) {
       let touchStartY = 0
       let touchStartTime = 0
       const swipeThreshold = 50
       const velocityThreshold = 0.5
-
-      const getViewportHeight = () => {
-        return window.visualViewport?.height || window.innerHeight
-      }
-
-      const getScrollForSection = (section: number) => {
-        const vh = getViewportHeight()
-        return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1)) * vh
-      }
-
-      const getSectionFromScroll = () => {
-        const vh = getViewportHeight()
-        const section = Math.round(window.scrollY / vh)
-        return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1))
-      }
 
       const handleTouchStart = (e: TouchEvent) => {
         touchStartY = e.touches[0].clientY
@@ -85,33 +107,7 @@ export function SceneManager() {
           const current = getSectionFromScroll()
           const direction = deltaY > 0 ? 1 : -1
           const next = Math.max(0, Math.min(TOTAL_SECTIONS - 1, current + direction))
-
-          if (next === current) return
-
-          isAnimatingRef.current = true
-          currentSectionRef.current = next
-
-          const startScroll = window.scrollY
-          const targetScroll = getScrollForSection(next)
-          const distance = targetScroll - startScroll
-          const duration = 600
-          const startTime = performance.now()
-
-          const animate = (now: number) => {
-            const elapsed = now - startTime
-            const t = Math.min(elapsed / duration, 1)
-            const eased = 1 - Math.pow(1 - t, 3)
-
-            window.scrollTo(0, startScroll + distance * eased)
-
-            if (t < 1) {
-              requestAnimationFrame(animate)
-            } else {
-              isAnimatingRef.current = false
-            }
-          }
-
-          requestAnimationFrame(animate)
+          animateToSection(next)
         }
       }
 
@@ -128,11 +124,42 @@ export function SceneManager() {
       }
     }
 
+    let wheelAccumulator = 0
+    let wheelTimeout: ReturnType<typeof setTimeout> | null = null
+    const wheelThreshold = 50
+
+    const handleWheel = (e: WheelEvent) => {
+      if (isAnimatingRef.current) {
+        e.preventDefault()
+        return
+      }
+
+      wheelAccumulator += e.deltaY
+
+      if (wheelTimeout) clearTimeout(wheelTimeout)
+      wheelTimeout = setTimeout(() => {
+        wheelAccumulator = 0
+      }, 150)
+
+      if (Math.abs(wheelAccumulator) >= wheelThreshold) {
+        e.preventDefault()
+        const current = getSectionFromScroll()
+        const direction = wheelAccumulator > 0 ? 1 : -1
+        const next = Math.max(0, Math.min(TOTAL_SECTIONS - 1, current + direction))
+        wheelAccumulator = 0
+        animateToSection(next)
+      }
+    }
+
+    document.addEventListener('wheel', handleWheel, { passive: false })
+
     return () => {
       lenis.destroy()
       setLenis(null)
+      document.removeEventListener('wheel', handleWheel)
+      if (wheelTimeout) clearTimeout(wheelTimeout)
     }
-  }, [setLenis, setHeaderHeight])
+  }, [setLenis])
 
   return <WebGL />
 }
