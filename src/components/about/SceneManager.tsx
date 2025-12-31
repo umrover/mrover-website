@@ -2,6 +2,7 @@ import { useStore } from '../../lib/store'
 import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
 import { WebGL } from './WebGL'
+import { ProgressBar } from './ProgressBar'
 import { BRANCHES } from './SceneConfig'
 
 const TOTAL_SECTIONS = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
@@ -182,5 +183,10 @@ export function SceneManager() {
     }
   }, [setLenis])
 
-  return <WebGL />
+  return (
+    <>
+      <WebGL />
+      <ProgressBar />
+    </>
+  )
 }
