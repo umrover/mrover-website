@@ -56,7 +56,7 @@ export function SceneManager() {
       const startScroll = window.scrollY
       const targetScroll = getScrollForSection(targetSection)
       const distance = targetScroll - startScroll
-      const duration = isMobile ? 600 : 800
+      const duration = 600
       const startTime = performance.now()
 
       const animate = (now: number) => {
@@ -151,12 +151,33 @@ export function SceneManager() {
       }
     }
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isAnimatingRef.current) return
+
+      const current = getSectionFromScroll()
+      let next = current
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault()
+        next = Math.min(TOTAL_SECTIONS - 1, current + 1)
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault()
+        next = Math.max(0, current - 1)
+      }
+
+      if (next !== current) {
+        animateToSection(next)
+      }
+    }
+
     document.addEventListener('wheel', handleWheel, { passive: false })
+    document.addEventListener('keydown', handleKeyDown)
 
     return () => {
       lenis.destroy()
       setLenis(null)
       document.removeEventListener('wheel', handleWheel)
+      document.removeEventListener('keydown', handleKeyDown)
       if (wheelTimeout) clearTimeout(wheelTimeout)
     }
   }, [setLenis])

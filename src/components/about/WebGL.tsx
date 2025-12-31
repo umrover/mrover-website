@@ -110,7 +110,7 @@ function CameraController() {
   return null
 }
 
-function Rover() {
+function Rover({ onLoad }: { onLoad?: () => void }) {
   const [robot, setRobot] = useState<THREE.Object3D | null>(null)
 
   useEffect(() => {
@@ -128,8 +128,9 @@ function Rover() {
         }
       })
       setRobot(loadedRobot)
+      onLoad?.()
     })
-  }, [])
+  }, [onLoad])
 
   if (!robot) return null
 
@@ -194,7 +195,7 @@ function Atmosphere() {
   return null
 }
 
-function Scene({ isMobile }: { isMobile: boolean }) {
+function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () => void }) {
   return (
     <>
       <Atmosphere />
@@ -221,7 +222,7 @@ function Scene({ isMobile }: { isMobile: boolean }) {
       <MarsTerrain />
 
       <Suspense fallback={null}>
-        <Rover />
+        <Rover onLoad={onRoverLoad} />
         {BRANCHES.slice(1).map((_, i) => (
           <BranchPlaceholder key={i + 1} branchIndex={i + 1} />
         ))}
@@ -292,35 +293,22 @@ function useIsMobile() {
 }
 
 export function WebGL() {
-  const [loading, setLoading] = useState(true)
-  const [progress, setProgress] = useState(0)
+  const [roverLoaded, setRoverLoaded] = useState(false)
   const isMobile = useIsMobile()
 
-  useEffect(() => {
-    THREE.DefaultLoadingManager.onStart = () => {
-      setLoading(true)
-      setProgress(0)
-    }
-    
-    THREE.DefaultLoadingManager.onProgress = (_, itemsLoaded, itemsTotal) => {
-      setProgress((itemsLoaded / itemsTotal) * 100)
-    }
-
-    THREE.DefaultLoadingManager.onLoad = () => {
-      setProgress(100)
-      setTimeout(() => setLoading(false), 500)
-    }
+  const handleRoverLoad = useCallback(() => {
+    setRoverLoaded(true)
   }, [])
 
   return (
     <>
-      <LoadingOverlay progress={progress} visible={loading} />
+      <LoadingOverlay progress={roverLoaded ? 100 : 50} visible={!roverLoaded} />
       <div style={{
         position: 'fixed',
         inset: 0,
         pointerEvents: 'none',
         zIndex: 0,
-        opacity: loading ? 0 : 1,
+        opacity: roverLoaded ? 1 : 0,
         transition: 'opacity 1s ease',
       }}>
         <Canvas
@@ -330,7 +318,7 @@ export function WebGL() {
           dpr={isMobile ? 1 : [1, 2]}
         >
           <Suspense fallback={null}>
-            <Scene isMobile={isMobile} />
+            <Scene isMobile={isMobile} onRoverLoad={handleRoverLoad} />
           </Suspense>
         </Canvas>
       </div>
