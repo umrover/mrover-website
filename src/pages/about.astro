@@ -16,13 +16,28 @@ import { BRANCHES } from "@/components/about/SceneConfig";
           style={`--branch-sections: ${branch.sections.length}; --branch-color: ${branch.color}; --branch-accent: ${branch.accent};`}
         >
           <div class="branch-inner">
-            <div class="branch-label">{branch.name}</div>
+            {branch.name.toLowerCase() !== 'mission' && (
+              <div class="branch-label">
+                <span class="branch-label-line"></span>
+                <span class="branch-label-text">{branch.name}</span>
+              </div>
+            )}
             <div class="branch-slides">
               {branch.sections.map((section) => (
                 <section class="slide" data-id={section.name}>
                   {section.name === 'mission-intro' ? (
                     <div class="slide-intro">
-                      <h1>{section.label}</h1>
+                      <h1 class="intro-title">
+                        {(section.label || '').split(' ').map((word: string, wordIndex: number) => (
+                          <div class="word" style={`--word-index: ${wordIndex}`}>
+                            {word.split('').map((char: string, charIndex: number) => (
+                              <span class="char" style={`--char-index: ${charIndex}; --word-index: ${wordIndex}`}>
+                                {char}
+                              </span>
+                            ))}
+                          </div>
+                        ))}
+                      </h1>
                     </div>
                   ) : section.name === 'mission' ? (
                     <div class="card">
@@ -142,14 +157,26 @@ import { BRANCHES } from "@/components/about/SceneConfig";
     position: absolute;
     top: 80px;
     left: 4rem;
-    font-family: 'Panchang', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-    color: var(--branch-accent);
-    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     z-index: 10;
+  }
+
+  .branch-label-line {
+    width: 24px;
+    height: 1px;
+    background: var(--branch-accent);
+    opacity: 0.6;
+  }
+
+  .branch-label-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.7);
   }
 
   .branch-slides {
@@ -177,41 +204,79 @@ import { BRANCHES } from "@/components/about/SceneConfig";
     align-items: center;
   }
 
-  .slide-intro h1 {
+  .slide-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .intro-title {
     font-family: 'Panchang', sans-serif;
-    font-size: 8rem;
+    font-size: clamp(2.5rem, 12vw, 8rem);
     font-weight: 700;
     text-transform: uppercase;
     color: #ffffff;
     margin: 0;
-    line-height: 0.9;
+    line-height: 1;
     letter-spacing: 0.02em;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+  }
+
+  .intro-title .word {
+    display: block;
+    overflow: hidden;
+  }
+
+  .intro-title .char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(100%) rotateX(-90deg);
+    animation: char-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(0.4s + var(--word-index) * 0.3s + var(--char-index) * 0.05s);
+  }
+
+  @keyframes char-reveal {
+    0% {
+      opacity: 0;
+      transform: translateY(100%) rotateX(-90deg);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) rotateX(0deg);
+    }
   }
 
   .card {
-    width: 400px;
+    width: 500px;
+    min-height: 180px;
     padding: 1.5rem;
     background: rgba(14, 14, 14, 0.5);
     backdrop-filter: blur(8px);
     border: 1px solid var(--branch-accent, rgba(255,255,255,0.3));
     color: white;
     pointer-events: auto;
+    display: flex;
+    flex-direction: column;
   }
 
   .card-title {
     font-family: 'Panchang', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    line-height: 1.1;
+    line-height: 1.2;
     color: var(--branch-accent, #FF8C00);
     margin: 0 0 1rem 0;
+    word-break: keep-all;
   }
 
   .card-desc {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 1rem;
+    font-size: 1.25rem;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.9);
     margin: 0;
@@ -223,9 +288,17 @@ import { BRANCHES } from "@/components/about/SceneConfig";
 
   @media (max-width: 800px) {
     .branch-label {
-      left: 1rem;
+      left: 1.5rem;
       top: 70px;
-      font-size: 0.7rem;
+      gap: 0.75rem;
+    }
+
+    .branch-label-line {
+      width: 16px;
+    }
+
+    .branch-label-text {
+      font-size: 0.9rem;
       letter-spacing: 0.15em;
     }
 
@@ -233,21 +306,17 @@ import { BRANCHES } from "@/components/about/SceneConfig";
       padding: 0 1.5rem 2rem 1.5rem;
     }
 
-    .slide-intro h1 {
-      font-size: 2.5rem;
-    }
-
     .card {
       width: calc(100vw - 3rem);
-      max-width: 400px;
+      max-width: none;
     }
 
     .card-title {
-      font-size: 1.25rem;
+      font-size: 1.4rem;
     }
 
     .card-desc {
-      font-size: 0.95rem;
+      font-size: 1.1rem;
     }
   }
 </style>

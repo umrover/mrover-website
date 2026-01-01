@@ -11,6 +11,8 @@ export function SceneManager() {
   const setLenis = useStore((state) => state.setLenis)
   const currentSectionRef = useRef(0)
   const isAnimatingRef = useRef(false)
+  const queuedDirectionRef = useRef<number | null>(null)
+  const animationStartTimeRef = useRef(0)
 
   useEffect(() => {
     const header = document.querySelector('header')
@@ -53,6 +55,8 @@ export function SceneManager() {
 
       isAnimatingRef.current = true
       currentSectionRef.current = targetSection
+      queuedDirectionRef.current = null
+      animationStartTimeRef.current = performance.now()
 
       const startScroll = window.scrollY
       const targetScroll = getScrollForSection(targetSection)
@@ -71,6 +75,11 @@ export function SceneManager() {
           requestAnimationFrame(animate)
         } else {
           isAnimatingRef.current = false
+          if (queuedDirectionRef.current !== null) {
+            const nextSection = Math.max(0, Math.min(TOTAL_SECTIONS - 1, currentSectionRef.current + queuedDirectionRef.current))
+            queuedDirectionRef.current = null
+            animateToSection(nextSection)
+          }
         }
       }
 
@@ -95,8 +104,6 @@ export function SceneManager() {
       }
 
       const handleTouchEnd = (e: TouchEvent) => {
-        if (isAnimatingRef.current) return
-
         const touchEndY = e.changedTouches[0].clientY
         const deltaY = touchStartY - touchEndY
         const deltaTime = Date.now() - touchStartTime
@@ -105,8 +112,12 @@ export function SceneManager() {
         const isSwipe = Math.abs(deltaY) > swipeThreshold || velocity > velocityThreshold
 
         if (isSwipe) {
-          const current = getSectionFromScroll()
           const direction = deltaY > 0 ? 1 : -1
+          if (isAnimatingRef.current) {
+            queuedDirectionRef.current = direction
+            return
+          }
+          const current = getSectionFromScroll()
           const next = Math.max(0, Math.min(TOTAL_SECTIONS - 1, current + direction))
           animateToSection(next)
         }
@@ -130,8 +141,14 @@ export function SceneManager() {
     const wheelThreshold = 50
 
     const handleWheel = (e: WheelEvent) => {
+      e.preventDefault()
+
       if (isAnimatingRef.current) {
-        e.preventDefault()
+        const timeSinceStart = performance.now() - animationStartTimeRef.current
+        if (timeSinceStart > 200) {
+          const direction = e.deltaY > 0 ? 1 : -1
+          queuedDirectionRef.current = direction
+        }
         return
       }
 
@@ -143,7 +160,6 @@ export function SceneManager() {
       }, 150)
 
       if (Math.abs(wheelAccumulator) >= wheelThreshold) {
-        e.preventDefault()
         const current = getSectionFromScroll()
         const direction = wheelAccumulator > 0 ? 1 : -1
         const next = Math.max(0, Math.min(TOTAL_SECTIONS - 1, current + direction))

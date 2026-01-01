@@ -1,15 +1,59 @@
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { Stars, Environment } from '@react-three/drei'
+import { Environment } from '@react-three/drei'
 import { EffectComposer, Vignette, Bloom } from '@react-three/postprocessing'
 import { useScroll } from '../../hooks/use-scroll'
-import { useRef, Suspense, useCallback, useEffect, useState } from 'react'
+import { useRef, Suspense, useCallback, useEffect, useState, useMemo } from 'react'
 import * as THREE from 'three'
 import URDFLoader from 'urdf-loader'
 import { lerp } from '../../lib/maths'
 import { BRANCHES, BRANCH_SPACING } from './SceneConfig'
-import { MarsTerrain } from './MarsTerrain'
 
 const ALL_SECTIONS = BRANCHES.flatMap(b => b.sections)
+
+function Stars({ count = 5000 }) {
+  const ref = useRef<THREE.Points>(null)
+  const scrollRef = useRef(0)
+  const totalSections = ALL_SECTIONS.length
+
+  useScroll(useCallback(({ scroll }: { scroll: number }) => {
+    scrollRef.current = scroll
+  }, []))
+
+  const positions = useMemo(() => {
+    const pos = new Float32Array(count * 3)
+    const radius = 2000
+    const height = totalSections * BRANCH_SPACING * 1.5
+    for (let i = 0; i < count; i++) {
+      const theta = Math.random() * Math.PI * 2
+      const r = radius * (0.3 + Math.random() * 0.7)
+      const x = r * Math.cos(theta)
+      const z = r * Math.sin(theta)
+      const y = (Math.random() - 0.4) * height
+      pos[i * 3] = x
+      pos[i * 3 + 1] = y
+      pos[i * 3 + 2] = z
+    }
+    return pos
+  }, [count, totalSections])
+
+  useFrame(() => {
+    if (ref.current) {
+      ref.current.rotation.y = scrollRef.current * 0.00005
+    }
+  })
+
+  return (
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          args={[positions, 3]}
+        />
+      </bufferGeometry>
+      <pointsMaterial size={3} color="white" transparent opacity={0.8} sizeAttenuation />
+    </points>
+  )
+}
 
 function getScrollState(scroll: number, windowHeight: number) {
   let sectionOffset = 0
@@ -110,6 +154,15 @@ function CameraController() {
   return null
 }
 
+const defaultJointValues: Record<string, number> = {
+  chassis_to_arm_a: 24.14,
+  arm_a_to_arm_b: -0.785,
+  arm_b_to_arm_c: 1.91,
+  arm_c_to_arm_d: -1,
+  arm_d_to_arm_e: -1.57,
+  gripper_link: 0,
+}
+
 function Rover({ onLoad }: { onLoad?: () => void }) {
   const [robot, setRobot] = useState<THREE.Object3D | null>(null)
 
@@ -122,11 +175,18 @@ function Rover({ onLoad }: { onLoad?: () => void }) {
         if (child instanceof THREE.Mesh) {
           child.castShadow = true
           child.receiveShadow = true
-          if (child.material instanceof THREE.MeshStandardMaterial) {
-            child.material.roughness = Math.min(child.material.roughness, 0.7)
+          const mat = child.material as THREE.MeshStandardMaterial
+          if (mat instanceof THREE.MeshStandardMaterial) {
+            mat.roughness = Math.min(mat.roughness, 0.7)
           }
         }
       })
+      const robotWithJoints = loadedRobot as THREE.Object3D & { setJointValue?: (name: string, value: number) => void }
+      if (robotWithJoints.setJointValue) {
+        for (const [joint, value] of Object.entries(defaultJointValues)) {
+          robotWithJoints.setJointValue(joint, value)
+        }
+      }
       setRobot(loadedRobot)
       onLoad?.()
     })
@@ -135,7 +195,7 @@ function Rover({ onLoad }: { onLoad?: () => void }) {
   if (!robot) return null
 
   return (
-    <group rotation-y={-Math.PI / 3}>
+    <group position={[0, -25, 0]} rotation-y={-Math.PI / 3}>
       <primitive object={robot} />
     </group>
   )
@@ -195,11 +255,91 @@ function Atmosphere() {
   return null
 }
 
+function Stage() {
+  const platformRef = useRef<THREE.Mesh>(null)
+  const light1Ref = useRef<THREE.SpotLight>(null)
+  const light2Ref = useRef<THREE.SpotLight>(null)
+  const targetRef = useRef<THREE.Object3D>(null)
+  const { scrollRef, windowHeight } = useScrollState()
+
+  useFrame(() => {
+    if (!windowHeight) return
+
+    const { sectionIndex, sectionProgress } = getScrollState(scrollRef.current, windowHeight)
+
+    let progress = 0
+    if (sectionIndex === 0) {
+      progress = sectionProgress
+    } else if (sectionIndex >= 1) {
+      progress = 1
+    }
+
+    const eased = 1 - Math.pow(1 - progress, 3)
+
+    if (platformRef.current) {
+      platformRef.current.position.y = lerp(-80, -35, eased)
+      const mat = platformRef.current.material as THREE.MeshStandardMaterial
+      mat.opacity = lerp(0, 1, eased)
+    }
+
+    const lightIntensity = lerp(0, 100, eased)
+    if (light1Ref.current) {
+      light1Ref.current.intensity = lightIntensity
+      if (targetRef.current) light1Ref.current.target = targetRef.current
+    }
+    if (light2Ref.current) {
+      light2Ref.current.intensity = lightIntensity
+      if (targetRef.current) light2Ref.current.target = targetRef.current
+    }
+  })
+
+  return (
+    <>
+      <object3D ref={targetRef} position={[0, 20, 0]} />
+
+      <mesh ref={platformRef} rotation-x={-Math.PI / 2} position={[0, -80, 0]} receiveShadow>
+        <circleGeometry args={[100, 64]} />
+        <meshStandardMaterial
+          color="#0a0a0a"
+          metalness={0.3}
+          roughness={0.8}
+          transparent
+          opacity={0}
+        />
+      </mesh>
+
+      <spotLight
+        ref={light1Ref}
+        position={[120, 280, 120]}
+        angle={0.5}
+        penumbra={0.5}
+        intensity={0}
+        color="#ffffff"
+        distance={500}
+        decay={0.5}
+        castShadow
+      />
+      <spotLight
+        ref={light2Ref}
+        position={[-120, 280, 120]}
+        angle={0.5}
+        penumbra={0.5}
+        intensity={0}
+        color="#FFE4C4"
+        distance={500}
+        decay={0.5}
+        castShadow
+      />
+    </>
+  )
+}
+
+
 function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () => void }) {
   return (
     <>
       <Atmosphere />
-      <Stars radius={800} depth={150} count={isMobile ? 2000 : 5000} factor={6} fade speed={0.3} />
+      <Stars count={isMobile ? 2000 : 3000} />
       <Environment preset="sunset" environmentIntensity={0.7} />
 
       <directionalLight
@@ -219,21 +359,19 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
       <directionalLight position={[-150, 50, -100]} intensity={0.5} color={0x445566} />
 
       <CameraController />
-      <MarsTerrain />
 
       <Suspense fallback={null}>
         <Rover onLoad={onRoverLoad} />
+        <Stage />
         {BRANCHES.slice(1).map((_, i) => (
           <BranchPlaceholder key={i + 1} branchIndex={i + 1} />
         ))}
       </Suspense>
 
-      {!isMobile && (
-        <EffectComposer enableNormalPass={false}>
-          <Bloom luminanceThreshold={1} mipmapBlur intensity={0.5} radius={0.6} />
-          <Vignette darkness={0.4} offset={0.3} />
-        </EffectComposer>
-      )}
+      <EffectComposer enableNormalPass={false}>
+        <Bloom luminanceThreshold={1} mipmapBlur intensity={0.5} radius={0.6} />
+        <Vignette darkness={0.4} offset={0.3} />
+      </EffectComposer>
     </>
   )
 }
