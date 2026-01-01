@@ -165,12 +165,17 @@ const defaultJointValues: Record<string, number> = {
 
 function Rover({ onLoad }: { onLoad?: () => void }) {
   const [robot, setRobot] = useState<THREE.Object3D | null>(null)
+  const hasCalledOnLoad = useRef(false)
+  const frameCount = useRef(0)
 
   useEffect(() => {
     const loader = new URDFLoader()
     loader.packages = { mrover: '/urdf' }
     loader.load('/urdf/rover/rover.urdf', (loadedRobot) => {
       loadedRobot.rotation.x = -Math.PI / 2
+
+      const texturePromises: Promise<void>[] = []
+
       loadedRobot.traverse((child: THREE.Object3D) => {
         if (child instanceof THREE.Mesh) {
           child.castShadow = true
@@ -178,19 +183,41 @@ function Rover({ onLoad }: { onLoad?: () => void }) {
           const mat = child.material as THREE.MeshStandardMaterial
           if (mat instanceof THREE.MeshStandardMaterial) {
             mat.roughness = Math.min(mat.roughness, 0.7)
+            if (mat.map && !mat.map.image) {
+              texturePromises.push(new Promise<void>((resolve) => {
+                const checkLoaded = () => {
+                  if (mat.map?.image) resolve()
+                  else setTimeout(checkLoaded, 50)
+                }
+                checkLoaded()
+              }))
+            }
           }
         }
       })
+
       const robotWithJoints = loadedRobot as THREE.Object3D & { setJointValue?: (name: string, value: number) => void }
       if (robotWithJoints.setJointValue) {
         for (const [joint, value] of Object.entries(defaultJointValues)) {
           robotWithJoints.setJointValue(joint, value)
         }
       }
-      setRobot(loadedRobot)
-      onLoad?.()
+
+      Promise.all(texturePromises).then(() => {
+        setRobot(loadedRobot)
+      })
     })
-  }, [onLoad])
+  }, [])
+
+  useFrame(() => {
+    if (robot && !hasCalledOnLoad.current) {
+      frameCount.current++
+      if (frameCount.current >= 3) {
+        hasCalledOnLoad.current = true
+        onLoad?.()
+      }
+    }
+  })
 
   if (!robot) return null
 
