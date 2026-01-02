@@ -94,7 +94,7 @@ export function StarsBackground() {
         <Suspense fallback={null}>
           <Atmosphere />
           <Stars count={isMobile ? 2000 : 5000} />
-          <EffectComposer disableNormalPass multisampling={0}>
+          <EffectComposer multisampling={0}>
             <Vignette darkness={0.5} offset={0.3} />
           </EffectComposer>
         </Suspense>
