@@ -37,15 +37,15 @@ import { StarsBackground } from "@/components/StarsBackground";
           style="transform: translateY(clamp(150px, 25vh, 280px)); width: min(90vw, 600px) !important; height: auto !important; max-width: none !important;"
         />
       </div>
-      <div class="font-mono text-white max-w-2xl mx-auto opacity-0" style="min-width: 500px;" data-hero-buttons>
+      <div class="font-mono text-white w-[min(90vw,500px)] mx-auto opacity-0" data-hero-buttons>
         <div
-          class="border border-mrover-accent/30 bg-transparent rounded-xl p-6 shadow-[0_0_30px_-5px_rgba(255,140,0,0.15)]"
+          class="border border-mrover-accent/30 bg-transparent rounded-xl p-4 sm:p-6 shadow-[0_0_30px_-5px_rgba(255,140,0,0.15)]"
           data-terminal-bg
           style="backdrop-filter: blur(0px);"
         >
           <div class="w-full">
-            <div class="text-lg flex items-center">
-              <span class="text-mrover-accent mr-3">user@mrover:~$</span>
+            <div class="text-sm sm:text-lg flex items-center flex-wrap">
+              <span class="text-mrover-accent mr-2 sm:mr-3 whitespace-nowrap">user@mrover:~$</span>
               <span class="text-white" data-typing-text></span>
             </div>
             <div class="flex flex-col gap-1 w-full mt-2">
@@ -74,8 +74,8 @@ import { StarsBackground } from "@/components/StarsBackground";
                 <span class="text-white font-mono tracking-wide hover:underline">sponsor</span>
               </a>
             </div>
-            <div class="text-lg flex items-center mt-2 opacity-0" data-final-prompt>
-              <span class="text-mrover-accent mr-3">user@mrover:~$</span>
+            <div class="text-sm sm:text-lg flex items-center mt-2 opacity-0" data-final-prompt>
+              <span class="text-mrover-accent mr-2 sm:mr-3">user@mrover:~$</span>
               <span class="inline-block w-2.5 h-5 bg-white" style="animation: blink 1.2s infinite;"></span>
             </div>
           </div>
