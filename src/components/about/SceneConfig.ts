@@ -41,7 +41,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Mechanical',
       name: 'Mobility',
-      desc: 'Develops drive and suspension systems to navigate rocks and rough terrain in each competition mission.',
+      desc: 'Develops drive and suspension systems for navigating rough terrain while ensuring reliable driving and protecting onboard equipment from impacts.',
       color: '#00274C',
       accent: '#FFCB05'
     },
@@ -53,8 +53,8 @@ const SECTION_TARGETS: SectionTarget[] = [
     name: 'chassis',
     subteam: {
       teamName: 'Mechanical',
-      name: 'Chassis',
-      desc: 'Develops a lightweight and strong chassis optimized for integration of all sub-systems.',
+      name: 'Chassis and Mounts',
+      desc: 'Creates a lightweight, strong chassis optimized for subsystem integration, plus gimbal cameras, electrical enclosures, and wire management.',
       color: '#00274C',
       accent: '#FFCB05'
     },
@@ -67,7 +67,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Mechanical',
       name: 'Robotic Arm',
-      desc: 'Designs and builds a multi degree-of-freedom robotic arm for Equipment Servicing and Extreme Retrieval missions.',
+      desc: 'Designs and builds a five degree-of-freedom robotic arm responsible for lifting, opening drawers, pushing buttons, typing, and precise movements.',
       color: '#00274C',
       accent: '#FFCB05'
     },
@@ -80,7 +80,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Science',
       name: 'Science Payload',
-      desc: 'Develops soil collection mechanics and on-board sensors for in-situ sampling and life-detection tests.',
+      desc: 'Performs in-situ sampling with on-board science tests, environmental sensors, and external cameras for rock analysis, using a linear actuator-driven auger system.',
       color: '#4CAF50',
       accent: '#C8E6C9'
     },
@@ -93,7 +93,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Science',
       name: 'Astrobiology',
-      desc: 'Develops tests to analyze soil and rock samples for signs of past or present life.',
+      desc: 'Develops tests analyzing soil and rock samples for life indicators, researching tests and implementing them on the rover for competition use.',
       color: '#4CAF50',
       accent: '#C8E6C9'
     },
@@ -106,7 +106,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Electrical',
       name: 'Power',
-      desc: 'Provides power to the rover and manages the electronics box with custom distribution solutions.',
+      desc: 'Provides rover power management and distributes electricity to key systems, currently improving custom battery design.',
       color: '#9C27B0',
       accent: '#E1BEE7'
     },
@@ -119,7 +119,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Electrical',
       name: 'Embedded Hardware',
-      desc: 'Controls actuators, receives sensor signals, and designs custom PCBs for motor control.',
+      desc: 'Designs custom circuit boards for actuator control, sensor signal reception, and data connections between electronics and external components.',
       color: '#9C27B0',
       accent: '#E1BEE7'
     },
@@ -132,7 +132,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Electrical',
       name: 'Communications',
-      desc: 'Ensures strong wireless RF communication link between base station and rover.',
+      desc: 'Ensures wireless RF communication between base station and rover through equipment testing and selection.',
       color: '#9C27B0',
       accent: '#E1BEE7'
     },
@@ -145,7 +145,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Software',
       name: 'Navigation',
-      desc: 'Develops path planning algorithms to autonomously navigate the rover around obstacles.',
+      desc: 'Uses A* pathfinding to plan obstacle-avoiding routes as part of the Autonomy team.',
       color: '#2196F3',
       accent: '#BBDEFB'
     },
@@ -158,7 +158,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Software',
       name: 'Localization',
-      desc: 'Determines the rover position and orientation using sensor fusion and mapping techniques.',
+      desc: 'Determines rover position and orientation as part of the Autonomy team using sensor fusion and mapping.',
       color: '#2196F3',
       accent: '#BBDEFB'
     },
@@ -171,7 +171,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Software',
       name: 'Perception',
-      desc: 'Processes camera and sensor data to detect and classify objects in the environment.',
+      desc: 'Identifies environmental features and objects as part of the Autonomy team using camera and sensor data.',
       color: '#2196F3',
       accent: '#BBDEFB'
     },
@@ -184,7 +184,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Software',
       name: 'Drone',
-      desc: 'Develops a drone for collaboration with the rover, capable of manual and autonomous operation.',
+      desc: 'Develops manual and autonomous drone capable of reading signs, locating objects, and communications support during delivery missions.',
       color: '#2196F3',
       accent: '#BBDEFB'
     },
@@ -196,8 +196,8 @@ const SECTION_TARGETS: SectionTarget[] = [
     name: 'esw-controls',
     subteam: {
       teamName: 'Software',
-      name: 'ESW Controls',
-      desc: 'Writes low-level driver code and control systems for motors and actuators.',
+      name: 'Embedded Software',
+      desc: 'Writes low-level driver code abstracting manufacturer libraries in C and Python for other programming teams.',
       color: '#2196F3',
       accent: '#BBDEFB'
     },
@@ -210,7 +210,7 @@ const SECTION_TARGETS: SectionTarget[] = [
     subteam: {
       teamName: 'Software',
       name: 'ESW Telemetry',
-      desc: 'Manages data collection, transmission, and monitoring of rover systems.',
+      desc: 'TO BE COMPLETED',
       color: '#2196F3',
       accent: '#BBDEFB'
     },
@@ -222,8 +222,8 @@ const SECTION_TARGETS: SectionTarget[] = [
     name: 'teleop',
     subteam: {
       teamName: 'Software',
-      name: 'Teleop',
-      desc: 'Creates the interface between driver and rover, maintaining GUIs and control solutions.',
+      name: 'Teleoperation',
+      desc: 'Creates driver-rover interfaces through base station GUIs, control solutions for complex systems, and custom build infrastructure.',
       color: '#2196F3',
       accent: '#BBDEFB'
     },

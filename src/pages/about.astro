@@ -16,12 +16,6 @@ import { BRANCHES } from "@/components/about/SceneConfig";
           style={`--branch-sections: ${branch.sections.length}; --branch-color: ${branch.color}; --branch-accent: ${branch.accent};`}
         >
           <div class="branch-inner">
-            {branch.name.toLowerCase() !== 'mission' && (
-              <div class="branch-label">
-                <span class="branch-label-line"></span>
-                <span class="branch-label-text">{branch.name}</span>
-              </div>
-            )}
             <div class="branch-slides">
               {branch.sections.map((section) => (
                 <section class="slide" data-id={section.name}>
@@ -153,32 +147,6 @@ import { BRANCHES } from "@/components/about/SceneConfig";
     flex-direction: column;
   }
 
-  .branch-label {
-    position: absolute;
-    top: 80px;
-    left: 4rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    z-index: 10;
-  }
-
-  .branch-label-line {
-    width: 24px;
-    height: 1px;
-    background: var(--branch-accent);
-    opacity: 0.6;
-  }
-
-  .branch-label-text {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: rgba(255, 255, 255, 0.7);
-  }
-
   .branch-slides {
     display: flex;
     flex: 1;
@@ -192,7 +160,7 @@ import { BRANCHES } from "@/components/about/SceneConfig";
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    align-items: flex-start;
+    align-items: flex-end;
     padding: 0 4rem 4rem 4rem;
     box-sizing: border-box;
     pointer-events: none;
@@ -282,28 +250,20 @@ import { BRANCHES } from "@/components/about/SceneConfig";
     margin: 0;
   }
 
-  :global(html) {
+  :global(html),
+  :global(body) {
     overscroll-behavior: none;
+    -webkit-overflow-scrolling: auto;
+  }
+
+  :global(body) {
+    touch-action: pan-x pan-y;
   }
 
   @media (max-width: 800px) {
-    .branch-label {
-      left: 1.5rem;
-      top: 70px;
-      gap: 0.75rem;
-    }
-
-    .branch-label-line {
-      width: 16px;
-    }
-
-    .branch-label-text {
-      font-size: 0.9rem;
-      letter-spacing: 0.15em;
-    }
-
     .slide {
       padding: 0 1.5rem 2rem 1.5rem;
+      align-items: flex-start;
     }
 
     .card {

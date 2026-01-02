@@ -10,6 +10,7 @@ const TOTAL_SECTIONS = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
 export function SceneManager() {
   const setLenis = useStore((state) => state.setLenis)
   const currentSectionRef = useRef(0)
+  const targetSectionRef = useRef(0)
   const isAnimatingRef = useRef(false)
   const queuedDirectionRef = useRef<number | null>(null)
   const animationStartTimeRef = useRef(0)
@@ -21,6 +22,9 @@ export function SceneManager() {
     }
 
     window.scrollTo(0, 0)
+    currentSectionRef.current = 0
+    targetSectionRef.current = 0
+
     const isMobile = window.matchMedia('(max-width: 768px)').matches || 'ontouchstart' in window
 
     const lenis = new Lenis({
@@ -40,26 +44,29 @@ export function SceneManager() {
     })
 
     const getScrollForSection = (section: number) => {
-      return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1)) * window.innerHeight
-    }
-
-    const getSectionFromScroll = () => {
-      const section = Math.round(window.scrollY / window.innerHeight)
-      return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1))
+      const clamped = Math.max(0, Math.min(section, TOTAL_SECTIONS - 1))
+      return clamped * window.innerHeight
     }
 
     const animateToSection = (targetSection: number) => {
-      if (isAnimatingRef.current) return
-      const current = getSectionFromScroll()
-      if (targetSection === current) return
+      const clampedTarget = Math.max(0, Math.min(targetSection, TOTAL_SECTIONS - 1))
+
+      if (isAnimatingRef.current) {
+        if (clampedTarget !== targetSectionRef.current) {
+          queuedDirectionRef.current = clampedTarget > targetSectionRef.current ? 1 : -1
+        }
+        return
+      }
+
+      if (clampedTarget === currentSectionRef.current) return
 
       isAnimatingRef.current = true
-      currentSectionRef.current = targetSection
+      targetSectionRef.current = clampedTarget
       queuedDirectionRef.current = null
       animationStartTimeRef.current = performance.now()
 
       const startScroll = window.scrollY
-      const targetScroll = getScrollForSection(targetSection)
+      const targetScroll = getScrollForSection(clampedTarget)
       const distance = targetScroll - startScroll
       const duration = 600
       const startTime = performance.now()
@@ -74,9 +81,12 @@ export function SceneManager() {
         if (t < 1) {
           requestAnimationFrame(animate)
         } else {
+          window.scrollTo(0, targetScroll)
+          currentSectionRef.current = clampedTarget
           isAnimatingRef.current = false
+
           if (queuedDirectionRef.current !== null) {
-            const nextSection = Math.max(0, Math.min(TOTAL_SECTIONS - 1, currentSectionRef.current + queuedDirectionRef.current))
+            const nextSection = currentSectionRef.current + queuedDirectionRef.current
             queuedDirectionRef.current = null
             animateToSection(nextSection)
           }
@@ -98,7 +108,7 @@ export function SceneManager() {
       }
 
       const handleTouchMove = (e: TouchEvent) => {
-        if (isAnimatingRef.current && e.cancelable) {
+        if (e.cancelable) {
           e.preventDefault()
         }
       }
@@ -113,13 +123,8 @@ export function SceneManager() {
 
         if (isSwipe) {
           const direction = deltaY > 0 ? 1 : -1
-          if (isAnimatingRef.current) {
-            queuedDirectionRef.current = direction
-            return
-          }
-          const current = getSectionFromScroll()
-          const next = Math.max(0, Math.min(TOTAL_SECTIONS - 1, current + direction))
-          animateToSection(next)
+          const baseSection = isAnimatingRef.current ? targetSectionRef.current : currentSectionRef.current
+          animateToSection(baseSection + direction)
         }
       }
 
@@ -160,41 +165,44 @@ export function SceneManager() {
       }, 150)
 
       if (Math.abs(wheelAccumulator) >= wheelThreshold) {
-        const current = getSectionFromScroll()
         const direction = wheelAccumulator > 0 ? 1 : -1
-        const next = Math.max(0, Math.min(TOTAL_SECTIONS - 1, current + direction))
         wheelAccumulator = 0
-        animateToSection(next)
+        animateToSection(currentSectionRef.current + direction)
       }
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isAnimatingRef.current) return
-
-      const current = getSectionFromScroll()
-      let next = current
+      const baseSection = isAnimatingRef.current ? targetSectionRef.current : currentSectionRef.current
 
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
         e.preventDefault()
-        next = Math.min(TOTAL_SECTIONS - 1, current + 1)
+        animateToSection(baseSection + 1)
       } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
         e.preventDefault()
-        next = Math.max(0, current - 1)
+        animateToSection(baseSection - 1)
       }
+    }
 
-      if (next !== current) {
-        animateToSection(next)
+    const handleScroll = () => {
+      if (isAnimatingRef.current) return
+      const section = Math.round(window.scrollY / window.innerHeight)
+      const clamped = Math.max(0, Math.min(section, TOTAL_SECTIONS - 1))
+      if (clamped !== currentSectionRef.current) {
+        currentSectionRef.current = clamped
+        targetSectionRef.current = clamped
       }
     }
 
     document.addEventListener('wheel', handleWheel, { passive: false })
     document.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => {
       lenis.destroy()
       setLenis(null)
       document.removeEventListener('wheel', handleWheel)
       document.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('scroll', handleScroll)
       if (wheelTimeout) clearTimeout(wheelTimeout)
     }
   }, [setLenis])

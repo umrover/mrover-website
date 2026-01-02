@@ -457,6 +457,205 @@ function useIsMobile() {
   return isMobile
 }
 
+function getScrollPositionForSection(globalSectionIndex: number, windowHeight: number): number {
+  let sectionOffset = 0
+  let heightOffset = 0
+
+  for (const branch of BRANCHES) {
+    const branchSectionCount = branch.sections.length
+    const branchEnd = sectionOffset + branchSectionCount
+
+    if (globalSectionIndex < branchEnd) {
+      const localIndex = globalSectionIndex - sectionOffset
+      const branchHeight = branchSectionCount * windowHeight
+      const scrollable = branchHeight - windowHeight
+      const progress = branchSectionCount > 1 ? localIndex / (branchSectionCount - 1) : 0
+      return heightOffset + progress * scrollable
+    }
+
+    heightOffset += branchSectionCount * windowHeight
+    sectionOffset = branchEnd
+  }
+
+  return heightOffset
+}
+
+function ProgressIndicator({ visible, isMobile }: { visible: boolean; isMobile: boolean }) {
+  const [currentBranchIndex, setCurrentBranchIndex] = useState(0)
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0)
+  const [expandedBranch, setExpandedBranch] = useState<number | null>(null)
+  const [windowHeight, setWindowHeight] = useState(0)
+
+  useEffect(() => {
+    const updateSize = () => setWindowHeight(window.innerHeight)
+    updateSize()
+    window.addEventListener('resize', updateSize)
+    return () => window.removeEventListener('resize', updateSize)
+  }, [])
+
+  useScroll(useCallback(({ scroll }: { scroll: number }) => {
+    if (!windowHeight) return
+
+    const totalSections = ALL_SECTIONS.length
+    const sectionIndex = Math.max(0, Math.min(Math.round(scroll / windowHeight), totalSections - 1))
+
+    let branchIdx = 0
+    let sectionCount = 0
+    for (let i = 0; i < BRANCHES.length; i++) {
+      if (sectionIndex < sectionCount + BRANCHES[i].sections.length) {
+        branchIdx = i
+        break
+      }
+      sectionCount += BRANCHES[i].sections.length
+    }
+
+    setCurrentBranchIndex(branchIdx)
+    setCurrentSectionIndex(sectionIndex)
+  }, [windowHeight]))
+
+  const jumpToSection = (globalIndex: number) => {
+    if (!windowHeight) return
+    const scrollPos = getScrollPositionForSection(globalIndex, windowHeight)
+    window.scrollTo({ top: scrollPos, behavior: 'smooth' })
+  }
+
+  if (!visible) return null
+
+  let globalIdx = 0
+  const branchOffsets: number[] = []
+  for (const branch of BRANCHES) {
+    branchOffsets.push(globalIdx)
+    globalIdx += branch.sections.length
+  }
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: '80px',
+      left: '1.5rem',
+      zIndex: 100,
+      pointerEvents: 'auto',
+      fontFamily: "'Rajdhani', system-ui, sans-serif",
+    }}>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0',
+      }}>
+        {BRANCHES.map((branch, idx) => {
+          const isActive = idx === currentBranchIndex
+          const isExpanded = expandedBranch === idx
+          const branchOffset = branchOffsets[idx]
+
+          return (
+            <div
+              key={branch.name}
+              style={{ position: 'relative' }}
+              onMouseEnter={() => !isMobile && setExpandedBranch(idx)}
+              onMouseLeave={() => !isMobile && setExpandedBranch(null)}
+            >
+              <button
+                onClick={() => {
+                  if (isMobile) {
+                    setExpandedBranch(isExpanded ? null : idx)
+                  } else {
+                    jumpToSection(branchOffset)
+                  }
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem',
+                  padding: '6px 0',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transform: isActive ? 'translateX(8px)' : 'translateX(0)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+              >
+                <span style={{
+                  width: '12px',
+                  height: '2px',
+                  background: branch.accent,
+                  opacity: isActive ? 1 : 0.4,
+                  transition: 'opacity 0.3s ease',
+                }} />
+                <span style={{
+                  fontSize: '1.1rem',
+                  fontWeight: 500,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.2em',
+                  color: isActive ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.4)',
+                  transition: 'color 0.3s ease',
+                }}>
+                  {branch.name}
+                </span>
+              </button>
+
+              <div style={{
+                position: 'absolute',
+                left: '100%',
+                top: '-8px',
+                paddingLeft: '8px',
+                opacity: isExpanded ? 1 : 0,
+                transform: isExpanded ? 'translateX(0)' : 'translateX(-10px)',
+                pointerEvents: isExpanded ? 'auto' : 'none',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}>
+                <div style={{
+                  background: 'rgba(10, 8, 8, 0.95)',
+                  backdropFilter: 'blur(12px)',
+                  border: `1px solid ${branch.accent}40`,
+                  padding: '8px',
+                  minWidth: '200px',
+                }}>
+                {branch.sections.map((section, sectionIdx) => {
+                  const globalSectionIdx = branchOffset + sectionIdx
+                  const isSectionActive = globalSectionIdx === currentSectionIndex
+                  let label = section.subteam?.name || section.label || section.name
+                  if (section.name === 'mission-intro') label = 'Title'
+                  else if (section.name === 'mission') label = 'Mission Statement'
+
+                  return (
+                    <button
+                      key={section.name}
+                      onClick={() => jumpToSection(globalSectionIdx)}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: '8px 12px',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: isSectionActive ? branch.accent : 'rgba(255, 255, 255, 0.6)',
+                        fontSize: '0.95rem',
+                        fontWeight: isSectionActive ? 600 : 400,
+                        textAlign: 'left',
+                        letterSpacing: '0.05em',
+                        transition: 'all 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = branch.accent
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = isSectionActive ? branch.accent : 'rgba(255, 255, 255, 0.6)'
+                      }}
+                    >
+                      {label}
+                    </button>
+                  )
+                })}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export function WebGL() {
   const [roverLoaded, setRoverLoaded] = useState(false)
   const isMobile = useIsMobile()
@@ -468,6 +667,7 @@ export function WebGL() {
   return (
     <>
       <LoadingOverlay progress={roverLoaded ? 100 : 50} visible={!roverLoaded} />
+      <ProgressIndicator visible={roverLoaded} isMobile={isMobile} />
       <div style={{
         position: 'fixed',
         inset: 0,

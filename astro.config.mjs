@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
+import compress from 'astro-compress';
 
 const isDev = process.env.DEV === 'true';
 
@@ -13,7 +14,17 @@ export default defineConfig({
   build: {
     assets: '_astro'
   },
-  integrations: [react(), sitemap()],
+  integrations: [
+    react(),
+    sitemap(),
+    compress({
+      CSS: true,
+      HTML: true,
+      JavaScript: true,
+      Image: false,
+      SVG: false,
+    }),
+  ],
   vite: {
     plugins: [tailwindcss()]
   }

@@ -61,6 +61,8 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/icons/favicon-32x32.png' },
         { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/icons/favicon-16x16.png' },
         { rel: 'manifest', href: '/manifest.json' },
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Inter:wght@200;300;400;500;600;700;800&display=swap' },
         { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' },
       ],
@@ -70,6 +72,27 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
       ],
     }}
   />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Michigan Mars Rover Team",
+    "alternateName": "MRover",
+    "url": "https://mrover.org",
+    "logo": "https://mrover.org/logos/logo_short.svg",
+    "description": "The Michigan Mars Rover Team (MRover) is a student-run, multidisciplinary team at the University of Michigan building rovers for Mars exploration and competing in the University Rover Challenge.",
+    "sameAs": [
+      "https://www.instagram.com/umrover/",
+      "https://www.facebook.com/MRoverTeam/",
+      "https://www.linkedin.com/company/michigan-mars-rover-team/",
+      "https://github.com/umrover"
+    ],
+    "parentOrganization": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of Michigan",
+      "url": "https://umich.edu"
+    }
+  })} />
 
   <!-- Dark mode script - runs before page render to prevent flash -->
   <script is:inline>
