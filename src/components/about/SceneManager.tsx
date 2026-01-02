@@ -1,7 +1,7 @@
 import { useStore } from '../../lib/store'
 import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
-import { WebGL } from './WebGL'
+import { AboutExperience } from './AboutExperience'
 import { ProgressBar } from './ProgressBar'
 import { BRANCHES } from './SceneConfig'
 
@@ -209,7 +209,7 @@ export function SceneManager() {
 
   return (
     <>
-      <WebGL />
+      <AboutExperience />
       <ProgressBar />
     </>
   )

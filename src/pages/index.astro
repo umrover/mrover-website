@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { StarsBackground } from "@/components/StarsBackground";
 ---
 
 <BaseLayout
@@ -7,19 +8,14 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
   description="The Michigan Mars Rover Team (MRover) is a student-run, multidisciplinary team building rovers for Mars exploration and competing in the University Rover Challenge."
   image="https://mrover.org/images/SAR_GOBLUESHOT.png"
 >
+  <StarsBackground client:only="react" />
+
   <!-- Hero Section -->
   <div
-    class="relative min-h-screen bg-cover bg-center flex items-center justify-center"
-    style="background-image: url('/images/rosie_circ.jpg');"
+    class="relative min-h-screen flex items-center justify-center font-rajdhani"
     data-hero
   >
-    <div
-      class="absolute inset-0 bg-black/80"
-      data-hero-overlay
-    >
-    </div>
     <div class="relative z-10 text-center px-6 max-w-5xl py-20">
-      <!-- intro anim -->
       <div
         class="relative mb-0 flex items-center justify-center w-full"
         style="height: clamp(250px, 30vh, 400px);"
@@ -43,40 +39,44 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       </div>
       <div class="font-mono text-white max-w-2xl mx-auto opacity-0" style="min-width: 500px;" data-hero-buttons>
         <div
-          class="border border-white/20 bg-black/40 rounded-lg p-4"
+          class="border border-mrover-accent/30 bg-transparent rounded-xl p-6 shadow-[0_0_30px_-5px_rgba(255,140,0,0.15)]"
           data-terminal-bg
           style="backdrop-filter: blur(0px);"
         >
           <div class="w-full">
-            <div class="mb-4 text-lg flex items-center">
-              <span class="text-mrover-accent w-6">$</span>
+            <div class="text-lg flex items-center">
+              <span class="text-mrover-accent mr-3">user@mrover:~$</span>
               <span class="text-white" data-typing-text></span>
             </div>
-            <div class="flex flex-col gap-2 w-full">
+            <div class="flex flex-col gap-1 w-full mt-2">
               <a
                 href="/about"
-                class="no-underline flex items-center gap-3 py-1 transition-all hover:bg-white/10 rounded opacity-0"
+                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded opacity-0"
                 data-option
               >
-                <span class="text-mrover-accent w-6">></span>
-                <span class="text-white font-semibold">learn_more</span>
+                <span class="text-mrover-accent w-4">></span>
+                <span class="text-white font-mono tracking-wide hover:underline">about</span>
               </a>
               <a
                 href="/join"
-                class="no-underline flex items-center gap-3 py-1 transition-all hover:bg-white/10 rounded opacity-0"
+                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded opacity-0"
                 data-option
               >
-                <span class="text-mrover-accent w-6">></span>
-                <span class="text-white font-semibold">join</span>
+                <span class="text-mrover-accent w-4">></span>
+                <span class="text-white font-mono tracking-wide hover:underline">join</span>
               </a>
               <a
-                href="/donate"
-                class="no-underline flex items-center gap-3 py-1 transition-all hover:bg-white/10 rounded opacity-0"
+                href="/sponsor"
+                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded opacity-0"
                 data-option
               >
-                <span class="text-mrover-accent w-6">></span>
-                <span class="text-white font-semibold">support</span>
+                <span class="text-mrover-accent w-4">></span>
+                <span class="text-white font-mono tracking-wide hover:underline">sponsor</span>
               </a>
+            </div>
+            <div class="text-lg flex items-center mt-2 opacity-0" data-final-prompt>
+              <span class="text-mrover-accent mr-3">user@mrover:~$</span>
+              <span class="inline-block w-2.5 h-5 bg-white" style="animation: blink 1.2s infinite;"></span>
             </div>
           </div>
         </div>
@@ -84,34 +84,36 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     </div>
   </div>
 
-  <div class="bg-gradient-to-b from-michigan-blue via-michigan-blue to-michigan-blue">
+  <div class="font-rajdhani">
     <!-- Who we are -->
-    <section class="py-24 md:py-32">
-      <div class="max-w-6xl mx-auto px-6 lg:px-12">
+    <section class="py-24 md:py-32 relative">
+      <div class="max-w-6xl mx-auto px-6 lg:px-12 relative z-10">
         <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div class="space-y-6" data-fade-in>
-            <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">Who we are</h2>
-            <p class="text-white/70 text-lg leading-relaxed">
+            <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight tracking-wide">WHO WE ARE</h2>
+            <div class="h-1 w-20 bg-mrover-accent rounded-full"></div>
+            <p class="text-white/70 text-lg leading-relaxed font-sans">
               <span class="text-mrover-accent font-semibold">Student-run, multidisciplinary team</span> building rovers for Mars exploration. We unite students across all years and majors, from Engineering to LSA, to inspire passion for space and develop engineering excellence.
             </p>
           </div>
           <div
-            class="relative rounded-xl overflow-hidden shadow-2xl"
+            class="relative rounded-xl overflow-hidden shadow-2xl border border-white/10"
             data-fade-in
             data-delay="0.2"
           >
             <img src="/images/SAR_GOBLUESHOT.png" alt="Mars Rover Team" class="w-full h-auto" />
+            <div class="absolute inset-0 bg-linear-to-t from-[#0a0808]/80 to-transparent opacity-60"></div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- What we do -->
-    <section class="py-24 md:py-32 bg-white/5">
-      <div class="max-w-6xl mx-auto px-6 lg:px-12">
+    <section class="py-24 md:py-32 relative">
+      <div class="max-w-6xl mx-auto px-6 lg:px-12 relative z-10">
         <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div class="order-2 md:order-1" data-fade-in data-delay="0.2">
-            <div class="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
+            <div class="relative aspect-video rounded-xl overflow-hidden shadow-[0_0_40px_-10px_rgba(255,140,0,0.1)] border border-white/10">
               <iframe
                 class="w-full h-full"
                 src="https://www.youtube.com/embed/QMt2GuHuyyI?si=Z9nYiCQTfpR1cdBd"
@@ -121,14 +123,15 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
             </div>
           </div>
           <div class="space-y-6 order-1 md:order-2" data-fade-in>
-            <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">What we do</h2>
-            <p class="text-white/70 text-lg leading-relaxed">
+            <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight tracking-wide">WHAT WE DO</h2>
+            <div class="h-1 w-20 bg-mrover-accent rounded-full"></div>
+            <p class="text-white/70 text-lg leading-relaxed font-sans">
               We're a competition-oriented team aiming to win the <span class="text-mrover-accent font-semibold">University Rover Challenge (URC)</span> at Mars Desert Research Station, Utah. With 36 teams from 15 countries competing, we secured <span class="text-mrover-accent font-semibold">11th place</span> with KIWI!
             </p>
-            <div class="pt-2">
-              <a href="/rovers" class="inline-block">
+            <div class="pt-4">
+              <a href="/rovers" class="inline-block group">
                 <button
-                  class="px-6 py-3 text-sm font-semibold uppercase bg-mrover-accent text-black rounded hover:bg-mrover-accent/90 transition-all cursor-pointer"
+                  class="px-8 py-3 text-base font-semibold uppercase tracking-widest text-white border border-mrover-accent rounded hover:bg-mrover-accent hover:text-black transition-all duration-300 cursor-pointer shadow-[0_0_15px_-3px_rgba(255,140,0,0.3)] hover:shadow-[0_0_25px_-5px_rgba(255,140,0,0.5)]"
                 >
                   Explore Our Rovers
                 </button>
@@ -140,63 +143,68 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     </section>
 
     <!-- Where we are -->
-    <section class="py-24 md:py-32">
-      <div class="max-w-6xl mx-auto px-6 lg:px-12">
+    <section class="py-24 md:py-32 relative">
+      <div class="max-w-6xl mx-auto px-6 lg:px-12 relative z-10">
         <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div class="space-y-6" data-fade-in>
-            <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">Where we are</h2>
-            <p class="text-white/70 text-lg leading-relaxed">
+            <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight tracking-wide">WHERE WE ARE</h2>
+            <div class="h-1 w-20 bg-mrover-accent rounded-full"></div>
+            <p class="text-white/70 text-lg leading-relaxed font-sans">
               Find us at the <span class="text-white font-medium">Wilson Center</span> on North Campus throughout the week.
             </p>
-            <p class="text-white/70 text-lg leading-relaxed">
+            <p class="text-white/70 text-lg leading-relaxed font-sans">
               Weekly team meetings: <span class="text-mrover-accent font-semibold">Sundays at 12pm</span> in <span class="text-white font-medium">1109 FXB</span>. Stop by anytime!
             </p>
             <a
               href="https://www.google.com/maps/place/Wilson+Student+Team+Project+Center/@42.2932393,-83.7113722,19.82z"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-mrover-accent hover:text-mrover-accent/80 transition-colors"
+              class="inline-flex items-center gap-2 text-mrover-accent hover:text-white transition-colors group"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-              <span class="font-medium">Wilson Student Team Project Center</span>
+              <div class="p-2 rounded-full border border-mrover-accent/30 group-hover:border-mrover-accent group-hover:bg-mrover-accent/10 transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+              </div>
+              <span class="font-medium tracking-wide">Wilson Student Team Project Center</span>
             </a>
           </div>
           <div
-            class="relative rounded-xl overflow-hidden shadow-2xl"
+            class="relative rounded-xl overflow-hidden shadow-2xl border border-white/10"
             data-fade-in
             data-delay="0.2"
           >
             <img src="/images/pit.jpg" alt="Team workspace" class="w-full h-auto" />
+            <div class="absolute inset-0 bg-linear-to-t from-[#0a0808]/80 to-transparent opacity-60"></div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Get Involved -->
-    <section class="py-24 md:py-32 bg-white/5">
-      <div class="max-w-4xl mx-auto px-6 lg:px-12">
-        <div class="text-center mb-12" data-fade-in>
-          <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">Get Involved</h2>
+    <section class="py-24 md:py-32 relative">
+      <div class="max-w-6xl mx-auto px-6 lg:px-12 relative z-10">
+        <div class="text-center mb-16" data-fade-in>
+          <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight tracking-wide mb-4">GET INVOLVED</h2>
+          <div class="h-1 w-20 bg-mrover-accent rounded-full mx-auto"></div>
         </div>
-        <div class="grid md:grid-cols-2 gap-6" data-fade-in data-delay="0.1">
+        <div class="grid md:grid-cols-2 gap-8" data-fade-in data-delay="0.1">
           <!-- Join Us -->
-          <a href="/join" class="group block p-8 bg-white/5 border border-white/10 rounded-xl hover:border-mrover-accent/50 hover:bg-white/10 transition-all">
+          <a href="/join" class="group block p-8 border border-white/10 rounded-xl hover:border-mrover-accent transition-all duration-300 hover:shadow-[0_0_30px_-10px_rgba(255,140,0,0.2)]">
             <div class="flex items-start gap-4">
-              <div class="w-12 h-12 bg-mrover-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-12 h-12 bg-mrover-accent/10 border border-mrover-accent/20 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-mrover-accent group-hover:text-black transition-all duration-300">
+                <svg class="w-6 h-6 text-mrover-accent group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
               </div>
               <div>
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-mrover-accent transition-colors">Join us</h3>
-                <p class="text-white/60 leading-relaxed">
+                <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-mrover-accent transition-colors font-rajdhani">JOIN US</h3>
+                <p class="text-white/60 leading-relaxed font-sans">
                   Passionate about space exploration and engineering? We want you on the team.
                 </p>
               </div>
@@ -204,16 +212,16 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           </a>
 
           <!-- Sponsor Us -->
-          <a href="/donate" class="group block p-8 bg-white/5 border border-white/10 rounded-xl hover:border-mrover-accent/50 hover:bg-white/10 transition-all">
+          <a href="/donate" class="group block p-8 border border-white/10 rounded-xl hover:border-mrover-accent transition-all duration-300 hover:shadow-[0_0_30px_-10px_rgba(255,140,0,0.2)]">
             <div class="flex items-start gap-4">
-              <div class="w-12 h-12 bg-mrover-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-12 h-12 bg-mrover-accent/10 border border-mrover-accent/20 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-mrover-accent group-hover:text-black transition-all duration-300">
+                <svg class="w-6 h-6 text-mrover-accent group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
               <div>
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-mrover-accent transition-colors">Sponsor us</h3>
-                <p class="text-white/60 leading-relaxed">
+                <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-mrover-accent transition-colors font-rajdhani">SPONSOR US</h3>
+                <p class="text-white/60 leading-relaxed font-sans">
                   Help us win URC. Every contribution, big or small, makes a difference.
                 </p>
               </div>
@@ -225,6 +233,13 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
   </div>
 </BaseLayout>
 
+<style>
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+</style>
+
 <script>
   import gsap from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -232,37 +247,12 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 
   gsap.registerPlugin(ScrollTrigger);
 
-  const lenis = new Lenis({
-    duration: 0.8,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  });
-
-  function raf(time: number) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  }
-
-  requestAnimationFrame(raf);
-
-  lenis.on("scroll", ScrollTrigger.update);
-
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-  });
-
-  gsap.ticker.lagSmoothing(0);
-
   window.scrollTo(0, 0);
-  lenis.scrollTo(0, { immediate: true });
 
   // hero intro
   const introTimeline = gsap.timeline({ defaults: { ease: "power2.out" } });
 
   introTimeline
-    .from("[data-hero-overlay]", {
-      opacity: 0,
-      duration: 0.6,
-    })
     .to("[data-block-m]", {
       duration: 0.5,
     })
@@ -301,7 +291,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           strings: ["./mrover"],
           typeSpeed: 80,
           showCursor: true,
-          cursorChar: "_",
+          cursorChar: "\u2588",
           onComplete: () => {
             setTimeout(() => {
               const cursor = document.querySelector(".typed-cursor") as HTMLElement;
@@ -315,6 +305,13 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
                 duration: 0.3,
                 stagger: 0.15,
                 ease: "power2.out",
+                onComplete: () => {
+                  gsap.to("[data-final-prompt]", {
+                    opacity: 1,
+                    duration: 0.3,
+                    ease: "power2.out",
+                  });
+                },
               });
             }, 300);
           },

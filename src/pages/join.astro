@@ -1,8 +1,11 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { StarsBackground } from "@/components/StarsBackground";
 ---
 
 <BaseLayout title="Join - University of Michigan Mars Rover Team">
+  <StarsBackground client:only="react" />
+
   <!-- Hero -->
   <div
     class="relative h-96 md:h-[500px] lg:h-[600px] bg-cover bg-center"
@@ -12,7 +15,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
   </div>
 
   <!-- Join Info -->
-  <section class="py-16 md:py-20 bg-black">
+  <section class="py-16 md:py-20 relative z-10">
     <div class="max-w-4xl mx-auto px-6 text-center">
       <h2 class="text-3xl md:text-4xl font-bold text-mrover-accent mb-6">Interested in MRover?</h2>
 

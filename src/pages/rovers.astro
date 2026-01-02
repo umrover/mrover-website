@@ -1,33 +1,70 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import roverInfo from '@/data/roverInfo.json';
+import { RoversScene } from '@/components/rovers/RoversScene';
 
-const reversedRovers = [...roverInfo].reverse();
+const reversedRovers = [...roverInfo];
+const featuredRovers = reversedRovers.slice(0, 3);
+const gridRovers = reversedRovers.slice(3);
 ---
 
 <BaseLayout title="Rovers - University of Michigan Mars Rover Team">
-  <!-- Hero -->
-  <div class="relative h-96 md:h-[500px] lg:h-[600px] bg-cover bg-center" style="background-image: url('/images/RosieDunes.jpg');">
-    <div class="absolute inset-0 bg-black/70"></div>
-  </div>
+  <RoversScene client:only="react" />
 
-  <!-- Section Divider -->
-  <div class="w-full bg-michigan-blue py-4">
-    <h2 class="text-3xl md:text-4xl text-center uppercase text-white font-bold">Our Rovers</h2>
-  </div>
+  <div class="page-content">
+    <!-- Header -->
+    <header class="page-header">
+      <h1 class="title">Our Rovers</h1>
+      <p class="subtitle">A history of innovation and exploration</p>
+    </header>
 
-  <!-- Rover Tiles Grid -->
-  <section class="py-12 md:py-16 bg-black">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {reversedRovers.map(rover => (
+    <!-- Featured Rovers (Newest 3) -->
+    <section class="featured-section">
+      {featuredRovers.map((rover, index) => (
+        <a
+          href="#content"
+          id={rover.year}
+          class={`featured-card group ${index % 2 === 1 ? 'reversed' : ''}`}
+        >
+          <div class="featured-image-container">
+            <div class="card-image" style={`background-image: url('/${rover.image_path}');`}></div>
+          </div>
+          
+          <div class="featured-content">
+            <h3 class="featured-year">{rover.year}</h3>
+            <p class="featured-name">{rover.name}</p>
+            <div class="featured-desc-preview">
+              <p>{rover.desc[0].substring(0, 150)}...</p>
+            </div>
+            <span class="read-more">Read More &rarr;</span>
+          </div>
+
+          <!-- Hidden data for JS -->
+          <span class="hidden year">{rover.year}</span>
+          <span class="hidden name">{rover.name}</span>
+          <span class="hidden imageURL">{rover.image_path}</span>
+          {rover.desc.map(para => (
+            <span class="hidden desc">{para}</span>
+          ))}
+          {rover.slideshow.map(slide => (
+            <span class="hidden slide">{slide}</span>
+          ))}
+        </a>
+      ))}
+    </section>
+
+    <!-- Rover Tiles Grid (Rest) -->
+    <section class="grid-section">
+      <div class="grid-container">
+        {gridRovers.map(rover => (
           <a
             href="#content"
             id={rover.year}
-            class="relative group block aspect-4/3 bg-cover bg-center rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer border border-michigan-blue/50"
-            style={`background-image: url('/${rover.image_path}');`}
+            class="rover-card group"
           >
-            <!-- Hidden data -->
+            <div class="card-image" style={`background-image: url('/${rover.image_path}');`}></div>
+            
+            <!-- Hidden data for JS -->
             <span class="hidden year">{rover.year}</span>
             <span class="hidden name">{rover.name}</span>
             <span class="hidden imageURL">{rover.image_path}</span>
@@ -38,33 +75,28 @@ const reversedRovers = [...roverInfo].reverse();
               <span class="hidden slide">{slide}</span>
             ))}
 
-            <!-- Overlay -->
-            <div class="absolute inset-0 bg-black/0 group-hover:bg-michigan-blue/90 transition-all duration-300 flex items-center justify-center">
-              <div class="text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <h3 class="text-4xl font-bold mb-2">{rover.year}</h3>
-                <p class="text-xl text-mrover-accent">{rover.name}</p>
-              </div>
+            <div class="card-overlay">
+              <h3 class="card-year">{rover.year}</h3>
+              <p class="card-name">{rover.name}</p>
             </div>
           </a>
         ))}
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Content Display Area -->
-  <div id="content" class="scroll-mt-20">
-    <div class="bg-black py-12 md:py-16">
-      <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="grid md:grid-cols-2 gap-12">
+    <!-- Content Display Area -->
+    <div id="content" class="content-section hidden">
+      <div class="glass-panel">
+        <div class="content-grid">
           <!-- Text Content -->
-          <div class="space-y-6">
+          <div class="text-content">
             <div id="content-title"></div>
-            <div id="content-text" class="space-y-4 text-white/80 leading-relaxed"></div>
+            <div id="content-text" class="prose"></div>
           </div>
 
           <!-- Slideshow -->
-          <div class="relative">
-            <div id="content-slideshow" class="slideshow rounded-lg overflow-hidden shadow-lg border border-michigan-blue/50"></div>
+          <div class="slideshow-wrapper">
+             <div id="content-slideshow" class="slideshow"></div>
           </div>
         </div>
       </div>
@@ -75,50 +107,23 @@ const reversedRovers = [...roverInfo].reverse();
   <script is:inline>
     let slideIndex = 0;
 
-    function initSlides() {
-      slideIndex = 0;
-      showSlides(slideIndex);
-
-      const slides = document.querySelectorAll('#content-slideshow .slide');
-      const prevBtn = document.querySelector('.prev');
-      const nextBtn = document.querySelector('.next');
-
-      if (slides.length === 1) {
-        if (prevBtn) prevBtn.style.display = 'none';
-        if (nextBtn) nextBtn.style.display = 'none';
-      } else {
-        if (prevBtn) prevBtn.style.display = 'block';
-        if (nextBtn) nextBtn.style.display = 'block';
-      }
-    }
-
-    window.currentSlide = currentSlide;
-
     function showSlides(n) {
       const slides = document.querySelectorAll('#content-slideshow .slide');
+      if (!slides.length) return;
 
-      if (n >= slides.length) {
-        slideIndex = 0;
-        n = 0;
-      }
-      if (n < 0) {
-        slideIndex = slides.length - 1;
-        n = slides.length - 1;
-      }
+      if (n >= slides.length) { slideIndex = 0; }
+      else if (n < 0) { slideIndex = slides.length - 1; }
+      else { slideIndex = n; }
 
-      slides.forEach((slide, index) => {
-        slide.style.display = index === n ? 'block' : 'none';
+      slides.forEach((slide) => {
+        slide.style.display = 'none';
       });
+      slides[slideIndex].style.display = 'block';
     }
 
-    function isElementVisible(element) {
-      const rect = element.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-      );
+    // Expose for onclick handlers
+    window.plusSlides = function(n) {
+      showSlides(slideIndex + n);
     }
 
     function smoothScrollTo(element) {
@@ -126,96 +131,438 @@ const reversedRovers = [...roverInfo].reverse();
         behavior: 'smooth',
         block: 'start'
       });
-
-      setTimeout(() => {
-        window.location.hash = element.id;
-      }, 800);
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+      const contentSection = document.getElementById('content');
+
       document.querySelectorAll('a[href="#content"][id]').forEach(tile => {
         tile.addEventListener('click', function(event) {
-          if (this.hash !== '') {
-            event.preventDefault();
+          event.preventDefault();
 
-            const year = this.querySelector('.year').textContent;
-            const name = this.querySelector('.name').textContent;
-            const descElements = this.querySelectorAll('.desc');
-            const slideElements = this.querySelectorAll('.slide');
+          const year = this.querySelector('.year').textContent;
+          const name = this.querySelector('.name').textContent;
+          const descElements = this.querySelectorAll('.desc');
+          const slideElements = this.querySelectorAll('.slide');
 
-            const contentTitle = document.getElementById('content-title');
-            contentTitle.innerHTML = `<h2 class="text-3xl md:text-4xl font-bold text-mrover-accent">${year} - ${name}</h2>`;
+          // Populate Title
+          const contentTitle = document.getElementById('content-title');
+          contentTitle.innerHTML = `<h2 class="detail-title">${year} <span class="detail-separator">//</span> ${name}</h2>`;
 
-            const contentText = document.getElementById('content-text');
-            contentText.innerHTML = '';
-            descElements.forEach(desc => {
-              contentText.insertAdjacentHTML('beforeend', `<p>${desc.textContent}</p>`);
-            });
+          // Populate Text
+          const contentText = document.getElementById('content-text');
+          contentText.innerHTML = '';
+          descElements.forEach(desc => {
+            contentText.insertAdjacentHTML('beforeend', `<p>${desc.textContent}</p>`);
+          });
 
-            const contentSlideshow = document.getElementById('content-slideshow');
-            contentSlideshow.innerHTML = '';
+          // Populate Slideshow
+          const contentSlideshow = document.getElementById('content-slideshow');
+          contentSlideshow.innerHTML = '';
+          
+          if (slideElements.length > 0) {
             slideElements.forEach(slide => {
               contentSlideshow.insertAdjacentHTML('beforeend',
-                `<img class="slide fade w-full h-auto" src="/${slide.textContent}" style="display: none;">`
+                `<img class="slide fade" src="/${slide.textContent}">`
               );
             });
-            contentSlideshow.insertAdjacentHTML('beforeend', '<a class="prev" onclick="plusSlides(-1)">&#10094;</a>');
-            contentSlideshow.insertAdjacentHTML('beforeend', '<a class="next" onclick="plusSlides(1)">&#10095;</a>');
-
-            initSlides();
-
-            const contentElement = document.querySelector(this.hash);
-            if (contentElement && !isElementVisible(contentText)) {
-              smoothScrollTo(contentElement);
+            
+            if (slideElements.length > 1) {
+              contentSlideshow.insertAdjacentHTML('beforeend', '<a class="prev" onclick="plusSlides(-1)">&#10094;</a>');
+              contentSlideshow.insertAdjacentHTML('beforeend', '<a class="next" onclick="plusSlides(1)">&#10095;</a>');
             }
+            
+            slideIndex = 0;
+            showSlides(0);
           }
+
+          // Show content section
+          contentSection.classList.remove('hidden');
+          contentSection.classList.add('visible');
+          
+          // Scroll to it
+          setTimeout(() => {
+             smoothScrollTo(contentSection);
+          }, 100);
         });
       });
     });
   </script>
 
   <style>
+    @import url('https://api.fontshare.com/v2/css?f[]=panchang@400,500,600,700&display=swap');
+
+    /* Global override for this page */
+    :global(body) {
+        background: #0a0808 !important;
+        color: white;
+    }
+    
+
+    .page-content {
+        position: relative;
+        z-index: 10;
+        padding-top: 100px;
+        min-height: 100vh;
+        width: 100%;
+        overflow-x: hidden;
+        font-family: 'Rajdhani', sans-serif;
+    }
+
+    .page-header {
+        text-align: center;
+        padding: 2rem 1rem 4rem 1rem;
+    }
+
+    .title {
+        font-family: 'Panchang', sans-serif;
+        font-size: clamp(2.5rem, 8vw, 5rem);
+        font-weight: 700;
+        text-transform: uppercase;
+        margin: 0 0 1rem 0;
+        color: white;
+        text-shadow: 0 0 30px rgba(255, 140, 0, 0.3);
+    }
+
+    .subtitle {
+        font-size: clamp(1rem, 2vw, 1.5rem);
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        margin: 0;
+    }
+
+    .grid-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem 2rem;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .featured-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+    }
+
+    .featured-card {
+        display: flex;
+        background: rgba(14, 14, 14, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        text-decoration: none;
+        transition: all 0.4s ease;
+        backdrop-filter: blur(4px);
+        height: 400px;
+        cursor: pointer;
+    }
+
+    .featured-card.reversed {
+        flex-direction: row-reverse;
+    }
+
+    .featured-card:hover {
+        transform: translateY(-5px);
+        border-color: #FF8C00;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .featured-image-container {
+        flex: 1.2;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .featured-content {
+        flex: 0.8;
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-left: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .featured-card.reversed .featured-content {
+        border-left: none;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .featured-year {
+        font-family: 'Panchang', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: white;
+        line-height: 1;
+        margin: 0;
+    }
+
+    .featured-name {
+        font-size: 1.5rem;
+        color: #FF8C00;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-weight: 600;
+        margin: 0.5rem 0 1.5rem 0;
+    }
+
+    .featured-desc-preview p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 0 1.5rem 0;
+    }
+
+    .read-more {
+        display: inline-flex;
+        align-items: center;
+        color: white;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.9rem;
+        opacity: 0.8;
+        transition: all 0.3s;
+    }
+
+    .featured-card:hover .read-more {
+        color: #FF8C00;
+        opacity: 1;
+        padding-left: 10px;
+    }
+
+    @media (max-width: 900px) {
+        .featured-card, .featured-card.reversed {
+            flex-direction: column;
+            height: auto;
+        }
+        
+        .featured-image-container {
+            height: 250px;
+            flex: none;
+        }
+
+        .featured-content {
+            padding: 2rem;
+            flex: none;
+            border: none !important;
+        }
+
+        .featured-year {
+            font-size: 2.5rem;
+        }
+    }
+
+    .rover-card {
+        display: block;
+        position: relative;
+        aspect-ratio: 4/3;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(14, 14, 14, 0.4);
+        backdrop-filter: blur(4px);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .rover-card:hover {
+        transform: translateY(-8px);
+        border-color: #FF8C00;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 140, 0, 0.2);
+    }
+
+    .card-image {
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        transition: transform 0.6s ease;
+    }
+
+    .rover-card:hover .card-image {
+        transform: scale(1.05);
+    }
+
+    .card-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 40%, transparent 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.5rem;
+        transition: all 0.3s;
+    }
+
+    .rover-card:hover .card-overlay {
+        background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.2) 100%);
+    }
+
+    .card-year {
+        font-family: 'Panchang', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 600;
+        color: white;
+        margin: 0;
+        line-height: 1;
+    }
+
+    .card-name {
+        font-size: 1.1rem;
+        color: #FF8C00;
+        margin: 0.5rem 0 0 0;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        opacity: 0.8;
+        transition: opacity 0.3s;
+    }
+
+    .rover-card:hover .card-name {
+        opacity: 1;
+    }
+
+    /* Detail Content */
+    .content-section {
+        padding: 2rem;
+        margin-bottom: 4rem;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        display: none; /* Initially hidden */
+    }
+
+    .content-section.visible {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .glass-panel {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: rgba(10, 10, 10, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: 4px solid #FF8C00;
+        border-radius: 8px;
+        padding: 3rem;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: start;
+    }
+
+    @media (max-width: 900px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        .glass-panel {
+            padding: 2rem;
+        }
+    }
+
+    .detail-title {
+        font-family: 'Panchang', sans-serif;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 600;
+        color: white;
+        margin: 0 0 2rem 0;
+        line-height: 1.1;
+    }
+
+    .detail-separator {
+        color: #FF8C00;
+        margin: 0 0.5rem;
+    }
+
+    .prose p {
+        font-size: 1.15rem;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 1.5rem;
+        font-weight: 300;
+    }
+
+    /* Slideshow */
+    .slideshow-wrapper {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(0,0,0,0.3);
+        aspect-ratio: 4/3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .slideshow {
+        width: 100%;
+        height: 100%;
+    }
+
     .slide {
-      display: none;
-    }
-
-    .prev, .next {
-      cursor: pointer;
-      position: absolute;
-      top: 50%;
-      width: auto;
-      margin-top: -22px;
-      padding: 16px;
-      color: white;
-      font-weight: bold;
-      font-size: 25px;
-      transition: 0.3s ease;
-      border-radius: 0 3px 3px 0;
-      text-decoration: none;
-      background-color: rgba(0, 39, 76, 0.7);
-      user-select: none;
-    }
-
-    .next {
-      right: 0;
-      border-radius: 3px 0 0 3px;
-    }
-
-    .prev {
-      left: 0;
-    }
-
-    .prev:hover, .next:hover {
-      background-color: rgba(0, 39, 76, 0.95);
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
     }
 
     .fade {
-      animation: fade 0.75s;
+        animation-name: fade;
+        animation-duration: 0.5s;
     }
 
     @keyframes fade {
-      from {opacity: .6}
-      to {opacity: 1}
+        from {opacity: 0.4} 
+        to {opacity: 1}
+    }
+
+    .prev, .next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        width: auto;
+        padding: 16px;
+        margin-top: -22px;
+        color: white;
+        font-weight: bold;
+        font-size: 24px;
+        transition: 0.3s ease;
+        user-select: none;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 5;
+    }
+
+    .next {
+        right: 0;
+        border-radius: 4px 0 0 4px;
+    }
+
+    .prev {
+        left: 0;
+        border-radius: 0 4px 4px 0;
+    }
+
+    .prev:hover, .next:hover {
+        background-color: #FF8C00;
     }
   </style>
 </BaseLayout>

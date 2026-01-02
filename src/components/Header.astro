@@ -34,7 +34,7 @@ const visiblePages = navPages.filter((page) => !page.hideInHeader).sort((a, b) =
           visiblePages.map((page) => (
             <a
               href={page.url}
-              class="text-sm font-semibold uppercase text-michigan-maize transition-colors"
+              class="text-sm font-semibold uppercase text-mrover-accent transition-colors"
             >
               {page.title}
             </a>
@@ -45,7 +45,7 @@ const visiblePages = navPages.filter((page) => !page.hideInHeader).sort((a, b) =
       <!-- Mobile Menu Button -->
       <div class="md:hidden">
         <div class="relative">
-          <button id="mobile-menu-button" class="p-2 text-gray-200 hover:text-michigan-maize cursor-pointer">
+          <button id="mobile-menu-button" class="p-2 text-gray-200 hover:text-mrover-accent cursor-pointer">
             <svg viewBox="0 0 24 24" class="w-6 h-6" fill="currentColor">
               <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
             </svg>
@@ -60,7 +60,7 @@ const visiblePages = navPages.filter((page) => !page.hideInHeader).sort((a, b) =
               visiblePages.map((page) => (
                 <a
                   href={page.url}
-                  class="block px-4 py-3 text-sm font-semibold uppercase text-michigan-maize hover:bg-mrover-base/20 transition-colors"
+                  class="block px-4 py-3 text-sm font-semibold uppercase text-mrover-accent hover:bg-mrover-base/20 transition-colors"
                 >
                   {page.title}
                 </a>

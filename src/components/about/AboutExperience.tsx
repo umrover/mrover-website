@@ -1,6 +1,6 @@
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { Environment } from '@react-three/drei'
-import { EffectComposer, Vignette, Bloom } from '@react-three/postprocessing'
+import { EffectComposer, Vignette } from '@react-three/postprocessing'
 import { useScroll } from '../../hooks/use-scroll'
 import { useRef, Suspense, useCallback, useEffect, useState, useMemo } from 'react'
 import * as THREE from 'three'
@@ -10,19 +10,20 @@ import { BRANCHES, BRANCH_SPACING } from './SceneConfig'
 
 const ALL_SECTIONS = BRANCHES.flatMap(b => b.sections)
 
-function Stars({ count = 5000 }) {
+function Stars({ count = 8000 }) {
   const ref = useRef<THREE.Points>(null)
   const scrollRef = useRef(0)
-  const totalSections = ALL_SECTIONS.length
 
   useScroll(useCallback(({ scroll }: { scroll: number }) => {
     scrollRef.current = scroll
   }, []))
 
-  const positions = useMemo(() => {
+  const [positions, colors] = useMemo(() => {
     const pos = new Float32Array(count * 3)
+    const colorArr = new Float32Array(count * 3)
     const radius = 2000
-    const height = totalSections * BRANCH_SPACING * 1.5
+    const height = ALL_SECTIONS.length * BRANCH_SPACING * 1.5
+
     for (let i = 0; i < count; i++) {
       const theta = Math.random() * Math.PI * 2
       const r = radius * (0.3 + Math.random() * 0.7)
@@ -32,25 +33,38 @@ function Stars({ count = 5000 }) {
       pos[i * 3] = x
       pos[i * 3 + 1] = y
       pos[i * 3 + 2] = z
+
+      const brightness = 0.7 + Math.random() * 0.5
+      const tint = Math.random()
+      if (tint < 0.1) {
+        colorArr[i * 3] = brightness
+        colorArr[i * 3 + 1] = brightness * 0.85
+        colorArr[i * 3 + 2] = brightness * 0.7
+      } else if (tint < 0.2) {
+        colorArr[i * 3] = brightness * 0.85
+        colorArr[i * 3 + 1] = brightness * 0.95
+        colorArr[i * 3 + 2] = brightness
+      } else {
+        colorArr[i * 3] = brightness
+        colorArr[i * 3 + 1] = brightness
+        colorArr[i * 3 + 2] = brightness
+      }
     }
-    return pos
-  }, [count, totalSections])
+    return [pos, colorArr]
+  }, [count])
 
   useFrame(() => {
-    if (ref.current) {
-      ref.current.rotation.y = scrollRef.current * 0.00005
-    }
+    if (document.hidden || !ref.current) return
+    ref.current.rotation.y = scrollRef.current * 0.00005
   })
 
   return (
     <points ref={ref}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-        />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
-      <pointsMaterial size={3} color="white" transparent opacity={0.8} sizeAttenuation />
+      <pointsMaterial size={3.5} vertexColors transparent opacity={1} sizeAttenuation />
     </points>
   )
 }
@@ -127,7 +141,7 @@ function CameraController() {
   const lookAtTarget = useRef(new THREE.Vector3())
 
   useFrame(() => {
-    if (!windowHeight) return
+    if (document.hidden || !windowHeight) return
 
     const { sectionProgress, fromSection, toSection } =
       getScrollState(scrollRef.current, windowHeight)
@@ -210,6 +224,7 @@ function Rover({ onLoad }: { onLoad?: () => void }) {
   }, [])
 
   useFrame(() => {
+    if (document.hidden) return
     if (robot && !hasCalledOnLoad.current) {
       frameCount.current++
       if (frameCount.current >= 3) {
@@ -233,7 +248,7 @@ function BranchPlaceholder({ branchIndex }: { branchIndex: number }) {
   const yOffset = -BRANCH_SPACING * branchIndex
 
   useFrame(() => {
-    if (!meshRef.current) return
+    if (document.hidden || !meshRef.current) return
     meshRef.current.rotation.y += 0.003
     meshRef.current.rotation.x += 0.002
   })
@@ -290,7 +305,7 @@ function Stage() {
   const { scrollRef, windowHeight } = useScrollState()
 
   useFrame(() => {
-    if (!windowHeight) return
+    if (document.hidden || !windowHeight) return
 
     const { sectionIndex, sectionProgress } = getScrollState(scrollRef.current, windowHeight)
 
@@ -395,8 +410,7 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
         ))}
       </Suspense>
 
-      <EffectComposer enableNormalPass={false}>
-        <Bloom luminanceThreshold={1} mipmapBlur intensity={0.5} radius={0.6} />
+      <EffectComposer enableNormalPass={false} multisampling={0}>
         <Vignette darkness={0.4} offset={0.3} />
       </EffectComposer>
     </>
@@ -597,7 +611,7 @@ function ProgressIndicator({ visible, isMobile }: { visible: boolean; isMobile: 
                 position: 'absolute',
                 left: '100%',
                 top: '-8px',
-                paddingLeft: '8px',
+                paddingLeft: '12px',
                 opacity: isExpanded ? 1 : 0,
                 transform: isExpanded ? 'translateX(0)' : 'translateX(-10px)',
                 pointerEvents: isExpanded ? 'auto' : 'none',
@@ -608,6 +622,7 @@ function ProgressIndicator({ visible, isMobile }: { visible: boolean; isMobile: 
                   backdropFilter: 'blur(12px)',
                   border: `1px solid ${branch.accent}40`,
                   padding: '8px',
+                  borderRadius: '8px',
                   minWidth: '200px',
                 }}>
                 {branch.sections.map((section, sectionIdx) => {
@@ -656,7 +671,7 @@ function ProgressIndicator({ visible, isMobile }: { visible: boolean; isMobile: 
   )
 }
 
-export function WebGL() {
+export function AboutExperience() {
   const [roverLoaded, setRoverLoaded] = useState(false)
   const isMobile = useIsMobile()
 
@@ -677,10 +692,10 @@ export function WebGL() {
         transition: 'opacity 1s ease',
       }}>
         <Canvas
-          gl={{ antialias: !isMobile, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.5 }}
+          gl={{ antialias: !isMobile, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.5, powerPreference: 'high-performance' }}
           camera={{ fov: 50, near: 0.1, far: 10000, position: [0, 100, 400] }}
           shadows={!isMobile}
-          dpr={isMobile ? 1 : [1, 2]}
+          dpr={isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5)}
         >
           <Suspense fallback={null}>
             <Scene isMobile={isMobile} onRoverLoad={handleRoverLoad} />

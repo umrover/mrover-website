@@ -65,7 +65,7 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
         { rel: 'manifest', href: '/manifest.json' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Inter:wght@200;300;400;500;600;700;800&display=swap' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Inter:wght@200;300;400;500;600;700;800&family=Rajdhani:wght@300;400;500;600;700&display=swap' },
         { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' },
       ],
       meta: [
@@ -115,6 +115,37 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
     }
 
     window.localStorage.setItem('theme', theme);
+  </script>
+  <!-- Smooth scrolling script -->
+  <script>
+    import Lenis from "lenis";
+    import gsap from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    // Initialize Lenis only if we are not on the /about page
+    if (window.location.pathname !== '/about') {
+      gsap.registerPlugin(ScrollTrigger);
+
+      const lenis = new Lenis({
+        duration: 0.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
+
+      function raf(time: number) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+
+      requestAnimationFrame(raf);
+
+      lenis.on("scroll", ScrollTrigger.update);
+
+      gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+      });
+
+      gsap.ticker.lagSmoothing(0);
+    }
   </script>
 </head>
 
