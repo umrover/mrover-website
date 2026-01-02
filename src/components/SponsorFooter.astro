@@ -1,12 +1,10 @@
 ---
 import sponsors from "@/data/sponsors.json";
 
-// Filter sponsors with level >= 4 (Platinum sponsors)
 const platinumSponsors = sponsors.filter((sponsor) => sponsor.level >= 4);
 ---
 
-<div class="max-w-content mx-auto px-6 lg:px-8 pb-12 pt-0 bg-white">
-  <!-- tspo used because adblock blocks the word sponsor -->
+<div class="max-w-content mx-auto px-6 lg:px-8 pb-12 pt-8 bg-white">
   <div class="flex flex-wrap justify-center items-center gap-8 mx-auto max-w-6xl mb-8">
     {
       platinumSponsors.map((sponsor) => (
@@ -23,9 +21,9 @@ const platinumSponsors = sponsors.filter((sponsor) => sponsor.level >= 4);
       ))
     }
   </div>
-  <p class="text-center text-sm">
-    <em>
-      <a href="/sponsors" class="text-mrover-base hover:text-mrover-accent transition-colors font-semibold">See All Sponsors</a>
-    </em>
-  </p>
-</div>
+    </div>
+    <div class="mt-8 text-center">
+      <a href="/sponsor" class="text-michigan-blue hover:text-mrover-accent transition-colors font-semibold">See All Sponsors</a>
+    </div>
+  </div>
+</section>

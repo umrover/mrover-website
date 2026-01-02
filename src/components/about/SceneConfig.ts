@@ -204,19 +204,6 @@ const SECTION_TARGETS: SectionTarget[] = [
     camera: { x: -60, y: 80, z: 220 },
     lookAt: { x: 0, y: 30, z: 0 },
   },
-  // Software - ESW Telemetry
-  {
-    name: 'esw-telemetry',
-    subteam: {
-      teamName: 'Software',
-      name: 'ESW Telemetry',
-      desc: 'TO BE COMPLETED',
-      color: '#2196F3',
-      accent: '#BBDEFB'
-    },
-    camera: { x: 100, y: 50, z: 180 },
-    lookAt: { x: 20, y: 20, z: 0 },
-  },
   // Software - Teleop
   {
     name: 'teleop',

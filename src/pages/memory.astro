@@ -2,53 +2,155 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="In Remembrance - University of Michigan Mars Rover Team">
-  <!-- Header -->
-  <div class="w-full bg-grey-light/30 py-4">
-    <h2 class="text-3xl md:text-4xl text-center uppercase text-text font-bold">In Remembrance of Jackie Tardif</h2>
-  </div>
+<BaseLayout title="In Remembrance - University of Michigan Mars Rover Team" showFooter={false}>
+  <style>
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-  <!-- Memorial Content -->
-  <section class="py-16 md:py-20 bg-background">
-    <div class="max-w-3xl mx-auto px-6">
-      <div class="text-center mb-12">
-        <img src="/Jackie.jpeg" alt="Jackie Tardif" class="mx-auto rounded-lg shadow-lg max-w-md w-full" />
-      </div>
+    @keyframes gentlePulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.7; }
+    }
 
-      <div class="space-y-6 text-grey-dark leading-relaxed">
-        <p>
-          The MRover team would like to honor the memory of Jacqueline Tardif, a graduate of Michigan's Aerospace
-          Engineering Program and former MRover president, who passed away due to Covid-19 complications in January of
-          2021.
-        </p>
+    .fade-in {
+      animation: fadeInUp 1s ease-out forwards;
+    }
 
-        <p>
-          Jackie served as team lead from 2010 to 2013. She was extremely devoted to her work and was responsible for
-          much of the team's foundations in its early days. We owe MRover's official establishment as a WSTPC team to
-          Jackie as well as the funding needed to build the team's first few rovers which she worked hard to amass.
-        </p>
+    .fade-in-delay-1 { animation-delay: 0.2s; opacity: 0; }
+    .fade-in-delay-2 { animation-delay: 0.4s; opacity: 0; }
+    .fade-in-delay-3 { animation-delay: 0.6s; opacity: 0; }
+    .fade-in-delay-4 { animation-delay: 0.8s; opacity: 0; }
 
-        <p>
-          Following her graduation, Jackie went on to work as a lead mechanical engineer for the Aerospace Corporation
-          in El Segundo, California, designing and building satellites, two of which were launched into orbit from the
-          International Space Station. Additionally, Jackie devoted herself to working with special needs children
-          through horseback riding and STEM outreach programs in her spare time.
-        </p>
+    .star-field {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
 
-        <p>
-          Jackie's full obituary as well as links to pages to make donations to Ride to Fly and the National Math and
-          Science Initiative in Jackie's name can be found
-          <a
-            href="https://www.legacy.com/us/obituaries/washingtonpost/name/jacqueline-tardif-obituary?pid=197677974"
-            class="text-mrover-blue hover:underline"
-            target="_blank"
-            rel="noopener noreferrer">here.</a
-          >
-        </p>
-      </div>
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: gentlePulse 3s ease-in-out infinite;
+    }
+
+    .photo-frame {
+      position: relative;
+    }
+
+    .photo-frame::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      background: linear-gradient(135deg, rgba(251, 196, 33, 0.3), rgba(0, 39, 76, 0.5), rgba(251, 196, 33, 0.3));
+      border-radius: 12px;
+      z-index: -1;
+    }
+  </style>
+
+  <div class="relative min-h-screen bg-gradient-to-b from-[#000814] via-[#001d3d] to-[#000814] pt-24 pb-20 overflow-hidden">
+    <div class="star-field">
+      <div class="star" style="top: 10%; left: 15%; animation-delay: 0s;"></div>
+      <div class="star" style="top: 20%; left: 80%; animation-delay: 0.5s;"></div>
+      <div class="star" style="top: 35%; left: 25%; animation-delay: 1s;"></div>
+      <div class="star" style="top: 45%; left: 90%; animation-delay: 1.5s;"></div>
+      <div class="star" style="top: 60%; left: 10%; animation-delay: 2s;"></div>
+      <div class="star" style="top: 75%; left: 70%; animation-delay: 0.3s;"></div>
+      <div class="star" style="top: 85%; left: 40%; animation-delay: 0.8s;"></div>
+      <div class="star" style="top: 15%; left: 55%; animation-delay: 1.2s;"></div>
+      <div class="star" style="top: 50%; left: 5%; animation-delay: 1.8s;"></div>
+      <div class="star" style="top: 90%; left: 85%; animation-delay: 2.2s;"></div>
     </div>
-  </section>
 
-  <!-- Social Media Footer -->
-  <footer />
+    <div class="relative z-10 max-w-4xl mx-auto px-6">
+      <header class="text-center mb-16 fade-in">
+        <p class="text-michigan-maize/70 uppercase tracking-[0.3em] text-sm mb-4">In Loving Memory</p>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl text-white font-light tracking-wide">
+          Jacqueline Tardif
+        </h1>
+        <div class="mt-6 flex items-center justify-center gap-4">
+          <span class="h-px w-16 bg-gradient-to-r from-transparent to-michigan-maize/50"></span>
+          <span class="text-michigan-maize/60 text-lg">1988 - 2021</span>
+          <span class="h-px w-16 bg-gradient-to-l from-transparent to-michigan-maize/50"></span>
+        </div>
+      </header>
+
+      <div class="flex justify-center mb-16 fade-in fade-in-delay-1">
+        <div class="photo-frame">
+          <img
+            src="/Jackie.jpeg"
+            alt="Jackie Tardif"
+            class="rounded-lg shadow-2xl max-w-sm w-full"
+          />
+        </div>
+      </div>
+
+      <blockquote class="text-center mb-16 fade-in fade-in-delay-2">
+        <p class="text-xl md:text-2xl text-white/70 italic font-light leading-relaxed max-w-2xl mx-auto">
+          "Per aspera ad astra"
+        </p>
+        <p class="text-michigan-maize/50 mt-3 text-sm tracking-wider">Through hardships to the stars</p>
+      </blockquote>
+
+      <div class="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-michigan-maize/30 to-transparent mb-16 mt-8"></div>
+
+      <article class="space-y-8 text-white/80 leading-relaxed text-lg fade-in fade-in-delay-3">
+        <p>
+          The MRover team honors the memory of <strong class="text-white font-normal">Jacqueline Tardif</strong>,
+          a graduate of Michigan's Aerospace Engineering Program and former MRover president, who passed away
+          due to Covid-19 complications in January of 2021.
+        </p>
+
+        <p>
+          Jackie served as team lead from 2010 to 2013, a pivotal era in the team's history. Her extraordinary
+          dedication was responsible for much of the team's foundations in its early days. We owe MRover's
+          official establishment as a WSTPC team to Jackie, as well as the funding she worked tirelessly to
+          secure for building the team's first rovers.
+        </p>
+
+        <p>
+          Following her graduation, Jackie pursued her passion for space at the Aerospace Corporation in
+          El Segundo, California, where she served as a lead mechanical engineer. There, she designed and
+          built satellites, two of which were launched into orbit from the International Space Station,
+          a testament to her remarkable skill and dedication.
+        </p>
+
+        <p>
+          Beyond her professional accomplishments, Jackie devoted herself to giving back. She spent her spare
+          time working with special needs children through horseback riding programs and STEM outreach
+          initiatives, inspiring the next generation just as she inspired all of us.
+        </p>
+      </article>
+
+      <div class="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-michigan-maize/30 to-transparent my-16"></div>
+
+      <footer class="text-center fade-in fade-in-delay-4 flex flex-col items-center">
+        <p class="text-white/60 mb-12 max-w-md text-balance">
+          Jackie's full obituary and donation links to Ride to Fly and the National Math and Science Initiative can be found at:
+        </p>
+        <a
+          href="https://www.legacy.com/us/obituaries/washingtonpost/name/jacqueline-tardif-obituary?pid=197677974"
+          class="inline-flex items-center gap-2 px-6 py-3 border border-michigan-maize/30 text-michigan-maize hover:bg-michigan-maize/10 transition-colors duration-300 rounded"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>Read Full Obituary</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      </footer>
+    </div>
+  </div>
 </BaseLayout>

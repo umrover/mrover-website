@@ -10,13 +10,15 @@ interface Props {
   description?: string;
   image?: string;
   canonical?: string;
+  showFooter?: boolean;
 }
 
 const {
   title = 'University of Michigan Mars Rover Team',
   description = 'The Michigan Mars Rover Team (MRover) competes in the annual University Rover Challenge. In 2018, we placed 9th in the world and 3rd in the US. Our mission is to inspire students to pursue space exploration and engineering.',
   image = 'https://mrover.org/logos/logo_short.svg',
-  canonical
+  canonical,
+  showFooter = true
 } = Astro.props;
 
 const siteUrl = 'https://mrover.org';
@@ -73,7 +75,7 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
     }}
   />
 
-  <script type="application/ld+json" set:html={JSON.stringify({
+  <script is:inline type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Michigan Mars Rover Team",
@@ -121,9 +123,11 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
 
   <slot />
 
-  <footer class="p-0 m-0">
-    <SocialMedia />
-    <SponsorFooter />
-  </footer>
+  {showFooter && (
+    <footer class="p-0 m-0">
+      <SocialMedia />
+      <SponsorFooter />
+    </footer>
+  )}
 </body>
 </html>

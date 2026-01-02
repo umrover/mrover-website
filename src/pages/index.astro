@@ -14,7 +14,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     data-hero
   >
     <div
-      class="absolute inset-0 bg-linear-to-br from-michigan-blue/90 via-mrover-base/80 to-black/60"
+      class="absolute inset-0 bg-black/80"
       data-hero-overlay
     >
     </div>
@@ -43,13 +43,13 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       </div>
       <div class="font-mono text-white max-w-2xl mx-auto opacity-0" style="min-width: 500px;" data-hero-buttons>
         <div
-          class="border-2 border-white/20 bg-black/5 rounded-lg p-4"
+          class="border border-white/20 bg-black/40 rounded-lg p-4"
           data-terminal-bg
           style="backdrop-filter: blur(0px);"
         >
           <div class="w-full">
             <div class="mb-4 text-lg flex items-center">
-              <span class="text-green-400 w-6">$</span>
+              <span class="text-mrover-accent w-6">$</span>
               <span class="text-white" data-typing-text></span>
             </div>
             <div class="flex flex-col gap-2 w-full">
@@ -58,24 +58,24 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
                 class="no-underline flex items-center gap-3 py-1 transition-all hover:bg-white/10 rounded opacity-0"
                 data-option
               >
-                <span class="text-green-400 w-6">></span>
-                <span class="text-mrover-accent font-semibold">learn_more</span>
+                <span class="text-mrover-accent w-6">></span>
+                <span class="text-white font-semibold">learn_more</span>
               </a>
               <a
                 href="/join"
                 class="no-underline flex items-center gap-3 py-1 transition-all hover:bg-white/10 rounded opacity-0"
                 data-option
               >
-                <span class="text-green-400 w-6">></span>
-                <span class="text-mrover-accent font-semibold">join</span>
+                <span class="text-mrover-accent w-6">></span>
+                <span class="text-white font-semibold">join</span>
               </a>
               <a
                 href="/donate"
                 class="no-underline flex items-center gap-3 py-1 transition-all hover:bg-white/10 rounded opacity-0"
                 data-option
               >
-                <span class="text-green-400 w-6">></span>
-                <span class="text-mrover-accent font-semibold">support</span>
+                <span class="text-mrover-accent w-6">></span>
+                <span class="text-white font-semibold">support</span>
               </a>
             </div>
           </div>
@@ -83,204 +83,147 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       </div>
     </div>
   </div>
-  <!-- Who we are -->
-  <section
-    class="relative min-h-screen flex items-center bg-gradient-to-br from-slate-900 via-michigan-blue to-slate-900"
-    data-section
-  >
-    <div
-      class="absolute inset-0 opacity-5"
-      style="background-image: url('/images/SAR_GOBLUESHOT.png'); background-size: cover; background-position: center;"
-    >
-    </div>
-    <div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-      <div class="grid md:grid-cols-3 gap-8 items-center">
-        <div class="space-y-6 md:col-span-1" data-fade-in>
-          <h2 class="text-4xl md:text-5xl font-bold text-mrover-accent leading-tight">Who we are</h2>
-          <p class="text-gray-200 text-lg leading-relaxed">
-            <span class="text-mrover-accent font-semibold">Student-run, multidisciplinary team</span> building rovers for <span class="font-semibold">Mars exploration</span>. We unite students across all years and majors, from Engineering to LSA, to inspire passion for space and develop <span class="font-semibold">engineering excellence</span>.
-          </p>
-        </div>
-        <div
-          class="relative h-96 md:h-[500px] rounded-2xl overflow-hidden shadow-2xl border-2 border-mrover-accent/30 transform hover:scale-105 transition-transform duration-300 md:col-span-2"
-          data-fade-in
-          data-delay="0.2"
-        >
-          <img src="/images/SAR_GOBLUESHOT.png" alt="Mars Rover Team" class="w-full h-full object-cover" />
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- What we do -->
-  <section
-    class="relative min-h-screen flex items-center bg-gradient-to-br from-michigan-blue via-slate-900 to-michigan-blue"
-    data-section
-  >
-    <div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-      <div class="grid md:grid-cols-3 gap-8 items-center">
-        <div class="order-2 md:order-1 md:col-span-2" data-fade-in data-delay="0.2">
-          <div class="relative h-96 md:h-[500px] rounded-2xl overflow-hidden shadow-2xl border-2 border-mrover-base/30">
-            <iframe
-              class="w-full h-full"
-              src="https://www.youtube.com/embed/QMt2GuHuyyI?si=Z9nYiCQTfpR1cdBd"
-              title="MRover Video"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen></iframe>
+
+  <div class="bg-gradient-to-b from-michigan-blue via-michigan-blue to-michigan-blue">
+    <!-- Who we are -->
+    <section class="py-24 md:py-32">
+      <div class="max-w-6xl mx-auto px-6 lg:px-12">
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div class="space-y-6" data-fade-in>
+            <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">Who we are</h2>
+            <p class="text-white/70 text-lg leading-relaxed">
+              <span class="text-mrover-accent font-semibold">Student-run, multidisciplinary team</span> building rovers for Mars exploration. We unite students across all years and majors, from Engineering to LSA, to inspire passion for space and develop engineering excellence.
+            </p>
+          </div>
+          <div
+            class="relative rounded-xl overflow-hidden shadow-2xl"
+            data-fade-in
+            data-delay="0.2"
+          >
+            <img src="/images/SAR_GOBLUESHOT.png" alt="Mars Rover Team" class="w-full h-auto" />
           </div>
         </div>
-        <div class="space-y-6 order-1 md:order-2 md:col-span-1" data-fade-in>
-          <h2 class="text-4xl md:text-5xl font-bold text-mrover-accent leading-tight">What we do</h2>
-          <p class="text-gray-200 text-lg leading-relaxed">
-            We're a Competition-oriented team aiming to win the <span class="text-mrover-accent font-semibold">University Rover Challenge (URC)</span> at Mars Desert Research Station, Utah. With <span class="font-semibold text-mrover-accent">36 teams from 15 countries</span> competing, we secured <span class="text-mrover-accent font-semibold">11th place</span> with <span class="text-green-400 font-semibold">KIWI</span>!
-          </p>
-          <div class="pt-4">
-            <a href="/rovers" class="inline-block transform hover:scale-105 transition-transform">
-              <button
-                class="px-8 py-3 text-base font-semibold uppercase bg-mrover-accent text-black rounded-lg hover:bg-mrover-accent/90 shadow-xl hover:shadow-2xl transition-all border-2 border-mrover-accent/50 cursor-pointer mt-2"
-              >
-                Explore Our Rovers
-              </button>
+      </div>
+    </section>
+
+    <!-- What we do -->
+    <section class="py-24 md:py-32 bg-white/5">
+      <div class="max-w-6xl mx-auto px-6 lg:px-12">
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div class="order-2 md:order-1" data-fade-in data-delay="0.2">
+            <div class="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
+              <iframe
+                class="w-full h-full"
+                src="https://www.youtube.com/embed/QMt2GuHuyyI?si=Z9nYiCQTfpR1cdBd"
+                title="MRover Video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="space-y-6 order-1 md:order-2" data-fade-in>
+            <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">What we do</h2>
+            <p class="text-white/70 text-lg leading-relaxed">
+              We're a competition-oriented team aiming to win the <span class="text-mrover-accent font-semibold">University Rover Challenge (URC)</span> at Mars Desert Research Station, Utah. With 36 teams from 15 countries competing, we secured <span class="text-mrover-accent font-semibold">11th place</span> with KIWI!
+            </p>
+            <div class="pt-2">
+              <a href="/rovers" class="inline-block">
+                <button
+                  class="px-6 py-3 text-sm font-semibold uppercase bg-mrover-accent text-black rounded hover:bg-mrover-accent/90 transition-all cursor-pointer"
+                >
+                  Explore Our Rovers
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Where we are -->
+    <section class="py-24 md:py-32">
+      <div class="max-w-6xl mx-auto px-6 lg:px-12">
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div class="space-y-6" data-fade-in>
+            <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">Where we are</h2>
+            <p class="text-white/70 text-lg leading-relaxed">
+              Find us at the <span class="text-white font-medium">Wilson Center</span> on North Campus throughout the week.
+            </p>
+            <p class="text-white/70 text-lg leading-relaxed">
+              Weekly team meetings: <span class="text-mrover-accent font-semibold">Sundays at 12pm</span> in <span class="text-white font-medium">1109 FXB</span>. Stop by anytime!
+            </p>
+            <a
+              href="https://www.google.com/maps/place/Wilson+Student+Team+Project+Center/@42.2932393,-83.7113722,19.82z"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 text-mrover-accent hover:text-mrover-accent/80 transition-colors"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span class="font-medium">Wilson Student Team Project Center</span>
             </a>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- Where we are -->
-  <section
-    class="relative min-h-screen flex items-center bg-gradient-to-br from-slate-900 via-michigan-blue to-slate-900"
-    data-section
-  >
-    <div
-      class="absolute inset-0 opacity-5"
-      style="background-image: url('/images/pit.jpg'); background-size: cover; background-position: center;"
-    >
-    </div>
-    <div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-      <div class="grid md:grid-cols-3 gap-8 items-center">
-        <div class="space-y-6 md:col-span-1" data-fade-in>
-          <h2 class="text-4xl md:text-5xl font-bold text-mrover-accent leading-tight">Where we are</h2>
-          <p class="text-gray-200 text-lg leading-relaxed">
-            Find us at the <span class="font-semibold">Wilson Center</span> on North Campus throughout the week.
-          </p>
-          <p class="text-gray-200 text-lg leading-relaxed">
-            Weekly team meetings: <span class="text-mrover-accent font-semibold">Sundays at 12pm</span> in <span class="font-semibold">1109 FXB</span>. Stop by anytime!
-          </p>
-          <a
-            href="https://www.google.com/maps/place/Wilson+Student+Team+Project+Center/@42.2932393,-83.7113722,19.82z/data=!3m1!5s0x883cae84e4367899:0xcc9c5432d0d48c08!4m6!3m5!1s0x883cae84db8de685:0x42e91c4ceb8a1ac4!8m2!3d42.2933242!4d-83.7108264!16s%2Fg%2F12lslfqjm?entry=ttu&amp;g_ep=EgoyMDI1MTExMS4wIKXMDSoASAFQAw%3D%3D"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex items-center gap-3 text-mrover-accent hover:text-mrover-accent/80 transition-colors"
-          >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-              ></path>
-            </svg>
-            <span class="font-semibold">Wilson Student Team Project Center</span>
-          </a>
-        </div>
-        <div
-          class="relative h-96 md:h-[500px] rounded-2xl overflow-hidden shadow-2xl border-2 border-mrover-accent/30 transform hover:scale-105 transition-transform duration-300 md:col-span-2"
-          data-fade-in
-          data-delay="0.2"
-        >
-          <img src="/images/pit.jpg" alt="Team workspace" class="w-full h-full object-cover" />
-        </div>
-      </div>
-    </div>
-  </section><!-- Join/Donate CTA Section -->
-  <section
-    class="relative min-h-screen flex items-center bg-gradient-to-br from-michigan-blue via-slate-900 to-michigan-blue"
-    data-section
-  >
-    <div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-      <div class="text-center mb-16" data-fade-in>
-        <h2 class="text-4xl md:text-5xl font-bold text-mrover-accent mb-6 leading-tight">Get Involved</h2>
-      </div>
-      <div class="grid md:grid-cols-2 gap-8 lg:gap-12" data-cta-cards>
-        <!-- Join Us -->
-        <div
-          class="group relative text-center space-y-6 p-10 bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 border-mrover-accent/30 hover:border-mrover-accent transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-2"
-          data-cta-card
-        >
           <div
-            class="w-20 h-20 mx-auto mb-6 bg-mrover-accent rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform"
+            class="relative rounded-xl overflow-hidden shadow-2xl"
+            data-fade-in
+            data-delay="0.2"
           >
-            <svg class="w-10 h-10 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-              ></path>
-            </svg>
+            <img src="/images/pit.jpg" alt="Team workspace" class="w-full h-auto" />
           </div>
-          <h3 class="text-3xl font-bold text-white">Join us!</h3>
-          <p class="text-gray-200 text-lg leading-relaxed">
-            Passionate about <span class="text-mrover-accent font-semibold">space exploration</span> and <span class="font-semibold text-mrover-accent">engineering</span>? We want you on the team.
-          </p>
-          <a href="/join" class="inline-block transform hover:scale-105 transition-transform">
-            <button
-              class="px-8 py-3 text-base font-semibold uppercase bg-mrover-accent text-white rounded-lg hover:bg-mrover-accent/90 shadow-xl hover:shadow-2xl transition-all cursor-pointer mt-2"
-            >
-              How to Join
-            </button>
-          </a>
         </div>
+      </div>
+    </section>
 
-        <!-- Sponsor Us -->
-        <div
-          class="group relative text-center space-y-6 p-10 bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 border-mrover-accent/30 hover:border-mrover-accent transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-2"
-          data-cta-card
-        >
-          <div
-            class="w-20 h-20 mx-auto mb-6 bg-mrover-accent rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform"
-          >
-            <svg class="w-10 h-10 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path>
-            </svg>
-          </div>
-          <h3 class="text-3xl font-bold text-white">Sponsor us!</h3>
-          <p class="text-gray-200 text-lg leading-relaxed">
-            Help us <span class="font-semibold text-mrover-accent">win URC</span>. Every contribution, big or small, makes a difference.
-          </p>
-          <a href="/donate" class="inline-block transform hover:scale-105 transition-transform">
-            <button
-              class="px-8 py-3 text-base font-semibold uppercase bg-mrover-accent text-white rounded-lg hover:bg-mrover-accent/90 shadow-xl hover:shadow-2xl transition-all cursor-pointer mt-2"
-            >
-              Sponsor us
-            </button>
+    <!-- Get Involved -->
+    <section class="py-24 md:py-32 bg-white/5">
+      <div class="max-w-4xl mx-auto px-6 lg:px-12">
+        <div class="text-center mb-12" data-fade-in>
+          <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">Get Involved</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6" data-fade-in data-delay="0.1">
+          <!-- Join Us -->
+          <a href="/join" class="group block p-8 bg-white/5 border border-white/10 rounded-xl hover:border-mrover-accent/50 hover:bg-white/10 transition-all">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-mrover-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-mrover-accent transition-colors">Join us</h3>
+                <p class="text-white/60 leading-relaxed">
+                  Passionate about space exploration and engineering? We want you on the team.
+                </p>
+              </div>
+            </div>
+          </a>
+
+          <!-- Sponsor Us -->
+          <a href="/donate" class="group block p-8 bg-white/5 border border-white/10 rounded-xl hover:border-mrover-accent/50 hover:bg-white/10 transition-all">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-mrover-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-mrover-accent transition-colors">Sponsor us</h3>
+                <p class="text-white/60 leading-relaxed">
+                  Help us win URC. Every contribution, big or small, makes a difference.
+                </p>
+              </div>
+            </div>
           </a>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </BaseLayout>
-
-<style>
-  /* eliminate gaps between sections */
-  section {
-    display: flex;
-    margin: 0;
-    padding: 0;
-    align-items: center;
-    justify-content: center;
-  }
-
-  section > div {
-    width: 100%;
-  }
-</style>
 
 <script>
   import gsap from "gsap";
@@ -289,7 +232,6 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // lenis init
   const lenis = new Lenis({
     duration: 0.8,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -302,7 +244,6 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 
   requestAnimationFrame(raf);
 
-  // sync lenis
   lenis.on("scroll", ScrollTrigger.update);
 
   gsap.ticker.add((time) => {
@@ -311,105 +252,46 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 
   gsap.ticker.lagSmoothing(0);
 
-  // ensure top on load
   window.scrollTo(0, 0);
   lenis.scrollTo(0, { immediate: true });
-
-  // snap scroll
-  const snapSections = gsap.utils.toArray("[data-section], [data-hero]") as HTMLElement[];
-  let snapEnabled = false;
-
-  // enable snap after user scrolls
-  let scrollTimeout: number;
-  const enableSnap = () => {
-    clearTimeout(scrollTimeout);
-    scrollTimeout = window.setTimeout(() => {
-      snapEnabled = true;
-    }, 100);
-  };
-
-  lenis.on("scroll", enableSnap);
-
-  ScrollTrigger.create({
-    snap: {
-      snapTo: (progress) => {
-        if (!snapEnabled) return progress;
-
-        // if user is in bottom 20% of page, disable snap (for footer)
-        if (progress > 0.85) {
-          return progress;
-        }
-
-        const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const currentScroll = progress * totalHeight;
-
-        // find closest section
-        let closest = 0;
-        let minDistance = Infinity;
-
-        snapSections.forEach((section) => {
-          const sectionTop = section.offsetTop;
-          const distance = Math.abs(currentScroll - sectionTop);
-          if (distance < minDistance) {
-            minDistance = distance;
-            closest = sectionTop / totalHeight;
-          }
-        });
-
-        return closest;
-      },
-      duration: { min: 0.2, max: 0.6 },
-      delay: 0.5,
-      ease: "power1.inOut",
-    },
-  });
 
   // hero intro
   const introTimeline = gsap.timeline({ defaults: { ease: "power2.out" } });
 
   introTimeline
-    // block m slide in
     .from("[data-hero-overlay]", {
       opacity: 0,
       duration: 0.6,
     })
-    // pause after block M
     .to("[data-block-m]", {
       duration: 0.5,
     })
-    // slide block M out
     .to("[data-block-m]", {
       y: -150,
       opacity: 0,
       duration: 0.5,
       ease: "power2.in",
     })
-    // pause
     .to({}, { duration: 0.3 })
-    // logo top slide in
     .to("[data-logo-top]", {
       y: 0,
       opacity: 1,
       duration: 0.5,
       ease: "power2.out",
     })
-    // logo bottom slide in
     .to("[data-logo-bottom]", {
       y: 0,
       opacity: 1,
       duration: 0.8,
       ease: "power2.out",
     })
-    // terminal prompt
     .to("[data-hero-buttons]", {
       opacity: 1,
       duration: 0.3,
     })
-    // typing
     .call(() => {
-      // blur terminal bg
       gsap.to("[data-terminal-bg]", {
-        backdropFilter: "blur(2px)",
+        backdropFilter: "blur(4px)",
         duration: 0.6,
         ease: "power2.out",
       });
@@ -419,16 +301,14 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           strings: ["./mrover"],
           typeSpeed: 80,
           showCursor: true,
-          cursorChar: "█",
+          cursorChar: "_",
           onComplete: () => {
-            // hide cursor
             setTimeout(() => {
               const cursor = document.querySelector(".typed-cursor") as HTMLElement;
               if (cursor) {
                 cursor.style.display = "none";
               }
 
-              // show options
               gsap.to("[data-option]", {
                 opacity: 1,
                 x: 0,
@@ -451,13 +331,13 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     gsap.from(element, {
       scrollTrigger: {
         trigger: element,
-        start: "top 80%",
+        start: "top 85%",
         end: "bottom 20%",
         toggleActions: "play none none reverse",
       },
-      y: 40,
+      y: 30,
       opacity: 0,
-      duration: 0.5,
+      duration: 0.6,
       delay: delay,
       ease: "power2.out",
     });
