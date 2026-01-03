@@ -116,6 +116,19 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
 
     window.localStorage.setItem('theme', theme);
   </script>
+  <!-- Suppress specific Three.js warnings -->
+  <script is:inline>
+    const originalWarn = console.warn;
+    console.warn = (...args) => {
+      if (args[0] && typeof args[0] === 'string' && (
+        args[0].includes('THREE.ColladaLoader: You are loading an asset with a Z-UP coordinate system') ||
+        args[0].includes('THREE.ColladaLoader: File version')
+      )) {
+        return;
+      }
+      originalWarn(...args);
+    };
+  </script>
   <!-- Smooth scrolling script -->
   <script>
     import Lenis from "lenis";

@@ -45,15 +45,15 @@ const SECTION_TARGETS: SectionTarget[] = [
       color: '#00274C',
       accent: '#FFCB05'
     },
-    camera: { x: -100, y: 30, z: 250 },
-    lookAt: { x: 0, y: -20, z: 0 },
+    camera: { x: -100, y: 70, z: 250 },
+    lookAt: { x: 0, y: 10, z: 0 },
   },
   // Mechanical - Chassis
   {
     name: 'chassis',
     subteam: {
       teamName: 'Mechanical',
-      name: 'Chassis and Mounts',
+      name: 'Chassis',
       desc: 'Creates a lightweight, strong chassis optimized for subsystem integration, plus gimbal cameras, electrical enclosures, and wire management.',
       color: '#00274C',
       accent: '#FFCB05'
@@ -268,3 +268,6 @@ export const BRANCHES: Branch[] = BRANCH_DEFINITIONS.map((def, i) => ({
   accent: def.accent,
   sections: offsetSections(SECTION_TARGETS.filter(def.filter), -BRANCH_SPACING * i),
 }))
+
+export const ALL_SECTIONS = BRANCHES.flatMap(b => b.sections)
+export const TOTAL_SECTIONS = ALL_SECTIONS.length

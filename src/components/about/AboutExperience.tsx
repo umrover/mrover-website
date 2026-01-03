@@ -1,359 +1,37 @@
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { Environment } from '@react-three/drei'
+import { Environment, useProgress } from '@react-three/drei'
 import { EffectComposer, Vignette } from '@react-three/postprocessing'
-import { useScroll } from '../../hooks/use-scroll'
-import { useRef, Suspense, useCallback, useEffect, useState, useMemo } from 'react'
+import { useRef, Suspense, useCallback, useState } from 'react'
 import * as THREE from 'three'
-import URDFLoader from 'urdf-loader'
-import { lerp } from '../../lib/maths'
 import { BRANCHES, BRANCH_SPACING } from './SceneConfig'
-
-const ALL_SECTIONS = BRANCHES.flatMap(b => b.sections)
-const TOTAL_SECTIONS = ALL_SECTIONS.length
-
-function Stars({ count = 8000 }) {
-  const ref = useRef<THREE.Points>(null)
-  const scrollRef = useRef(0)
-
-  useScroll(useCallback(({ scroll }: { scroll: number }) => {
-    scrollRef.current = scroll
-  }, []))
-
-  const [positions, colors] = useMemo(() => {
-    const pos = new Float32Array(count * 3)
-    const colorArr = new Float32Array(count * 3)
-    const radius = 2000
-    const height = ALL_SECTIONS.length * BRANCH_SPACING * 1.5
-
-    for (let i = 0; i < count; i++) {
-      const theta = Math.random() * Math.PI * 2
-      const r = radius * (0.3 + Math.random() * 0.7)
-      pos[i * 3] = r * Math.cos(theta)
-      pos[i * 3 + 1] = (Math.random() - 0.4) * height
-      pos[i * 3 + 2] = r * Math.sin(theta)
-
-      const brightness = 0.7 + Math.random() * 0.5
-      const tint = Math.random()
-      if (tint < 0.1) {
-        colorArr[i * 3] = brightness
-        colorArr[i * 3 + 1] = brightness * 0.85
-        colorArr[i * 3 + 2] = brightness * 0.7
-      } else if (tint < 0.2) {
-        colorArr[i * 3] = brightness * 0.85
-        colorArr[i * 3 + 1] = brightness * 0.95
-        colorArr[i * 3 + 2] = brightness
-      } else {
-        colorArr[i * 3] = brightness
-        colorArr[i * 3 + 1] = brightness
-        colorArr[i * 3 + 2] = brightness
-      }
-    }
-    return [pos, colorArr]
-  }, [count])
-
-  useFrame(() => {
-    if (document.hidden || !ref.current) return
-    ref.current.rotation.y = scrollRef.current * 0.00005
-  })
-
-  return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
-      </bufferGeometry>
-      <pointsMaterial size={3.5} vertexColors transparent opacity={1} sizeAttenuation />
-    </points>
-  )
-}
-
-function getScrollState(scroll: number, windowHeight: number) {
-  if (!windowHeight) {
-    return { sectionIndex: 0, sectionProgress: 0, fromSection: ALL_SECTIONS[0], toSection: ALL_SECTIONS[0] }
-  }
-
-  const scrollPerSection = windowHeight
-  const totalScrollable = (TOTAL_SECTIONS - 1) * scrollPerSection
-  const clampedScroll = Math.max(0, Math.min(scroll, totalScrollable))
-
-  const exactSection = clampedScroll / scrollPerSection
-  const sectionIndex = Math.min(Math.floor(exactSection), TOTAL_SECTIONS - 1)
-  const sectionProgress = exactSection - sectionIndex
-
-  return {
-    sectionIndex,
-    sectionProgress: Math.min(sectionProgress, 1),
-    fromSection: ALL_SECTIONS[sectionIndex],
-    toSection: ALL_SECTIONS[Math.min(sectionIndex + 1, TOTAL_SECTIONS - 1)],
-  }
-}
-
-function CameraController() {
-  const { camera, size } = useThree()
-  const scrollRef = useRef(0)
-  const windowHeightRef = useRef(0)
-  const lookAtTarget = useRef(new THREE.Vector3())
-
-  useEffect(() => {
-    windowHeightRef.current = window.innerHeight
-    const handleResize = () => { windowHeightRef.current = window.innerHeight }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
-  useScroll(useCallback(({ scroll }: { scroll: number }) => {
-    scrollRef.current = scroll
-  }, []))
-
-  useFrame(() => {
-    if (document.hidden || !windowHeightRef.current) return
-
-    const { sectionProgress, fromSection, toSection } = getScrollState(scrollRef.current, windowHeightRef.current)
-
-    const aspect = size.width / size.height
-    const isMobileAspect = aspect < 0.8
-    const xScale = isMobileAspect ? 0.3 : 1
-    const zScale = isMobileAspect ? 1.4 : 1
-
-    camera.position.set(
-      lerp(fromSection.camera.x, toSection.camera.x, sectionProgress) * xScale,
-      lerp(fromSection.camera.y, toSection.camera.y, sectionProgress),
-      lerp(fromSection.camera.z, toSection.camera.z, sectionProgress) * zScale
-    )
-
-    lookAtTarget.current.set(
-      lerp(fromSection.lookAt.x, toSection.lookAt.x, sectionProgress) * xScale,
-      lerp(fromSection.lookAt.y, toSection.lookAt.y, sectionProgress),
-      lerp(fromSection.lookAt.z, toSection.lookAt.z, sectionProgress)
-    )
-    camera.lookAt(lookAtTarget.current)
-  })
-
-  return null
-}
-
-const defaultJointValues: Record<string, number> = {
-  chassis_to_arm_a: 24.14,
-  arm_a_to_arm_b: -0.785,
-  arm_b_to_arm_c: 1.91,
-  arm_c_to_arm_d: -1,
-  arm_d_to_arm_e: -1.57,
-  gripper_link: 0,
-}
-
-function Rover({ onLoad }: { onLoad?: () => void }) {
-  const [robot, setRobot] = useState<THREE.Object3D | null>(null)
-  const hasCalledOnLoad = useRef(false)
-  const frameCount = useRef(0)
-
-  useEffect(() => {
-    const loader = new URDFLoader()
-    loader.packages = { mrover: '/urdf' }
-    loader.load('/urdf/rover/rover.urdf', (loadedRobot) => {
-      loadedRobot.rotation.x = -Math.PI / 2
-
-      const texturePromises: Promise<void>[] = []
-
-      loadedRobot.traverse((child: THREE.Object3D) => {
-        if (child instanceof THREE.Mesh) {
-          child.castShadow = true
-          child.receiveShadow = true
-          const mat = child.material as THREE.MeshStandardMaterial
-          if (mat instanceof THREE.MeshStandardMaterial) {
-            mat.roughness = Math.min(mat.roughness, 0.7)
-            if (mat.map && !mat.map.image) {
-              texturePromises.push(new Promise<void>((resolve) => {
-                const checkLoaded = () => {
-                  if (mat.map?.image) resolve()
-                  else setTimeout(checkLoaded, 50)
-                }
-                checkLoaded()
-              }))
-            }
-          }
-        }
-      })
-
-      const robotWithJoints = loadedRobot as THREE.Object3D & { setJointValue?: (name: string, value: number) => void }
-      if (robotWithJoints.setJointValue) {
-        for (const [joint, value] of Object.entries(defaultJointValues)) {
-          robotWithJoints.setJointValue(joint, value)
-        }
-      }
-
-      Promise.all(texturePromises).then(() => {
-        setRobot(loadedRobot)
-      })
-    })
-  }, [])
-
-  useFrame(() => {
-    if (document.hidden) return
-    if (robot && !hasCalledOnLoad.current) {
-      frameCount.current++
-      if (frameCount.current >= 3) {
-        hasCalledOnLoad.current = true
-        onLoad?.()
-      }
-    }
-  })
-
-  if (!robot) return null
-
-  return (
-    <group position={[0, -25, 0]} rotation-y={-Math.PI / 3}>
-      <primitive object={robot} />
-    </group>
-  )
-}
-
-function BranchPlaceholder({ branchIndex }: { branchIndex: number }) {
-  const meshRef = useRef<THREE.Mesh>(null)
-  const yOffset = -BRANCH_SPACING * branchIndex
-
-  useFrame(() => {
-    if (document.hidden || !meshRef.current) return
-    meshRef.current.rotation.y += 0.003
-    meshRef.current.rotation.x += 0.002
-  })
-
-  return (
-    <group position={[0, yOffset, 0]}>
-      <mesh ref={meshRef}>
-        <boxGeometry args={[60, 60, 60]} />
-        <meshBasicMaterial wireframe color="#ffffff" />
-      </mesh>
-      <sprite position={[0, 0, 35]} scale={[30, 30, 1]}>
-        <spriteMaterial color="#ffffff" opacity={0.8} transparent>
-          <canvasTexture
-            attach="map"
-            image={(() => {
-              const canvas = document.createElement('canvas')
-              canvas.width = 64
-              canvas.height = 64
-              const ctx = canvas.getContext('2d')!
-              ctx.fillStyle = '#ffffff'
-              ctx.font = 'bold 48px Arial'
-              ctx.textAlign = 'center'
-              ctx.textBaseline = 'middle'
-              ctx.fillText(String(branchIndex), 32, 32)
-              return canvas
-            })()}
-          />
-        </spriteMaterial>
-      </sprite>
-    </group>
-  )
-}
-
-function Atmosphere() {
-  const { scene } = useThree()
-
-  useEffect(() => {
-    scene.background = new THREE.Color(0x0a0808)
-    scene.fog = new THREE.FogExp2(0x1a1410, 0.00025)
-    return () => {
-      scene.background = null
-      scene.fog = null
-    }
-  }, [scene])
-
-  return null
-}
-
-function Stage() {
-  const platformRef = useRef<THREE.Mesh>(null)
-  const light1Ref = useRef<THREE.SpotLight>(null)
-  const light2Ref = useRef<THREE.SpotLight>(null)
-  const targetRef = useRef<THREE.Object3D>(null)
-  const scrollRef = useRef(0)
-  const windowHeightRef = useRef(0)
-
-  useEffect(() => {
-    windowHeightRef.current = window.innerHeight
-    const handleResize = () => { windowHeightRef.current = window.innerHeight }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
-  useScroll(useCallback(({ scroll }: { scroll: number }) => {
-    scrollRef.current = scroll
-  }, []))
-
-  useFrame(() => {
-    if (document.hidden || !windowHeightRef.current) return
-
-    const { sectionIndex, sectionProgress } = getScrollState(scrollRef.current, windowHeightRef.current)
-
-    let progress = 0
-    if (sectionIndex === 0) {
-      progress = sectionProgress
-    } else if (sectionIndex >= 1) {
-      progress = 1
-    }
-
-    const eased = 1 - Math.pow(1 - progress, 3)
-
-    if (platformRef.current) {
-      platformRef.current.position.y = lerp(-80, -35, eased)
-      const mat = platformRef.current.material as THREE.MeshStandardMaterial
-      mat.opacity = lerp(0, 1, eased)
-    }
-
-    const lightIntensity = lerp(0, 100, eased)
-    if (light1Ref.current) {
-      light1Ref.current.intensity = lightIntensity
-      if (targetRef.current) light1Ref.current.target = targetRef.current
-    }
-    if (light2Ref.current) {
-      light2Ref.current.intensity = lightIntensity
-      if (targetRef.current) light2Ref.current.target = targetRef.current
-    }
-  })
-
-  return (
-    <>
-      <object3D ref={targetRef} position={[0, 20, 0]} />
-
-      <mesh ref={platformRef} rotation-x={-Math.PI / 2} position={[0, -80, 0]} receiveShadow>
-        <circleGeometry args={[100, 64]} />
-        <meshStandardMaterial
-          color="#0a0a0a"
-          metalness={0.3}
-          roughness={0.8}
-          transparent
-          opacity={0}
-        />
-      </mesh>
-
-      <spotLight
-        ref={light1Ref}
-        position={[120, 280, 120]}
-        angle={0.5}
-        penumbra={0.5}
-        intensity={0}
-        color="#ffffff"
-        distance={500}
-        decay={0.5}
-        castShadow
-      />
-      <spotLight
-        ref={light2Ref}
-        position={[-120, 280, 120]}
-        angle={0.5}
-        penumbra={0.5}
-        intensity={0}
-        color="#FFE4C4"
-        distance={500}
-        decay={0.5}
-        castShadow
-      />
-    </>
-  )
-}
-
+import { Rover } from './Rover'
+import { Stars, Atmosphere, Stage, BranchPlaceholder } from './Environment'
+import { CameraController } from './Camera'
+import { LoadingOverlay, ProgressIndicator, useIsMobile } from './UI'
 
 function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () => void }) {
+  const { gl, scene, camera } = useThree()
+  const [standardReady, setStandardReady] = useState(false)
+  const [wireframeReady, setWireframeReady] = useState(false)
+  const framesRendered = useRef(0)
+  const compiled = useRef(false)
+
+  const roverReady = standardReady && wireframeReady
+
+  useFrame(() => {
+    if (roverReady) {
+      if (!compiled.current) {
+        gl.compile(scene, camera)
+        compiled.current = true
+      }
+      
+      framesRendered.current++
+      if (framesRendered.current > 15) {
+        onRoverLoad()
+      }
+    }
+  })
+
   return (
     <>
       <Atmosphere />
@@ -379,7 +57,14 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
       <CameraController />
 
       <Suspense fallback={null}>
-        <Rover onLoad={onRoverLoad} />
+        <group position={[0, -25, 0]}>
+          <Rover onLoaded={() => setStandardReady(true)} />
+        </group>
+
+        <group position={[0, -25 - BRANCH_SPACING, 0]}>
+          <Rover isWireframe configId="mechanical" onLoaded={() => setWireframeReady(true)} />
+        </group>
+
         <Stage />
         {BRANCHES.slice(1).map((_, i) => (
           <BranchPlaceholder key={i + 1} branchIndex={i + 1} />
@@ -393,238 +78,10 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
   )
 }
 
-function LoadingOverlay({ progress, visible }: { progress: number; visible: boolean }) {
-  if (!visible) return null
-  return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 1000,
-      background: '#0a0808',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      transition: 'opacity 0.5s ease',
-      pointerEvents: 'none',
-    }}>
-      <div style={{
-        width: '40px',
-        height: '40px',
-        border: '3px solid rgba(255, 140, 0, 0.3)',
-        borderTopColor: '#FF8C00',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite'
-      }} />
-      <div style={{
-        marginTop: '20px',
-        width: '200px',
-        height: '2px',
-        background: 'rgba(255, 255, 255, 0.1)',
-        borderRadius: '1px',
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          width: `${progress}%`,
-          height: '100%',
-          background: '#FF8C00',
-          transition: 'width 0.2s ease-out'
-        }} />
-      </div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
-  )
-}
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false)
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-  return isMobile
-}
-
-function ProgressIndicator({ visible, isMobile }: { visible: boolean; isMobile: boolean }) {
-  const [currentBranchIndex, setCurrentBranchIndex] = useState(0)
-  const [currentSectionIndex, setCurrentSectionIndex] = useState(0)
-  const [expandedBranch, setExpandedBranch] = useState<number | null>(null)
-  const [windowHeight, setWindowHeight] = useState(0)
-
-  useEffect(() => {
-    const updateSize = () => setWindowHeight(window.innerHeight)
-    updateSize()
-    window.addEventListener('resize', updateSize)
-    return () => window.removeEventListener('resize', updateSize)
-  }, [])
-
-  useScroll(useCallback(({ scroll }: { scroll: number }) => {
-    if (!windowHeight) return
-
-    const sectionIndex = Math.max(0, Math.min(Math.round(scroll / windowHeight), TOTAL_SECTIONS - 1))
-
-    let branchIdx = 0
-    let sectionCount = 0
-    for (let i = 0; i < BRANCHES.length; i++) {
-      if (sectionIndex < sectionCount + BRANCHES[i].sections.length) {
-        branchIdx = i
-        break
-      }
-      sectionCount += BRANCHES[i].sections.length
-    }
-
-    setCurrentBranchIndex(branchIdx)
-    setCurrentSectionIndex(sectionIndex)
-  }, [windowHeight]))
-
-  const jumpToSection = (globalIndex: number) => {
-    if (!windowHeight) return
-    window.scrollTo({ top: globalIndex * windowHeight, behavior: 'smooth' })
-  }
-
-  if (!visible) return null
-
-  let globalIdx = 0
-  const branchOffsets: number[] = []
-  for (const branch of BRANCHES) {
-    branchOffsets.push(globalIdx)
-    globalIdx += branch.sections.length
-  }
-
-  return (
-    <div style={{
-      position: 'fixed',
-      top: '80px',
-      left: '1.5rem',
-      zIndex: 100,
-      pointerEvents: 'auto',
-      fontFamily: "'Rajdhani', system-ui, sans-serif",
-    }}>
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0',
-      }}>
-        {BRANCHES.map((branch, idx) => {
-          const isActive = idx === currentBranchIndex
-          const isExpanded = expandedBranch === idx
-          const branchOffset = branchOffsets[idx]
-
-          return (
-            <div
-              key={branch.name}
-              style={{ position: 'relative' }}
-              onMouseEnter={() => !isMobile && setExpandedBranch(idx)}
-              onMouseLeave={() => !isMobile && setExpandedBranch(null)}
-            >
-              <button
-                onClick={() => {
-                  if (isMobile) {
-                    setExpandedBranch(isExpanded ? null : idx)
-                  } else {
-                    jumpToSection(branchOffset)
-                  }
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem',
-                  padding: '6px 0',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transform: isActive ? 'translateX(8px)' : 'translateX(0)',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                }}
-              >
-                <span style={{
-                  width: '12px',
-                  height: '2px',
-                  background: branch.accent,
-                  opacity: isActive ? 1 : 0.4,
-                  transition: 'opacity 0.3s ease',
-                }} />
-                <span style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 500,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.2em',
-                  color: isActive ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.4)',
-                  transition: 'color 0.3s ease',
-                }}>
-                  {branch.name}
-                </span>
-              </button>
-
-              <div style={{
-                position: 'absolute',
-                left: '100%',
-                top: '-8px',
-                paddingLeft: '12px',
-                opacity: isExpanded ? 1 : 0,
-                transform: isExpanded ? 'translateX(0)' : 'translateX(-10px)',
-                pointerEvents: isExpanded ? 'auto' : 'none',
-                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-              }}>
-                <div style={{
-                  background: 'rgba(10, 8, 8, 0.95)',
-                  backdropFilter: 'blur(12px)',
-                  border: `1px solid ${branch.accent}40`,
-                  padding: '8px',
-                  borderRadius: '8px',
-                  minWidth: '200px',
-                }}>
-                {branch.sections.map((section, sectionIdx) => {
-                  const globalSectionIdx = branchOffset + sectionIdx
-                  const isSectionActive = globalSectionIdx === currentSectionIndex
-                  let label = section.subteam?.name || section.label || section.name
-                  if (section.name === 'mission-intro') label = 'Title'
-                  else if (section.name === 'mission') label = 'Mission Statement'
-
-                  return (
-                    <button
-                      key={section.name}
-                      onClick={() => jumpToSection(globalSectionIdx)}
-                      style={{
-                        display: 'block',
-                        width: '100%',
-                        padding: '8px 12px',
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: isSectionActive ? branch.accent : 'rgba(255, 255, 255, 0.6)',
-                        fontSize: '0.95rem',
-                        fontWeight: isSectionActive ? 600 : 400,
-                        textAlign: 'left',
-                        letterSpacing: '0.05em',
-                        transition: 'all 0.15s ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = branch.accent
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = isSectionActive ? branch.accent : 'rgba(255, 255, 255, 0.6)'
-                      }}
-                    >
-                      {label}
-                    </button>
-                  )
-                })}
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
 export function AboutExperience() {
   const [roverLoaded, setRoverLoaded] = useState(false)
   const isMobile = useIsMobile()
+  const { progress } = useProgress()
 
   const handleRoverLoad = useCallback(() => {
     setRoverLoaded(true)
@@ -632,7 +89,7 @@ export function AboutExperience() {
 
   return (
     <>
-      <LoadingOverlay progress={roverLoaded ? 100 : 50} visible={!roverLoaded} />
+      <LoadingOverlay progress={progress} visible={!roverLoaded} />
       <ProgressIndicator visible={roverLoaded} isMobile={isMobile} />
       <div style={{
         position: 'fixed',
