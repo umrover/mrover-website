@@ -12,7 +12,8 @@ import { StarsBackground } from "@/components/StarsBackground";
 
   <!-- Hero Section -->
   <div
-    class="relative min-h-screen flex items-center justify-center font-rajdhani"
+    class="relative flex items-center justify-center font-rajdhani"
+    style="min-height: 100dvh;"
     data-hero
   >
     <div class="relative z-10 text-center px-6 max-w-5xl py-20">
@@ -237,6 +238,11 @@ import { StarsBackground } from "@/components/StarsBackground";
   @keyframes blink {
     0%, 50% { opacity: 1; }
     51%, 100% { opacity: 0; }
+  }
+
+  :global(html),
+  :global(body) {
+    overflow-x: hidden;
   }
 </style>
 

@@ -82,7 +82,7 @@ export function StarsBackground() {
   return (
     <div style={{
       position: 'fixed',
-      inset: 0,
+      inset: '-50px',
       zIndex: -1,
       background: '#0a0808'
     }}>
