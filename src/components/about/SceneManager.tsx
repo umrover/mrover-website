@@ -43,13 +43,10 @@ export function SceneManager() {
       requestAnimationFrame(raf)
     })
 
-    const getViewportHeight = () => {
-      return window.visualViewport?.height ?? window.innerHeight
-    }
-
     const getScrollForSection = (section: number) => {
       const clamped = Math.max(0, Math.min(section, TOTAL_SECTIONS - 1))
-      return clamped * getViewportHeight()
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight
+      return clamped * (scrollableHeight / (TOTAL_SECTIONS - 1))
     }
 
     const animateToSection = (targetSection: number) => {
@@ -189,7 +186,9 @@ export function SceneManager() {
 
     const handleScroll = () => {
       if (isAnimatingRef.current) return
-      const section = Math.round(window.scrollY / getViewportHeight())
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight
+      const sectionHeight = scrollableHeight / (TOTAL_SECTIONS - 1)
+      const section = Math.round(window.scrollY / sectionHeight)
       const clamped = Math.max(0, Math.min(section, TOTAL_SECTIONS - 1))
       if (clamped !== currentSectionRef.current) {
         currentSectionRef.current = clamped
