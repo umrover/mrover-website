@@ -38,7 +38,7 @@ import { StarsBackground } from "@/components/StarsBackground";
           style="transform: translateY(clamp(120px, 20vh, 220px)); width: min(90vw, 500px) !important; height: auto !important; max-width: none !important;"
         />
       </div>
-      <div class="font-mono text-white w-[min(90vw,500px)] mx-auto opacity-0" data-hero-buttons>
+      <div class="font-mono text-white w-[min(90vw,500px)] mx-auto" data-hero-buttons>
         <div
           class="border border-mrover-accent/30 bg-transparent rounded-xl p-4 sm:p-6 shadow-[0_0_30px_-5px_rgba(255,140,0,0.15)]"
           data-terminal-bg
@@ -52,7 +52,7 @@ import { StarsBackground } from "@/components/StarsBackground";
             <div class="flex flex-col gap-1 w-full mt-2">
               <a
                 href="/about"
-                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded opacity-0"
+                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded"
                 data-option
               >
                 <span class="text-mrover-accent w-4">></span>
@@ -60,7 +60,7 @@ import { StarsBackground } from "@/components/StarsBackground";
               </a>
               <a
                 href="/join"
-                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded opacity-0"
+                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded"
                 data-option
               >
                 <span class="text-mrover-accent w-4">></span>
@@ -68,14 +68,14 @@ import { StarsBackground } from "@/components/StarsBackground";
               </a>
               <a
                 href="/sponsor"
-                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded opacity-0"
+                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded"
                 data-option
               >
                 <span class="text-mrover-accent w-4">></span>
                 <span class="text-white font-mono tracking-wide hover:underline">sponsor</span>
               </a>
             </div>
-            <div class="text-sm sm:text-lg flex items-center mt-2 opacity-0" data-final-prompt>
+            <div class="text-sm sm:text-lg flex items-center mt-2" data-final-prompt>
               <span class="text-mrover-accent mr-2 sm:mr-3">user@mrover:~$</span>
               <span class="inline-block w-2.5 h-5 bg-white" style="animation: blink 1.2s infinite;"></span>
             </div>
@@ -117,8 +117,9 @@ import { StarsBackground } from "@/components/StarsBackground";
             <div class="relative aspect-video rounded-xl overflow-hidden shadow-[0_0_40px_-10px_rgba(255,140,0,0.1)] border border-white/10">
               <iframe
                 class="w-full h-full"
-                src="https://www.youtube.com/embed/QMt2GuHuyyI?si=Z9nYiCQTfpR1cdBd"
+                src="https://www.youtube-nocookie.com/embed/QMt2GuHuyyI?si=Z9nYiCQTfpR1cdBd"
                 title="MRover Video"
+                loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen></iframe>
             </div>
@@ -244,86 +245,110 @@ import { StarsBackground } from "@/components/StarsBackground";
   :global(body) {
     overflow-x: hidden;
   }
+
+  [data-hero-buttons],
+  [data-option],
+  [data-final-prompt] {
+    visibility: hidden;
+  }
 </style>
 
 <script>
   import gsap from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import Typed from "typed.js";
 
   gsap.registerPlugin(ScrollTrigger);
 
-  window.scrollTo(0, 0);
+  function initAnimations() {
+    window.scrollTo(0, 0);
 
-  // hero intro
-  const introTimeline = gsap.timeline({ defaults: { ease: "power2.out" } });
+    // set initial states
+    gsap.set("[data-hero-buttons]", { autoAlpha: 0 });
+    gsap.set("[data-option]", { autoAlpha: 0 });
+    gsap.set("[data-final-prompt]", { autoAlpha: 0 });
 
-  introTimeline
-    .to("[data-block-m]", {
-      duration: 0.5,
-    })
-    .to("[data-block-m]", {
-      y: -150,
-      opacity: 0,
-      duration: 0.5,
-      ease: "power2.in",
-    })
-    .to({}, { duration: 0.3 })
-    .to("[data-logo-top]", {
-      y: 0,
-      opacity: 1,
-      duration: 0.5,
-      ease: "power2.out",
-    })
-    .to("[data-logo-bottom]", {
-      y: 0,
-      opacity: 1,
-      duration: 0.8,
-      ease: "power2.out",
-    })
-    .to("[data-hero-buttons]", {
-      opacity: 1,
-      duration: 0.3,
-    })
-    .call(() => {
-      gsap.to("[data-terminal-bg]", {
-        backdropFilter: "blur(4px)",
-        duration: 0.6,
+    // hero intro
+    const introTimeline = gsap.timeline({ defaults: { ease: "power2.out" } });
+
+    introTimeline
+      .to("[data-block-m]", {
+        duration: 0.5,
+      })
+      .to("[data-block-m]", {
+        y: -150,
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.in",
+      })
+      .to({}, { duration: 0.3 })
+      .to("[data-logo-top]", {
+        y: 0,
+        opacity: 1,
+        duration: 0.5,
         ease: "power2.out",
-      });
+      })
+      .to("[data-logo-bottom]", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out",
+      })
+      .to("[data-hero-buttons]", {
+        autoAlpha: 1,
+        duration: 0.3,
+      })
+      .add(() => {
+        gsap.to("[data-terminal-bg]", {
+          backdropFilter: "blur(4px)",
+          duration: 0.6,
+          ease: "power2.out",
+        });
 
-      import("typed.js").then(({ default: Typed }) => {
         new Typed("[data-typing-text]", {
           strings: ["./mrover"],
           typeSpeed: 80,
           showCursor: false,
           onComplete: () => {
-            document.querySelectorAll("[data-option]").forEach((el) => {
-              (el as HTMLElement).style.opacity = "1";
+            gsap.to("[data-option]", {
+              autoAlpha: 1,
+              duration: 0.2,
+              stagger: 0.05,
             });
-            (document.querySelector("[data-final-prompt]") as HTMLElement).style.opacity = "1";
+            gsap.to("[data-final-prompt]", {
+              autoAlpha: 1,
+              duration: 0.2,
+              delay: 0.15,
+            });
           },
         });
       });
+
+    // scroll animations
+    const fadeInElements = document.querySelectorAll("[data-fade-in]");
+
+    fadeInElements.forEach((element) => {
+      const delay = parseFloat(element.getAttribute("data-delay") || "0");
+
+      gsap.from(element, {
+        scrollTrigger: {
+          trigger: element,
+          start: "top 85%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
+        },
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+        delay: delay,
+        ease: "power2.out",
+      });
     });
+  }
 
-  // scroll animations
-  const fadeInElements = document.querySelectorAll("[data-fade-in]");
-
-  fadeInElements.forEach((element) => {
-    const delay = parseFloat(element.getAttribute("data-delay") || "0");
-
-    gsap.from(element, {
-      scrollTrigger: {
-        trigger: element,
-        start: "top 85%",
-        end: "bottom 20%",
-        toggleActions: "play none none reverse",
-      },
-      y: 30,
-      opacity: 0,
-      duration: 0.6,
-      delay: delay,
-      ease: "power2.out",
-    });
-  });
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAnimations);
+  } else {
+    initAnimations();
+  }
 </script>

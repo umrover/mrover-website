@@ -72,6 +72,8 @@ export function SceneManager() {
       const duration = 600
       const startTime = performance.now()
 
+      lenis.stop()
+
       const animate = (now: number) => {
         const elapsed = now - startTime
         const t = Math.min(elapsed / duration, 1)
@@ -85,6 +87,7 @@ export function SceneManager() {
           window.scrollTo(0, targetScroll)
           currentSectionRef.current = clampedTarget
           isAnimatingRef.current = false
+          lenis.start()
 
           if (queuedDirectionRef.current !== null) {
             const nextSection = currentSectionRef.current + queuedDirectionRef.current
