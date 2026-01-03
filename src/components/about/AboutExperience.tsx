@@ -122,10 +122,14 @@ function useScrollState() {
   const [windowHeight, setWindowHeight] = useState(0)
 
   useEffect(() => {
-    const updateSize = () => setWindowHeight(window.innerHeight)
+    const updateSize = () => setWindowHeight(window.visualViewport?.height ?? window.innerHeight)
     updateSize()
     window.addEventListener('resize', updateSize)
-    return () => window.removeEventListener('resize', updateSize)
+    window.visualViewport?.addEventListener('resize', updateSize)
+    return () => {
+      window.removeEventListener('resize', updateSize)
+      window.visualViewport?.removeEventListener('resize', updateSize)
+    }
   }, [])
 
   useScroll(useCallback(({ scroll }: { scroll: number }) => {
@@ -501,10 +505,14 @@ function ProgressIndicator({ visible, isMobile }: { visible: boolean; isMobile: 
   const [windowHeight, setWindowHeight] = useState(0)
 
   useEffect(() => {
-    const updateSize = () => setWindowHeight(window.innerHeight)
+    const updateSize = () => setWindowHeight(window.visualViewport?.height ?? window.innerHeight)
     updateSize()
     window.addEventListener('resize', updateSize)
-    return () => window.removeEventListener('resize', updateSize)
+    window.visualViewport?.addEventListener('resize', updateSize)
+    return () => {
+      window.removeEventListener('resize', updateSize)
+      window.visualViewport?.removeEventListener('resize', updateSize)
+    }
   }, [])
 
   useScroll(useCallback(({ scroll }: { scroll: number }) => {
