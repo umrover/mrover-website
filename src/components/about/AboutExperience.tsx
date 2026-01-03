@@ -9,6 +9,7 @@ import { lerp } from '../../lib/maths'
 import { BRANCHES, BRANCH_SPACING } from './SceneConfig'
 
 const ALL_SECTIONS = BRANCHES.flatMap(b => b.sections)
+const TOTAL_SECTIONS = ALL_SECTIONS.length
 
 function Stars({ count = 8000 }) {
   const ref = useRef<THREE.Points>(null)
@@ -27,12 +28,9 @@ function Stars({ count = 8000 }) {
     for (let i = 0; i < count; i++) {
       const theta = Math.random() * Math.PI * 2
       const r = radius * (0.3 + Math.random() * 0.7)
-      const x = r * Math.cos(theta)
-      const z = r * Math.sin(theta)
-      const y = (Math.random() - 0.4) * height
-      pos[i * 3] = x
-      pos[i * 3 + 1] = y
-      pos[i * 3 + 2] = z
+      pos[i * 3] = r * Math.cos(theta)
+      pos[i * 3 + 1] = (Math.random() - 0.4) * height
+      pos[i * 3 + 2] = r * Math.sin(theta)
 
       const brightness = 0.7 + Math.random() * 0.5
       const tint = Math.random()
@@ -70,98 +68,64 @@ function Stars({ count = 8000 }) {
 }
 
 function getScrollState(scroll: number, windowHeight: number) {
-  let sectionOffset = 0
-  let heightOffset = 0
-  const transitionZone = windowHeight * 0.8
-
-  for (const branch of BRANCHES) {
-    const branchHeight = branch.sections.length * windowHeight
-    const branchEnd = heightOffset + branchHeight
-
-    if (scroll < branchEnd) {
-      const scrolled = Math.max(0, scroll - heightOffset)
-      const scrollable = branchHeight - windowHeight
-      const transitionStart = scrollable + windowHeight - transitionZone
-
-      if (scrolled <= transitionStart) {
-        const progress = scrollable > 0 ? Math.min(scrolled / scrollable, 1) : 0
-        const sectionFloat = progress * (branch.sections.length - 1)
-        const localIdx = Math.floor(sectionFloat)
-        const globalIdx = sectionOffset + localIdx
-
-        return {
-          sectionIndex: globalIdx,
-          sectionProgress: sectionFloat - localIdx,
-          fromSection: ALL_SECTIONS[globalIdx],
-          toSection: ALL_SECTIONS[Math.min(globalIdx + 1, ALL_SECTIONS.length - 1)],
-        }
-      } else {
-        const globalIdx = sectionOffset + branch.sections.length - 1
-        const nextIdx = sectionOffset + branch.sections.length
-        const transitionProgress = (scrolled - transitionStart) / transitionZone
-
-        return {
-          sectionIndex: globalIdx,
-          sectionProgress: transitionProgress,
-          fromSection: ALL_SECTIONS[globalIdx],
-          toSection: nextIdx < ALL_SECTIONS.length ? ALL_SECTIONS[nextIdx] : ALL_SECTIONS[globalIdx],
-        }
-      }
-    }
-
-    heightOffset = branchEnd
-    sectionOffset += branch.sections.length
+  if (!windowHeight) {
+    return { sectionIndex: 0, sectionProgress: 0, fromSection: ALL_SECTIONS[0], toSection: ALL_SECTIONS[0] }
   }
 
-  const lastIdx = ALL_SECTIONS.length - 1
-  return { sectionIndex: lastIdx, sectionProgress: 0, fromSection: ALL_SECTIONS[lastIdx], toSection: ALL_SECTIONS[lastIdx] }
+  const scrollPerSection = windowHeight
+  const totalScrollable = (TOTAL_SECTIONS - 1) * scrollPerSection
+  const clampedScroll = Math.max(0, Math.min(scroll, totalScrollable))
+
+  const exactSection = clampedScroll / scrollPerSection
+  const sectionIndex = Math.min(Math.floor(exactSection), TOTAL_SECTIONS - 1)
+  const sectionProgress = exactSection - sectionIndex
+
+  return {
+    sectionIndex,
+    sectionProgress: Math.min(sectionProgress, 1),
+    fromSection: ALL_SECTIONS[sectionIndex],
+    toSection: ALL_SECTIONS[Math.min(sectionIndex + 1, TOTAL_SECTIONS - 1)],
+  }
 }
 
-function useScrollState() {
+function CameraController() {
+  const { camera, size } = useThree()
   const scrollRef = useRef(0)
-  const [windowHeight, setWindowHeight] = useState(0)
+  const windowHeightRef = useRef(0)
+  const lookAtTarget = useRef(new THREE.Vector3())
 
   useEffect(() => {
-    const updateSize = () => setWindowHeight(window.innerHeight)
-    updateSize()
-    window.addEventListener('resize', updateSize)
-    return () => window.removeEventListener('resize', updateSize)
+    windowHeightRef.current = window.innerHeight
+    const handleResize = () => { windowHeightRef.current = window.innerHeight }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   useScroll(useCallback(({ scroll }: { scroll: number }) => {
     scrollRef.current = scroll
   }, []))
 
-  return { scrollRef, windowHeight }
-}
-
-function CameraController() {
-  const { camera, size } = useThree()
-  const { scrollRef, windowHeight } = useScrollState()
-  const lookAtTarget = useRef(new THREE.Vector3())
-
   useFrame(() => {
-    if (document.hidden || !windowHeight) return
+    if (document.hidden || !windowHeightRef.current) return
 
-    const { sectionProgress, fromSection, toSection } =
-      getScrollState(scrollRef.current, windowHeight)
+    const { sectionProgress, fromSection, toSection } = getScrollState(scrollRef.current, windowHeightRef.current)
 
     const aspect = size.width / size.height
     const isMobileAspect = aspect < 0.8
     const xScale = isMobileAspect ? 0.3 : 1
     const zScale = isMobileAspect ? 1.4 : 1
 
-    const camX = lerp(fromSection.camera.x, toSection.camera.x, sectionProgress) * xScale
-    const camY = lerp(fromSection.camera.y, toSection.camera.y, sectionProgress)
-    const camZ = lerp(fromSection.camera.z, toSection.camera.z, sectionProgress) * zScale
+    camera.position.set(
+      lerp(fromSection.camera.x, toSection.camera.x, sectionProgress) * xScale,
+      lerp(fromSection.camera.y, toSection.camera.y, sectionProgress),
+      lerp(fromSection.camera.z, toSection.camera.z, sectionProgress) * zScale
+    )
 
-    camera.position.set(camX, camY, camZ)
-
-    const lookX = lerp(fromSection.lookAt.x, toSection.lookAt.x, sectionProgress) * xScale
-    const lookY = lerp(fromSection.lookAt.y, toSection.lookAt.y, sectionProgress)
-    const lookZ = lerp(fromSection.lookAt.z, toSection.lookAt.z, sectionProgress)
-
-    lookAtTarget.current.set(lookX, lookY, lookZ)
+    lookAtTarget.current.set(
+      lerp(fromSection.lookAt.x, toSection.lookAt.x, sectionProgress) * xScale,
+      lerp(fromSection.lookAt.y, toSection.lookAt.y, sectionProgress),
+      lerp(fromSection.lookAt.z, toSection.lookAt.z, sectionProgress)
+    )
     camera.lookAt(lookAtTarget.current)
   })
 
@@ -302,12 +266,24 @@ function Stage() {
   const light1Ref = useRef<THREE.SpotLight>(null)
   const light2Ref = useRef<THREE.SpotLight>(null)
   const targetRef = useRef<THREE.Object3D>(null)
-  const { scrollRef, windowHeight } = useScrollState()
+  const scrollRef = useRef(0)
+  const windowHeightRef = useRef(0)
+
+  useEffect(() => {
+    windowHeightRef.current = window.innerHeight
+    const handleResize = () => { windowHeightRef.current = window.innerHeight }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useScroll(useCallback(({ scroll }: { scroll: number }) => {
+    scrollRef.current = scroll
+  }, []))
 
   useFrame(() => {
-    if (document.hidden || !windowHeight) return
+    if (document.hidden || !windowHeightRef.current) return
 
-    const { sectionIndex, sectionProgress } = getScrollState(scrollRef.current, windowHeight)
+    const { sectionIndex, sectionProgress } = getScrollState(scrollRef.current, windowHeightRef.current)
 
     let progress = 0
     if (sectionIndex === 0) {
@@ -471,29 +447,6 @@ function useIsMobile() {
   return isMobile
 }
 
-function getScrollPositionForSection(globalSectionIndex: number, windowHeight: number): number {
-  let sectionOffset = 0
-  let heightOffset = 0
-
-  for (const branch of BRANCHES) {
-    const branchSectionCount = branch.sections.length
-    const branchEnd = sectionOffset + branchSectionCount
-
-    if (globalSectionIndex < branchEnd) {
-      const localIndex = globalSectionIndex - sectionOffset
-      const branchHeight = branchSectionCount * windowHeight
-      const scrollable = branchHeight - windowHeight
-      const progress = branchSectionCount > 1 ? localIndex / (branchSectionCount - 1) : 0
-      return heightOffset + progress * scrollable
-    }
-
-    heightOffset += branchSectionCount * windowHeight
-    sectionOffset = branchEnd
-  }
-
-  return heightOffset
-}
-
 function ProgressIndicator({ visible, isMobile }: { visible: boolean; isMobile: boolean }) {
   const [currentBranchIndex, setCurrentBranchIndex] = useState(0)
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0)
@@ -510,8 +463,7 @@ function ProgressIndicator({ visible, isMobile }: { visible: boolean; isMobile: 
   useScroll(useCallback(({ scroll }: { scroll: number }) => {
     if (!windowHeight) return
 
-    const totalSections = ALL_SECTIONS.length
-    const sectionIndex = Math.max(0, Math.min(Math.round(scroll / windowHeight), totalSections - 1))
+    const sectionIndex = Math.max(0, Math.min(Math.round(scroll / windowHeight), TOTAL_SECTIONS - 1))
 
     let branchIdx = 0
     let sectionCount = 0
@@ -529,8 +481,7 @@ function ProgressIndicator({ visible, isMobile }: { visible: boolean; isMobile: 
 
   const jumpToSection = (globalIndex: number) => {
     if (!windowHeight) return
-    const scrollPos = getScrollPositionForSection(globalIndex, windowHeight)
-    window.scrollTo({ top: scrollPos, behavior: 'smooth' })
+    window.scrollTo({ top: globalIndex * windowHeight, behavior: 'smooth' })
   }
 
   if (!visible) return null

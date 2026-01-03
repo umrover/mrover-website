@@ -18,8 +18,7 @@ export function ProgressBar() {
     const clickY = e.clientY - rect.top
     const progress = clickY / rect.height
     const targetSection = Math.round(progress * (TOTAL_SECTIONS - 1))
-    const targetScroll = targetSection * window.innerHeight
-    window.scrollTo(0, targetScroll)
+    window.scrollTo({ top: targetSection * window.innerHeight, behavior: 'smooth' })
   }
 
   return (
