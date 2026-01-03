@@ -26,7 +26,7 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="overflow-x-hidden">
 <head>
   <SEO
     title={title}
@@ -149,7 +149,7 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
   </script>
 </head>
 
-<body class="font-lato text-base leading-normal text-michigan-blue antialiased">
+<body class="font-lato text-base leading-normal text-michigan-blue antialiased overflow-x-hidden">
   <Header />
 
   <slot />
