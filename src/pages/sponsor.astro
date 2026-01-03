@@ -6,7 +6,8 @@ const sponsorshipLevels = [
   {
     name: "Platinum",
     amount: "$5,000+",
-    color: "platinum",
+    headerBg: "bg-gradient-to-br from-[#e5e4e2]/15 to-[#b4b4b4]/10",
+    nameColor: "text-[#e5e4e2]",
     benefits: [
       "All Gold, Silver, and Bronze benefits",
       "Access to the team for videos and case studies",
@@ -17,7 +18,8 @@ const sponsorshipLevels = [
   {
     name: "Gold",
     amount: "$3,000+",
-    color: "gold",
+    headerBg: "bg-gradient-to-br from-[#ffd700]/15 to-[#daa520]/10",
+    nameColor: "text-[#ffd700]",
     benefits: [
       "All Silver and Bronze benefits",
       "Exclusive access to recruiting events",
@@ -28,7 +30,8 @@ const sponsorshipLevels = [
   {
     name: "Silver",
     amount: "$1,000+",
-    color: "silver",
+    headerBg: "bg-gradient-to-br from-[#c0c0c0]/15 to-[#a9a9a9]/10",
+    nameColor: "text-[#c0c0c0]",
     benefits: [
       "All Bronze benefits",
       "Secondary logo placement",
@@ -38,7 +41,8 @@ const sponsorshipLevels = [
   {
     name: "Bronze",
     amount: "$500+",
-    color: "bronze",
+    headerBg: "bg-gradient-to-br from-[#cd7f32]/15 to-[#b87333]/10",
+    nameColor: "text-[#cd7f32]",
     benefits: [
       "Resume book of all team members",
       "Tertiary logo placement",
@@ -49,92 +53,114 @@ const sponsorshipLevels = [
 ---
 
 <BaseLayout title="Sponsor - University of Michigan Mars Rover Team" showFooter={false}>
-  <div class="sponsor-page">
+  <div class="bg-[#0a0808] text-white">
     <!-- Hero -->
-    <section class="hero">
-      <div class="hero-bg" style="background-image: url('/images/canyons-and-sponsors.jpg');"></div>
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <h1 class="hero-title">Partner With Us</h1>
-        <p class="hero-subtitle">Help us push the boundaries of exploration</p>
-        <a href="mailto:rover@umich.edu" class="hero-cta">Get in Touch</a>
+    <section class="relative h-[70vh] min-h-[500px] flex items-center justify-center">
+      <div class="absolute inset-0 bg-cover bg-center bg-[url('/images/canyons-and-sponsors.jpg')]"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-black/60 to-[#0a0808]"></div>
+      <div class="relative text-center p-8">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold uppercase mb-4 [text-shadow:0_0_40px_rgba(255,140,0,0.3)]">
+          Partner With Us
+        </h1>
+        <p class="text-base sm:text-lg md:text-xl text-white/70 tracking-widest !mb-10">
+          Help us push the boundaries of exploration
+        </p>
+        <a
+          href="mailto:rover@umich.edu"
+          class="inline-block px-10 py-4 bg-mrover-accent text-black font-semibold uppercase tracking-wide rounded transition-all hover:bg-[#ff9f2f] hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(255,140,0,0.3)]"
+        >
+          Get in Touch
+        </a>
       </div>
     </section>
 
     <!-- Why Sponsor -->
-    <section class="section section-dark">
-      <div class="container">
-        <h2 class="section-title">Why Sponsor MRover?</h2>
-        <div class="info-grid">
-          <div class="info-card">
-            <div class="info-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+    <section class="py-20 bg-[#0a0808]">
+      <div class="max-w-[1200px] mx-auto px-8">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold uppercase text-center tracking-wide !mb-14">
+          Why Sponsor MRover?
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-white/[0.03] border border-white/[0.08] rounded-lg p-8 text-center transition-all hover:border-mrover-accent/30 hover:bg-mrover-accent/5">
+            <div class="w-12 h-12 mx-auto mb-6 text-mrover-accent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
               </svg>
             </div>
-            <h3>Materials & Prototypes</h3>
-            <p>Fund cutting-edge components and rapid prototyping for our rovers</p>
+            <h3 class="text-xl font-semibold mb-3">Materials & Prototypes</h3>
+            <p class="text-white/60 leading-relaxed">Fund cutting-edge components and rapid prototyping for our rovers</p>
           </div>
-          <div class="info-card">
-            <div class="info-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <div class="bg-white/[0.03] border border-white/[0.08] rounded-lg p-8 text-center transition-all hover:border-mrover-accent/30 hover:bg-mrover-accent/5">
+            <div class="w-12 h-12 mx-auto mb-6 text-mrover-accent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
             </div>
-            <h3>Outreach & Education</h3>
-            <p>Support STEM education and inspire the next generation of engineers</p>
+            <h3 class="text-xl font-semibold mb-3">Outreach & Education</h3>
+            <p class="text-white/60 leading-relaxed">Support STEM education and inspire the next generation of engineers</p>
           </div>
-          <div class="info-card">
-            <div class="info-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <div class="bg-white/[0.03] border border-white/[0.08] rounded-lg p-8 text-center transition-all hover:border-mrover-accent/30 hover:bg-mrover-accent/5">
+            <div class="w-12 h-12 mx-auto mb-6 text-mrover-accent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full">
                 <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
               </svg>
             </div>
-            <h3>Competition Travel</h3>
-            <p>Send our team to international rover competitions worldwide</p>
+            <h3 class="text-xl font-semibold mb-3">Competition Travel</h3>
+            <p class="text-white/60 leading-relaxed">Send our team to international rover competitions worldwide</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Sponsorship Levels -->
-    <section class="section section-levels">
-      <div class="container">
-        <h2 class="section-title">Sponsorship Tiers</h2>
-        <div class="levels-grid">
+    <section class="py-20 bg-gradient-to-b from-[#0a0808] to-[#111]">
+      <div class="max-w-[1200px] mx-auto px-8">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold uppercase text-center tracking-wide !mb-14">
+          Sponsorship Tiers
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {sponsorshipLevels.map((level) => (
-            <div class={`level-card level-${level.color}`}>
-              <div class="level-header">
-                <span class="level-name">{level.name}</span>
-                <span class="level-amount">{level.amount}</span>
+            <div class="bg-white/[0.02] border border-white/10 rounded-lg overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
+              <div class={`p-6 flex justify-between items-center border-b border-white/10 ${level.headerBg}`}>
+                <span class={`text-xl font-bold uppercase tracking-wide ${level.nameColor}`}>{level.name}</span>
+                <span class="text-lg font-semibold text-white/70">{level.amount}</span>
               </div>
-              <ul class="level-benefits">
+              <ul class="p-6 space-y-3">
                 {level.benefits.map((benefit) => (
-                  <li>{benefit}</li>
+                  <li class="flex items-start gap-3 text-white/80 leading-relaxed">
+                    <span class="w-1.5 h-1.5 rounded-full bg-mrover-accent mt-2 shrink-0"></span>
+                    <span>{benefit}</span>
+                  </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
-        <p class="levels-note">We also accommodate non-monetary donations and custom partnerships.</p>
+        <p class="text-center text-white/50 italic mt-10">
+          We also accommodate non-monetary donations and custom partnerships.
+        </p>
       </div>
     </section>
 
     <!-- Donate -->
-    <section class="section section-donate">
-      <div class="container">
-        <div class="donate-content">
-          <div class="donate-text">
-            <h2 class="section-title">Individual Donations</h2>
-            <p>Support our mission with a donation of any size. All donors receive our newsletter and recognition on our website.</p>
+    <section class="py-20 bg-mrover-accent text-black">
+      <div class="max-w-[1200px] mx-auto px-8">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+          <div class="max-w-xl">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold uppercase mb-4 tracking-wide">
+              Individual Donations
+            </h2>
+            <p class="text-lg leading-relaxed opacity-90">
+              Support our mission with a donation of any size. All donors receive our newsletter and recognition on our website.
+            </p>
           </div>
           <a
             href="https://leadersandbest.umich.edu/find/#!/give/basket/fund/933717"
             target="_blank"
             rel="noopener noreferrer"
-            class="donate-button"
+            class="inline-block px-10 py-4 bg-black text-white font-semibold uppercase tracking-wide rounded whitespace-nowrap transition-all hover:bg-[#1a1a1a] hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(0,0,0,0.2)]"
           >
             Donate Now
           </a>
@@ -143,11 +169,20 @@ const sponsorshipLevels = [
     </section>
 
     <!-- Contact -->
-    <section class="section section-contact">
-      <div class="container">
-        <h2 class="section-title">Ready to Partner?</h2>
-        <p class="contact-text">Reach out to discuss sponsorship opportunities</p>
-        <a href="mailto:rover@umich.edu" class="contact-email">rover@umich.edu</a>
+    <section class="py-24 bg-[#0a0808] text-center">
+      <div class="max-w-[1200px] mx-auto px-8">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold uppercase mb-12 tracking-wide">
+          Ready to Partner?
+        </h2>
+        <p class="text-lg text-white/60 mb-6">
+          Reach out to discuss sponsorship opportunities
+        </p>
+        <a
+          href="mailto:rover@umich.edu"
+          class="inline-block text-2xl sm:text-3xl md:text-4xl font-semibold text-mrover-accent transition-all hover:drop-shadow-[0_0_20px_rgba(255,140,0,0.5)]"
+        >
+          rover@umich.edu
+        </a>
       </div>
     </section>
 
@@ -155,332 +190,3 @@ const sponsorshipLevels = [
     <AllSponsors />
   </div>
 </BaseLayout>
-
-<style>
-  .sponsor-page {
-    background: #0a0808;
-    color: white;
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  .section {
-    padding: 5rem 0;
-  }
-
-  .section-title {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    font-weight: 700;
-    text-transform: uppercase;
-    text-align: center;
-    margin-bottom: 3rem;
-    letter-spacing: 0.05em;
-  }
-
-  /* Hero */
-  .hero {
-    position: relative;
-    height: 70vh;
-    min-height: 500px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-  }
-
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(10,8,8,1) 100%);
-  }
-
-  .hero-content {
-    position: relative;
-    text-align: center;
-    padding: 2rem;
-  }
-
-  .hero-title {
-    font-size: clamp(2.5rem, 8vw, 5rem);
-    font-weight: 700;
-    text-transform: uppercase;
-    margin: 0 0 1rem 0;
-    text-shadow: 0 0 40px rgba(255, 140, 0, 0.3);
-  }
-
-  .hero-subtitle {
-    font-size: clamp(1rem, 2.5vw, 1.5rem);
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0 0 2.5rem 0;
-    letter-spacing: 0.1em;
-  }
-
-  .hero-cta {
-    display: inline-block;
-    padding: 1rem 2.5rem;
-    background: #FF8C00;
-    color: black;
-    font-weight: 600;
-    text-transform: uppercase;
-    text-decoration: none;
-    letter-spacing: 0.05em;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-  }
-
-  .hero-cta:hover {
-    background: #ff9f2f;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(255, 140, 0, 0.3);
-  }
-
-  /* Info Grid */
-  .section-dark {
-    background: #0a0808;
-  }
-
-  .info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-  }
-
-  .info-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-
-  .info-card:hover {
-    border-color: rgba(255, 140, 0, 0.3);
-    background: rgba(255, 140, 0, 0.05);
-  }
-
-  .info-icon {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 1.5rem;
-    color: #FF8C00;
-  }
-
-  .info-icon svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .info-card h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0 0 0.75rem 0;
-  }
-
-  .info-card p {
-    color: rgba(255, 255, 255, 0.6);
-    margin: 0;
-    line-height: 1.6;
-  }
-
-  /* Sponsorship Levels */
-  .section-levels {
-    background: linear-gradient(to bottom, #0a0808 0%, #111 100%);
-  }
-
-  .levels-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .level-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
-
-  .level-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  }
-
-  .level-header {
-    padding: 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .level-name {
-    font-size: 1.25rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .level-amount {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  .level-platinum .level-header { background: linear-gradient(135deg, rgba(229, 228, 226, 0.15) 0%, rgba(180, 180, 180, 0.1) 100%); }
-  .level-platinum .level-name { color: #e5e4e2; }
-
-  .level-gold .level-header { background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(218, 165, 32, 0.1) 100%); }
-  .level-gold .level-name { color: #ffd700; }
-
-  .level-silver .level-header { background: linear-gradient(135deg, rgba(192, 192, 192, 0.15) 0%, rgba(169, 169, 169, 0.1) 100%); }
-  .level-silver .level-name { color: #c0c0c0; }
-
-  .level-bronze .level-header { background: linear-gradient(135deg, rgba(205, 127, 50, 0.15) 0%, rgba(184, 115, 51, 0.1) 100%); }
-  .level-bronze .level-name { color: #cd7f32; }
-
-  .level-benefits {
-    list-style: none;
-    margin: 0;
-    padding: 1.5rem;
-  }
-
-  .level-benefits li {
-    position: relative;
-    padding-left: 1.5rem;
-    margin-bottom: 0.75rem;
-    color: rgba(255, 255, 255, 0.8);
-    line-height: 1.5;
-  }
-
-  .level-benefits li:last-child {
-    margin-bottom: 0;
-  }
-
-  .level-benefits li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.5rem;
-    width: 6px;
-    height: 6px;
-    background: #FF8C00;
-    border-radius: 50%;
-  }
-
-  .levels-note {
-    text-align: center;
-    color: rgba(255, 255, 255, 0.5);
-    font-style: italic;
-    margin-top: 2.5rem;
-  }
-
-  /* Donate */
-  .section-donate {
-    background: #FF8C00;
-    color: black;
-  }
-
-  .section-donate .section-title {
-    color: black;
-  }
-
-  .donate-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 2rem;
-  }
-
-  @media (min-width: 768px) {
-    .donate-content {
-      flex-direction: row;
-      text-align: left;
-      justify-content: space-between;
-    }
-  }
-
-  .donate-text {
-    max-width: 600px;
-  }
-
-  .donate-text .section-title {
-    text-align: left;
-    margin-bottom: 1rem;
-  }
-
-  .donate-text p {
-    margin: 0;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    opacity: 0.9;
-  }
-
-  .donate-button {
-    display: inline-block;
-    padding: 1rem 2.5rem;
-    background: black;
-    color: white;
-    font-weight: 600;
-    text-transform: uppercase;
-    text-decoration: none;
-    letter-spacing: 0.05em;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-  }
-
-  .donate-button:hover {
-    background: #1a1a1a;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Contact */
-  .section-contact {
-    background: #0a0808;
-    text-align: center;
-    padding: 6rem 0;
-  }
-
-  .contact-text {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 1.1rem;
-    margin: 0 0 1.5rem 0;
-  }
-
-  .contact-email {
-    display: inline-block;
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
-    font-weight: 600;
-    color: #FF8C00;
-    text-decoration: none;
-    transition: all 0.3s ease;
-  }
-
-  .contact-email:hover {
-    text-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
-  }
-
-  @media (max-width: 768px) {
-    .section {
-      padding: 3rem 0;
-    }
-
-    .donate-text .section-title {
-      text-align: center;
-    }
-  }
-</style>

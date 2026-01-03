@@ -11,32 +11,38 @@ const gridRovers = reversedRovers.slice(3);
 <BaseLayout title="Rovers - University of Michigan Mars Rover Team">
   <RoversScene client:only="react" />
 
-  <div class="page-content">
+  <div class="relative z-10 pt-24 min-h-screen w-full overflow-x-hidden font-rajdhani">
     <!-- Header -->
-    <header class="page-header">
-      <h1 class="title">Our Rovers</h1>
-      <p class="subtitle">A history of innovation and exploration</p>
+    <header class="text-center px-4 pb-16">
+      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold uppercase text-white mb-4" style="font-family: 'Panchang', sans-serif; text-shadow: 0 0 30px rgba(255, 140, 0, 0.3);">
+        Our Rovers
+      </h1>
+      <p class="text-base sm:text-lg md:text-xl text-white/60 uppercase tracking-[0.2em]">
+        A history of innovation and exploration
+      </p>
     </header>
 
     <!-- Featured Rovers (Newest 3) -->
-    <section class="featured-section">
+    <section class="max-w-[1400px] mx-auto px-8 pb-16 flex flex-col gap-12">
       {featuredRovers.map((rover, index) => (
         <a
           href="#content"
           id={rover.year}
-          class={`featured-card group ${index % 2 === 1 ? 'reversed' : ''}`}
+          class={`featured-card group flex bg-[#0e0e0e]/60 border border-white/10 rounded-lg overflow-hidden no-underline backdrop-blur-sm h-[400px] cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-mrover-accent hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] ${index % 2 === 1 ? 'flex-row-reverse' : ''}`}
         >
-          <div class="featured-image-container">
-            <div class="card-image" style={`background-image: url('/${rover.image_path}');`}></div>
+          <div class="flex-[1.2] overflow-hidden relative">
+            <div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={`background-image: url('/${rover.image_path}');`}></div>
           </div>
-          
-          <div class="featured-content">
-            <h3 class="featured-year">{rover.year}</h3>
-            <p class="featured-name">{rover.name}</p>
-            <div class="featured-desc-preview">
-              <p>{rover.desc[0].substring(0, 150)}...</p>
+
+          <div class={`flex-[0.8] p-12 flex flex-col justify-center ${index % 2 === 1 ? 'border-r border-white/5' : 'border-l border-white/5'}`}>
+            <h3 class="text-5xl font-bold text-white leading-none m-0" style="font-family: 'Panchang', sans-serif;">{rover.year}</h3>
+            <p class="text-2xl text-mrover-accent uppercase tracking-[0.15em] font-semibold mt-2 mb-6">{rover.name}</p>
+            <div class="text-lg leading-relaxed text-white/70 mb-6">
+              <p class="m-0">{rover.desc[0].substring(0, 150)}...</p>
             </div>
-            <span class="read-more">Read More &rarr;</span>
+            <span class="inline-flex items-center text-white font-medium uppercase tracking-[0.1em] text-sm opacity-80 transition-all duration-300 group-hover:text-mrover-accent group-hover:opacity-100 group-hover:pl-2.5">
+              Read More &rarr;
+            </span>
           </div>
 
           <!-- Hidden data for JS -->
@@ -54,16 +60,16 @@ const gridRovers = reversedRovers.slice(3);
     </section>
 
     <!-- Rover Tiles Grid (Rest) -->
-    <section class="grid-section">
-      <div class="grid-container">
+    <section class="max-w-[1400px] mx-auto px-8 pb-16">
+      <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-8">
         {gridRovers.map(rover => (
           <a
             href="#content"
             id={rover.year}
-            class="rover-card group"
+            class="rover-card group block relative aspect-[4/3] rounded overflow-hidden border border-white/10 bg-[#0e0e0e]/40 backdrop-blur-sm no-underline cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:border-mrover-accent hover:shadow-[0_20px_40px_rgba(0,0,0,0.4),0_0_20px_rgba(255,140,0,0.2)]"
           >
-            <div class="card-image" style={`background-image: url('/${rover.image_path}');`}></div>
-            
+            <div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={`background-image: url('/${rover.image_path}');`}></div>
+
             <!-- Hidden data for JS -->
             <span class="hidden year">{rover.year}</span>
             <span class="hidden name">{rover.name}</span>
@@ -75,29 +81,28 @@ const gridRovers = reversedRovers.slice(3);
               <span class="hidden slide">{slide}</span>
             ))}
 
-            <div class="card-overlay">
-              <h3 class="card-year">{rover.year}</h3>
-              <p class="card-name">{rover.name}</p>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent flex flex-col justify-end p-6 transition-all duration-300 group-hover:from-black/95 group-hover:via-black/60 group-hover:to-black/20">
+              <h3 class="text-4xl font-semibold text-white m-0 leading-none" style="font-family: 'Panchang', sans-serif;">{rover.year}</h3>
+              <p class="text-lg text-mrover-accent mt-2 font-medium tracking-[0.1em] uppercase opacity-80 transition-opacity duration-300 group-hover:opacity-100">{rover.name}</p>
             </div>
           </a>
         ))}
       </div>
     </section>
-
   </div>
 
   <!-- Modal Overlay -->
-  <div id="rover-modal" class="modal-overlay hidden">
-    <div class="modal-backdrop"></div>
-    <div class="modal-container">
-      <div class="modal-content">
-        <div class="content-grid">
-          <div class="text-content">
+  <div id="rover-modal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-8 hidden">
+    <div class="modal-backdrop absolute inset-0 bg-black/85 opacity-0 transition-opacity duration-300"></div>
+    <div class="modal-container relative max-w-[1200px] max-h-[90vh] w-full bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 border-l-4 border-l-mrover-accent rounded-lg shadow-[0_30px_60px_rgba(0,0,0,0.5)] opacity-0 scale-95 translate-y-5 transition-all duration-300 overflow-hidden">
+      <div class="p-8 max-h-[90vh] overflow-y-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+          <div>
             <div id="content-title"></div>
-            <div id="content-text" class="prose"></div>
+            <div id="content-text" class="prose-content"></div>
           </div>
-          <div class="slideshow-wrapper">
-            <div id="content-slideshow" class="slideshow"></div>
+          <div class="relative rounded-lg overflow-hidden border border-white/10">
+            <div id="content-slideshow" class="w-full block"></div>
           </div>
         </div>
       </div>
@@ -169,12 +174,12 @@ const gridRovers = reversedRovers.slice(3);
           const slideElements = this.querySelectorAll('.slide');
 
           const contentTitle = document.getElementById('content-title');
-          contentTitle.innerHTML = `<h2 class="detail-title">${year} <span class="detail-separator">//</span> ${name}</h2>`;
+          contentTitle.innerHTML = `<h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-8 leading-tight" style="font-family: 'Panchang', sans-serif;">${year} <span class="text-mrover-accent mx-2">//</span> ${name}</h2>`;
 
           const contentText = document.getElementById('content-text');
           contentText.innerHTML = '';
           descElements.forEach(desc => {
-            contentText.insertAdjacentHTML('beforeend', `<p>${desc.textContent}</p>`);
+            contentText.insertAdjacentHTML('beforeend', `<p class="text-lg leading-relaxed text-white/85 mb-6 font-light">${desc.textContent}</p>`);
           });
 
           const contentSlideshow = document.getElementById('content-slideshow');
@@ -183,13 +188,13 @@ const gridRovers = reversedRovers.slice(3);
           if (slideElements.length > 0) {
             slideElements.forEach(slide => {
               contentSlideshow.insertAdjacentHTML('beforeend',
-                `<img class="slide fade" src="/${slide.textContent}">`
+                `<img class="slide w-full animate-fade" src="/${slide.textContent}">`
               );
             });
 
             if (slideElements.length > 1) {
-              contentSlideshow.insertAdjacentHTML('beforeend', '<a class="prev" onclick="plusSlides(-1)">&#10094;</a>');
-              contentSlideshow.insertAdjacentHTML('beforeend', '<a class="next" onclick="plusSlides(1)">&#10095;</a>');
+              contentSlideshow.insertAdjacentHTML('beforeend', '<a class="prev absolute top-1/2 left-0 -mt-5 p-4 text-white font-bold text-2xl bg-black/50 cursor-pointer select-none z-10 rounded-r transition-colors hover:bg-mrover-accent" onclick="plusSlides(-1)">&#10094;</a>');
+              contentSlideshow.insertAdjacentHTML('beforeend', '<a class="next absolute top-1/2 right-0 -mt-5 p-4 text-white font-bold text-2xl bg-black/50 cursor-pointer select-none z-10 rounded-l transition-colors hover:bg-mrover-accent" onclick="plusSlides(1)">&#10095;</a>');
             }
 
             slideIndex = 0;
@@ -205,400 +210,53 @@ const gridRovers = reversedRovers.slice(3);
   <style>
     @import url('https://api.fontshare.com/v2/css?f[]=panchang@400,500,600,700&display=swap');
 
-    /* Global override for this page */
     :global(body) {
-        background: #0a0808 !important;
-        color: white;
-    }
-    
-
-    .page-content {
-        position: relative;
-        z-index: 10;
-        padding-top: 100px;
-        min-height: 100vh;
-        width: 100%;
-        overflow-x: hidden;
-        font-family: 'Rajdhani', sans-serif;
-    }
-
-    .page-header {
-        text-align: center;
-        padding: 2rem 1rem 4rem 1rem;
-    }
-
-    .title {
-        font-family: 'Panchang', sans-serif;
-        font-size: clamp(2.5rem, 8vw, 5rem);
-        font-weight: 700;
-        text-transform: uppercase;
-        margin: 0 0 1rem 0;
-        color: white;
-        text-shadow: 0 0 30px rgba(255, 140, 0, 0.3);
-    }
-
-    .subtitle {
-        font-size: clamp(1rem, 2vw, 1.5rem);
-        color: rgba(255, 255, 255, 0.6);
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        margin: 0;
-    }
-
-    .grid-section {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 2rem 4rem 2rem;
-    }
-
-    .grid-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 2rem;
-    }
-
-    .featured-section {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 2rem 4rem 2rem;
-        display: flex;
-        flex-direction: column;
-        gap: 3rem;
-    }
-
-    .featured-card {
-        display: flex;
-        background: rgba(14, 14, 14, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        overflow: hidden;
-        text-decoration: none;
-        transition: all 0.4s ease;
-        backdrop-filter: blur(4px);
-        height: 400px;
-        cursor: pointer;
-    }
-
-    .featured-card.reversed {
-        flex-direction: row-reverse;
-    }
-
-    .featured-card:hover {
-        transform: translateY(-5px);
-        border-color: #FF8C00;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    }
-
-    .featured-image-container {
-        flex: 1.2;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .featured-content {
-        flex: 0.8;
-        padding: 3rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        border-left: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .featured-card.reversed .featured-content {
-        border-left: none;
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .featured-year {
-        font-family: 'Panchang', sans-serif;
-        font-size: 3.5rem;
-        font-weight: 700;
-        color: white;
-        line-height: 1;
-        margin: 0;
-    }
-
-    .featured-name {
-        font-size: 1.5rem;
-        color: #FF8C00;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        font-weight: 600;
-        margin: 0.5rem 0 1.5rem 0;
-    }
-
-    .featured-desc-preview p {
-        font-size: 1.1rem;
-        line-height: 1.6;
-        color: rgba(255, 255, 255, 0.7);
-        margin: 0 0 1.5rem 0;
-    }
-
-    .read-more {
-        display: inline-flex;
-        align-items: center;
-        color: white;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        font-size: 0.9rem;
-        opacity: 0.8;
-        transition: all 0.3s;
-    }
-
-    .featured-card:hover .read-more {
-        color: #FF8C00;
-        opacity: 1;
-        padding-left: 10px;
-    }
-
-    @media (max-width: 900px) {
-        .featured-card, .featured-card.reversed {
-            flex-direction: column;
-            height: auto;
-        }
-        
-        .featured-image-container {
-            height: 250px;
-            flex: none;
-        }
-
-        .featured-content {
-            padding: 2rem;
-            flex: none;
-            border: none !important;
-        }
-
-        .featured-year {
-            font-size: 2.5rem;
-        }
-    }
-
-    .rover-card {
-        display: block;
-        position: relative;
-        aspect-ratio: 4/3;
-        border-radius: 4px;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(14, 14, 14, 0.4);
-        backdrop-filter: blur(4px);
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        text-decoration: none;
-        cursor: pointer;
-    }
-
-    .rover-card:hover {
-        transform: translateY(-8px);
-        border-color: #FF8C00;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 140, 0, 0.2);
-    }
-
-    .card-image {
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        transition: transform 0.6s ease;
-    }
-
-    .rover-card:hover .card-image {
-        transform: scale(1.05);
-    }
-
-    .card-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 40%, transparent 100%);
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        padding: 1.5rem;
-        transition: all 0.3s;
-    }
-
-    .rover-card:hover .card-overlay {
-        background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.2) 100%);
-    }
-
-    .card-year {
-        font-family: 'Panchang', sans-serif;
-        font-size: 2.2rem;
-        font-weight: 600;
-        color: white;
-        margin: 0;
-        line-height: 1;
-    }
-
-    .card-name {
-        font-size: 1.1rem;
-        color: #FF8C00;
-        margin: 0.5rem 0 0 0;
-        font-weight: 500;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        opacity: 0.8;
-        transition: opacity 0.3s;
-    }
-
-    .rover-card:hover .card-name {
-        opacity: 1;
-    }
-
-    /* Modal */
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-    }
-
-    .modal-overlay.hidden {
-        display: none;
-    }
-
-    .modal-backdrop {
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.85);
-        opacity: 0;
-        transition: opacity 0.3s ease;
+      background: #0a0808 !important;
+      color: white;
     }
 
     .modal-overlay.visible .modal-backdrop {
-        opacity: 1;
-    }
-
-    .modal-container {
-        position: relative;
-        max-width: 1200px;
-        max-height: 90vh;
-        width: 100%;
-        background: rgba(10, 10, 10, 0.95);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-left: 4px solid #FF8C00;
-        border-radius: 8px;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-        opacity: 0;
-        transform: scale(0.95) translateY(20px);
-        transition: opacity 0.3s ease, transform 0.3s ease;
-        overflow: hidden;
+      opacity: 1;
     }
 
     .modal-overlay.visible .modal-container {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-
-    .modal-content {
-        padding: 2rem;
-        max-height: 90vh;
-        overflow-y: auto;
-    }
-
-    .content-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 4rem;
-        align-items: center;
-    }
-
-    @media (max-width: 900px) {
-        .content-grid {
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-        .modal-overlay {
-            padding: 1rem;
-        }
-        .modal-content {
-            padding: 1.5rem;
-        }
-    }
-
-    .detail-title {
-        font-family: 'Panchang', sans-serif;
-        font-size: clamp(2rem, 5vw, 3rem);
-        font-weight: 600;
-        color: white;
-        margin: 0 0 2rem 0;
-        line-height: 1.1;
-    }
-
-    .detail-separator {
-        color: #FF8C00;
-        margin: 0 0.5rem;
-    }
-
-    .prose p {
-        font-size: 1.15rem;
-        line-height: 1.7;
-        color: rgba(255, 255, 255, 0.85);
-        margin-bottom: 1.5rem;
-        font-weight: 300;
-    }
-
-    /* Slideshow */
-    .slideshow-wrapper {
-        position: relative;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .slideshow {
-        width: 100%;
-        display: block;
+      opacity: 1;
+      transform: scale(1) translateY(0);
     }
 
     .slide {
-        width: 100%;
-        display: none;
-    }
-
-    .fade {
-        animation-name: fade;
-        animation-duration: 0.5s;
+      display: none;
     }
 
     @keyframes fade {
-        from {opacity: 0.4} 
-        to {opacity: 1}
+      from { opacity: 0.4; }
+      to { opacity: 1; }
     }
 
-    .prev, .next {
-        cursor: pointer;
-        position: absolute;
-        top: 50%;
-        width: auto;
-        padding: 16px;
-        margin-top: -22px;
-        color: white;
-        font-weight: bold;
-        font-size: 24px;
-        transition: 0.3s ease;
-        user-select: none;
-        background-color: rgba(0,0,0,0.5);
-        z-index: 5;
+    .animate-fade {
+      animation: fade 0.5s;
     }
 
-    .next {
-        right: 0;
-        border-radius: 4px 0 0 4px;
-    }
+    @media (max-width: 900px) {
+      .featured-card {
+        flex-direction: column !important;
+        height: auto !important;
+      }
 
-    .prev {
-        left: 0;
-        border-radius: 0 4px 4px 0;
-    }
+      .featured-card > div:first-child {
+        height: 250px;
+        flex: none !important;
+      }
 
-    .prev:hover, .next:hover {
-        background-color: #FF8C00;
+      .featured-card > div:last-of-type {
+        padding: 2rem !important;
+        flex: none !important;
+        border: none !important;
+      }
+
+      .featured-card h3 {
+        font-size: 2.5rem !important;
+      }
     }
   </style>
 </BaseLayout>

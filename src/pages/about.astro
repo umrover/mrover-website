@@ -5,27 +5,30 @@ import { BRANCHES } from "@/components/about/SceneConfig";
 ---
 
 <BaseLayout title="About - University of Michigan Mars Rover Team">
-  <div class="about-content-wrapper">
+  <div class="about-content-wrapper relative font-rajdhani" style="clip-path: inset(0);">
     <SceneManager client:only="react" />
 
-    <main class="relative z-10">
+    <main class="relative z-[1] text-white">
       {BRANCHES.map((branch) => (
         <div
-          class="branch-wrapper"
+          class="branch-wrapper relative"
           data-branch={branch.name}
-          style={`--branch-sections: ${branch.sections.length}; --branch-color: ${branch.color}; --branch-accent: ${branch.accent};`}
+          style={`height: calc(${branch.sections.length} * 100dvh); --branch-color: ${branch.color}; --branch-accent: ${branch.accent};`}
         >
-          <div class="branch-inner">
-            <div class="branch-slides">
+          <div class="sticky top-0 h-dvh overflow-hidden flex flex-col">
+            <div class="branch-slides flex flex-1 items-stretch">
               {branch.sections.map((section) => (
-                <section class="slide" data-id={section.name}>
+                <section
+                  class={`min-w-screen w-screen h-dvh flex flex-col p-0 px-16 pb-16 box-border pointer-events-none shrink-0 ${section.name === 'mission-intro' ? 'justify-center items-center' : 'justify-end items-end'}`}
+                  data-id={section.name}
+                >
                   {section.name === 'mission-intro' ? (
-                    <div class="slide-intro">
-                      <h1 class="intro-title">
+                    <div class="flex flex-col items-center">
+                      <h1 class="intro-title text-white m-0 leading-none tracking-[0.02em] text-center flex flex-col items-center select-none uppercase font-bold" style="font-family: 'Panchang', sans-serif; font-size: clamp(2.5rem, 12vw, 8rem);">
                         {(section.label || '').split(' ').map((word: string, wordIndex: number) => (
-                          <div class="word" style={`--word-index: ${wordIndex}`}>
+                          <div class="block overflow-hidden" style={`--word-index: ${wordIndex}`}>
                             {word.split('').map((char: string, charIndex: number) => (
-                              <span class="char" style={`--char-index: ${charIndex}; --word-index: ${wordIndex}`}>
+                              <span class="char inline-block" style={`--char-index: ${charIndex}; --word-index: ${wordIndex}`}>
                                 {char}
                               </span>
                             ))}
@@ -34,14 +37,14 @@ import { BRANCHES } from "@/components/about/SceneConfig";
                       </h1>
                     </div>
                   ) : section.name === 'mission' ? (
-                    <div class="card">
-                      <h2 class="card-title">Our Mission</h2>
-                      <p class="card-desc">{section.description}</p>
+                    <div class="card w-[500px] min-h-[180px] p-6 bg-[#0e0e0e]/50 backdrop-blur-md text-white pointer-events-auto flex flex-col" style={`border: 1px solid var(--branch-accent, rgba(255,255,255,0.3));`}>
+                      <h2 class="text-3xl font-semibold uppercase leading-tight mb-4 break-keep" style={`font-family: 'Panchang', sans-serif; color: var(--branch-accent, #FF8C00);`}>Our Mission</h2>
+                      <p class="text-xl leading-relaxed text-white/90 m-0">{section.description}</p>
                     </div>
                   ) : (
-                    <div class="card">
-                      <h2 class="card-title">{section.subteam?.name}</h2>
-                      <p class="card-desc">{section.subteam?.desc}</p>
+                    <div class="card w-[500px] min-h-[180px] p-6 bg-[#0e0e0e]/50 backdrop-blur-md text-white pointer-events-auto flex flex-col" style={`border: 1px solid var(--branch-accent, rgba(255,255,255,0.3));`}>
+                      <h2 class="text-3xl font-semibold uppercase leading-tight mb-4 break-keep" style={`font-family: 'Panchang', sans-serif; color: var(--branch-accent, #FF8C00);`}>{section.subteam?.name}</h2>
+                      <p class="text-xl leading-relaxed text-white/90 m-0">{section.subteam?.desc}</p>
                     </div>
                   )}
                 </section>
@@ -63,7 +66,7 @@ import { BRANCHES } from "@/components/about/SceneConfig";
 
       document.querySelectorAll('.branch-wrapper').forEach((wrapper) => {
         const slides = wrapper.querySelector('.branch-slides') as HTMLElement
-        const sections = slides?.querySelectorAll('.slide') as NodeListOf<HTMLElement>
+        const sections = slides?.querySelectorAll('section') as NodeListOf<HTMLElement>
 
         if (!slides || !sections || sections.length <= 1) return
 
@@ -104,13 +107,6 @@ import { BRANCHES } from "@/components/about/SceneConfig";
 
 <style>
   @import url('https://api.fontshare.com/v2/css?f[]=panchang@400,500,600,700&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap');
-
-  .about-content-wrapper {
-    position: relative;
-    clip-path: inset(0);
-    font-family: 'Rajdhani', system-ui, -apple-system, sans-serif;
-  }
 
   :global(footer) {
     display: none;
@@ -127,80 +123,17 @@ import { BRANCHES } from "@/components/about/SceneConfig";
     backdrop-filter: none !important;
   }
 
-  main {
-    position: relative;
-    z-index: 1;
-    color: white;
+  :global(html),
+  :global(body) {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: auto;
   }
 
-  .branch-wrapper {
-    height: calc(var(--branch-sections) * 100dvh);
-    position: relative;
+  :global(body) {
+    touch-action: pan-x pan-y;
   }
 
-  .branch-inner {
-    position: sticky;
-    top: 0;
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .branch-slides {
-    display: flex;
-    flex: 1;
-    align-items: stretch;
-  }
-
-  .slide {
-    min-width: 100vw;
-    width: 100vw;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-end;
-    padding: 0 4rem 4rem 4rem;
-    box-sizing: border-box;
-    pointer-events: none;
-    flex-shrink: 0;
-  }
-
-  .slide[data-id="mission-intro"] {
-    justify-content: center;
-    align-items: center;
-  }
-
-  .slide-intro {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .intro-title {
-    font-family: 'Panchang', sans-serif;
-    font-size: clamp(2.5rem, 12vw, 8rem);
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #ffffff;
-    margin: 0;
-    line-height: 1;
-    letter-spacing: 0.02em;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    user-select: none;
-  }
-
-  .intro-title .word {
-    display: block;
-    overflow: hidden;
-  }
-
-  .intro-title .char {
-    display: inline-block;
+  .char {
     opacity: 0;
     transform: translateY(100%) rotateX(-90deg);
     animation: char-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -218,65 +151,23 @@ import { BRANCHES } from "@/components/about/SceneConfig";
     }
   }
 
-  .card {
-    width: 500px;
-    min-height: 180px;
-    padding: 1.5rem;
-    background: rgba(14, 14, 14, 0.5);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--branch-accent, rgba(255,255,255,0.3));
-    color: white;
-    pointer-events: auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .card-title {
-    font-family: 'Panchang', sans-serif;
-    font-size: 1.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    line-height: 1.2;
-    color: var(--branch-accent, #FF8C00);
-    margin: 0 0 1rem 0;
-    word-break: keep-all;
-  }
-
-  .card-desc {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.25rem;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.9);
-    margin: 0;
-  }
-
-  :global(html),
-  :global(body) {
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: auto;
-  }
-
-  :global(body) {
-    touch-action: pan-x pan-y;
-  }
-
   @media (max-width: 800px) {
-    .slide {
-      padding: 0 1.5rem 2rem 1.5rem;
-      align-items: flex-start;
+    section {
+      padding: 0 1.5rem 2rem 1.5rem !important;
+      align-items: flex-start !important;
     }
 
     .card {
-      width: calc(100vw - 3rem);
+      width: calc(100vw - 3rem) !important;
       max-width: none;
     }
 
-    .card-title {
-      font-size: 1.4rem;
+    .card h2 {
+      font-size: 1.4rem !important;
     }
 
-    .card-desc {
-      font-size: 1.1rem;
+    .card p {
+      font-size: 1.1rem !important;
     }
   }
 </style>

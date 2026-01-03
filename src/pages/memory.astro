@@ -3,64 +3,9 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="In Remembrance - University of Michigan Mars Rover Team" showFooter={false}>
-  <style>
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes gentlePulse {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 0.7; }
-    }
-
-    .fade-in {
-      animation: fadeInUp 1s ease-out forwards;
-    }
-
-    .fade-in-delay-1 { animation-delay: 0.2s; opacity: 0; }
-    .fade-in-delay-2 { animation-delay: 0.4s; opacity: 0; }
-    .fade-in-delay-3 { animation-delay: 0.6s; opacity: 0; }
-    .fade-in-delay-4 { animation-delay: 0.8s; opacity: 0; }
-
-    .star-field {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .star {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
-      border-radius: 50%;
-      animation: gentlePulse 3s ease-in-out infinite;
-    }
-
-    .photo-frame {
-      position: relative;
-    }
-
-    .photo-frame::before {
-      content: '';
-      position: absolute;
-      inset: -3px;
-      background: linear-gradient(135deg, rgba(251, 196, 33, 0.3), rgba(0, 39, 76, 0.5), rgba(251, 196, 33, 0.3));
-      border-radius: 12px;
-      z-index: -1;
-    }
-  </style>
-
-<div class="relative min-h-screen bg-linear-to-b from-[#000814] via-[#001d3d] to-[#000814] pt-24 pb-20 overflow-hidden">
-    <div class="star-field">
+  <div class="relative min-h-screen bg-gradient-to-b from-[#000814] via-[#001d3d] to-[#000814] pt-24 pb-20 overflow-hidden">
+    <!-- Star field -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div class="star" style="top: 10%; left: 15%; animation-delay: 0s;"></div>
       <div class="star" style="top: 20%; left: 80%; animation-delay: 0.5s;"></div>
       <div class="star" style="top: 35%; left: 25%; animation-delay: 1s;"></div>
@@ -74,18 +19,20 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     </div>
 
     <div class="relative z-10 max-w-4xl mx-auto px-6">
+      <!-- Header -->
       <header class="text-center mb-16 fade-in">
         <p class="text-michigan-maize/70 uppercase tracking-[0.3em] text-sm mb-4">In Loving Memory</p>
         <h1 class="text-4xl md:text-5xl lg:text-6xl text-white font-light tracking-wide">
           Jacqueline Tardif
         </h1>
         <div class="mt-6 flex items-center justify-center gap-4">
-          <span class="h-px w-16 bg-linear-to-r from-transparent to-michigan-maize/50"></span>
+          <span class="h-px w-16 bg-gradient-to-r from-transparent to-michigan-maize/50"></span>
           <span class="text-michigan-maize/60 text-lg">1988 - 2021</span>
-          <span class="h-px w-16 bg-linear-to-l from-transparent to-michigan-maize/50"></span>
+          <span class="h-px w-16 bg-gradient-to-l from-transparent to-michigan-maize/50"></span>
         </div>
       </header>
 
+      <!-- Photo -->
       <div class="flex justify-center mb-16 fade-in fade-in-delay-1">
         <div class="photo-frame">
           <img
@@ -96,6 +43,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
         </div>
       </div>
 
+      <!-- Quote -->
       <blockquote class="text-center mb-16 fade-in fade-in-delay-2">
         <p class="text-xl md:text-2xl text-white/70 italic font-light leading-relaxed max-w-2xl mx-auto">
           "Per aspera ad astra"
@@ -103,8 +51,9 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
         <p class="text-michigan-maize/50 mt-3 text-sm tracking-wider">Through hardships to the stars</p>
       </blockquote>
 
-      <div class="h-px w-32 mx-auto bg-linear-to-r from-transparent via-michigan-maize/30 to-transparent mb-16 mt-8"></div>
+      <div class="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-michigan-maize/30 to-transparent mb-16 mt-8"></div>
 
+      <!-- Article -->
       <article class="space-y-8 text-white/80 leading-relaxed text-lg fade-in fade-in-delay-3">
         <p>
           The MRover team honors the memory of <strong class="text-white font-normal">Jacqueline Tardif</strong>,
@@ -133,15 +82,16 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
         </p>
       </article>
 
-      <div class="h-px w-32 mx-auto bg-linear-to-r from-transparent via-michigan-maize/30 to-transparent my-16"></div>
+      <div class="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-michigan-maize/30 to-transparent my-16"></div>
 
+      <!-- Footer -->
       <footer class="text-center fade-in fade-in-delay-4 flex flex-col items-center">
         <p class="text-white/60 max-w-md text-balance">
           Jackie's full obituary and donation links to Ride to Fly and the National Math and Science Initiative can be found at:
         </p>
         <a
           href="https://www.legacy.com/us/obituaries/washingtonpost/name/jacqueline-tardif-obituary?pid=197677974"
-          class="inline-flex items-center gap-2 px-6 py-3 border border-michigan-maize/30 text-michigan-maize hover:bg-michigan-maize/10 transition-colors duration-300 rounded"
+          class="inline-flex items-center gap-2 px-6 py-3 border border-michigan-maize/30 text-michigan-maize hover:bg-michigan-maize/10 transition-colors duration-300 rounded mt-4"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -154,3 +104,52 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     </div>
   </div>
 </BaseLayout>
+
+<style>
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes gentlePulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.7; }
+  }
+
+  .fade-in {
+    animation: fadeInUp 1s ease-out forwards;
+  }
+
+  .fade-in-delay-1 { animation-delay: 0.2s; opacity: 0; }
+  .fade-in-delay-2 { animation-delay: 0.4s; opacity: 0; }
+  .fade-in-delay-3 { animation-delay: 0.6s; opacity: 0; }
+  .fade-in-delay-4 { animation-delay: 0.8s; opacity: 0; }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: gentlePulse 3s ease-in-out infinite;
+  }
+
+  .photo-frame {
+    position: relative;
+  }
+
+  .photo-frame::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    background: linear-gradient(135deg, rgba(251, 196, 33, 0.3), rgba(0, 39, 76, 0.5), rgba(251, 196, 33, 0.3));
+    border-radius: 12px;
+    z-index: -1;
+  }
+</style>

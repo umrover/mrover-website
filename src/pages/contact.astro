@@ -11,16 +11,20 @@ const executives = [
 ---
 
 <BaseLayout title="Contact - University of Michigan Mars Rover Team">
-  <div class="contact-page">
-    <div class="hero-bg" style="background-image: url('/images/festifall2022.jpg');"></div>
-    <div class="hero-overlay"></div>
+  <div class="relative min-h-screen flex items-center justify-center">
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/images/festifall2022.jpg');"></div>
+    <div class="absolute inset-0 bg-linear-to-b from-black/70 to-[#0a0808]/95"></div>
 
-    <div class="content">
+    <div class="relative z-10 w-full max-w-[1000px] mx-auto px-8 py-24">
       <!-- Team Contact -->
-      <section class="team-section">
-        <h1 class="page-title">Contact Us</h1>
-        <a href="mailto:rover@umich.edu" class="team-email">rover@umich.edu</a>
-        <div class="team-address">
+      <section class="text-center mb-20">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold uppercase text-white mb-6" style="text-shadow: 0 0 40px rgba(255, 140, 0, 0.3);">
+          Contact Us
+        </h1>
+        <a href="mailto:rover@umich.edu" class="inline-block text-xl md:text-2xl font-semibold text-mrover-accent mb-8 hover:opacity-80 transition-opacity">
+          rover@umich.edu
+        </a>
+        <div class="text-white/70 leading-relaxed">
           <p>University of Michigan</p>
           <p>Wilson Student Team Project Center</p>
           <p>2603 Draper, Ann Arbor, MI 48109-2101</p>
@@ -28,14 +32,22 @@ const executives = [
       </section>
 
       <!-- Executive Board -->
-      <section class="exec-section">
-        <h2 class="section-title">Executive Board</h2>
-        <div class="exec-grid">
+      <section class="text-center">
+        <h2 class="text-2xl md:text-3xl font-bold uppercase text-white mb-10 tracking-wide">
+          Executive Board
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {executives.map((exec) => (
-            <div class="exec-card">
-              <span class="exec-title">{exec.title}</span>
-              <span class="exec-name">{exec.name}</span>
-              <a href={`mailto:${exec.email}`} class="exec-email">{exec.email}</a>
+            <div class="bg-white/3 border border-white/10 rounded-lg p-6 flex flex-col gap-2 transition-all hover:border-mrover-accent/40 hover:bg-mrover-accent/5 hover:-translate-y-0.5">
+              <span class="text-xs font-semibold uppercase tracking-wider text-mrover-accent">
+                {exec.title}
+              </span>
+              <span class="text-lg font-medium text-white">
+                {exec.name}
+              </span>
+              <a href={`mailto:${exec.email}`} class="text-sm text-white/50 hover:text-mrover-accent transition-colors">
+                {exec.email}
+              </a>
             </div>
           ))}
         </div>
@@ -43,145 +55,3 @@ const executives = [
     </div>
   </div>
 </BaseLayout>
-
-<style>
-  .contact-page {
-    position: relative;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-  }
-
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(10,8,8,0.95) 100%);
-  }
-
-  .content {
-    position: relative;
-    z-index: 10;
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 6rem 2rem;
-  }
-
-  /* Team Section */
-  .team-section {
-    text-align: center;
-    margin-bottom: 5rem;
-  }
-
-  .page-title {
-    font-size: clamp(2.5rem, 8vw, 4rem);
-    font-weight: 700;
-    text-transform: uppercase;
-    margin: 0 0 1.5rem 0;
-    color: white;
-    text-shadow: 0 0 40px rgba(255, 140, 0, 0.3);
-  }
-
-  .team-email {
-    display: inline-block;
-    font-size: clamp(1.25rem, 3vw, 1.75rem);
-    font-weight: 600;
-    color: #FF8C00;
-    text-decoration: none;
-    margin-bottom: 2rem;
-    transition: all 0.3s ease;
-  }
-
-  .team-email:hover {
-    text-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
-  }
-
-  .team-address {
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.8;
-  }
-
-  .team-address p {
-    margin: 0;
-  }
-
-  /* Executive Section */
-  .exec-section {
-    text-align: center;
-  }
-
-  .section-title {
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    font-weight: 700;
-    text-transform: uppercase;
-    color: white;
-    margin: 0 0 2.5rem 0;
-    letter-spacing: 0.05em;
-  }
-
-  .exec-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.25rem;
-  }
-
-  .exec-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-  }
-
-  .exec-card:hover {
-    border-color: rgba(255, 140, 0, 0.4);
-    background: rgba(255, 140, 0, 0.05);
-    transform: translateY(-2px);
-  }
-
-  .exec-title {
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #FF8C00;
-  }
-
-  .exec-name {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: white;
-  }
-
-  .exec-email {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.5);
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-
-  .exec-email:hover {
-    color: #FF8C00;
-  }
-
-  @media (max-width: 600px) {
-    .content {
-      padding: 4rem 1.5rem;
-    }
-
-    .exec-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
