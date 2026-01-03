@@ -1,122 +1,153 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import AllSponsors from "@/components/AllSponsors.astro";
+
+const sponsorshipLevels = [
+  {
+    name: "Platinum",
+    amount: "$5,000+",
+    color: "platinum",
+    benefits: [
+      "All Gold, Silver, and Bronze benefits",
+      "Access to the team for videos and case studies",
+      "Featured logo on our rover during competition",
+      "Most prominent placement on website, t-shirts, and presentations",
+    ],
+  },
+  {
+    name: "Gold",
+    amount: "$3,000+",
+    color: "gold",
+    benefits: [
+      "All Silver and Bronze benefits",
+      "Exclusive access to recruiting events",
+      "Primary logo placement on all materials",
+      "Social media recognition post",
+    ],
+  },
+  {
+    name: "Silver",
+    amount: "$1,000+",
+    color: "silver",
+    benefits: [
+      "All Bronze benefits",
+      "Secondary logo placement",
+      "Exclusive meetings with the team",
+    ],
+  },
+  {
+    name: "Bronze",
+    amount: "$500+",
+    color: "bronze",
+    benefits: [
+      "Resume book of all team members",
+      "Tertiary logo placement",
+      "Monthly email newsletter updates",
+    ],
+  },
+];
 ---
 
 <BaseLayout title="Sponsor - University of Michigan Mars Rover Team" showFooter={false}>
-  <!-- Hero -->
-  <div
-    class="relative h-96 md:h-[500px] lg:h-[600px] bg-cover bg-center"
-    style="background-image: url('/images/canyons-and-sponsors.jpg');"
-  >
-    <div class="absolute inset-0 bg-black/70"></div>
-  </div>
-
-  <div class="bg-white">
-    <!-- Sponsorship Information -->
-    <section class="py-16 md:py-20">
-      <div class="max-w-3xl mx-auto px-6">
-        <h2 class="text-3xl md:text-4xl text-center uppercase text-michigan-blue font-bold mb-8">Sponsorships</h2>
-        <div class="prose prose-lg max-w-none">
-          <p class="text-gray-700 leading-relaxed">
-            MRover relies on sponsorships and donations to fund all of our activities throughout the year. In particular,
-            we use funds to:
-          </p>
-          <ul class="space-y-2 text-gray-700 mb-6">
-            <li>purchase materials</li>
-            <li>create prototypes</li>
-            <li>improve our toolset</li>
-            <li>organize outreach events</li>
-            <li>send the team to competition</li>
-          </ul>
-
-          <p class="text-gray-700 leading-relaxed mb-6">
-            As we ramp up our outreach efforts, plan more prototypes, and look into going to additional competitions, our
-            team budget is rising. We would appreciate your support to help us continue our growth as a team.
-          </p>
-
-          <p class="text-gray-700 leading-relaxed">For more information about sponsoring us, please contact us at:</p>
-
-          <h3 class="text-center text-2xl font-semibold mt-4">
-            <a href="mailto:rover@umich.edu" class="text-mrover-accent hover:text-mrover-accent/80">rover@umich.edu</a>
-          </h3>
-        </div>
+  <div class="sponsor-page">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-bg" style="background-image: url('/images/canyons-and-sponsors.jpg');"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 class="hero-title">Partner With Us</h1>
+        <p class="hero-subtitle">Help us push the boundaries of exploration</p>
+        <a href="mailto:rover@umich.edu" class="hero-cta">Get in Touch</a>
       </div>
     </section>
 
-    <!-- Individual Donations -->
-    <section class="py-16 md:py-20 border-t border-gray-100">
-      <div class="max-w-4xl mx-auto px-6">
-        <h2 class="text-3xl md:text-4xl text-center uppercase text-michigan-blue font-bold mb-8">Donations</h2>
-        <div class="flex flex-col md:flex-row items-center justify-center gap-8">
-          <p class="text-gray-700 leading-relaxed max-w-xl">
-            We value online donations by individuals. You choose the size of your donation. All donors get our newsletter
-            and their name on our website.
-          </p>
-          <a
-            href="https://leadersandbest.umich.edu/find/#!/give/basket/fund/933717"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <button
-              class="inline-block px-8 py-3 text-base font-medium uppercase bg-mrover-accent text-black rounded-lg hover:bg-mrover-accent/90 transition-all shadow-md hover:shadow-lg whitespace-nowrap cursor-pointer"
-            >
-              Donate
-            </button>
-          </a>
+    <!-- Why Sponsor -->
+    <section class="section section-dark">
+      <div class="container">
+        <h2 class="section-title">Why Sponsor MRover?</h2>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <h3>Materials & Prototypes</h3>
+            <p>Fund cutting-edge components and rapid prototyping for our rovers</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <h3>Outreach & Education</h3>
+            <p>Support STEM education and inspire the next generation of engineers</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              </svg>
+            </div>
+            <h3>Competition Travel</h3>
+            <p>Send our team to international rover competitions worldwide</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Sponsorship Levels -->
-    <section class="py-16 md:py-20 border-t border-gray-100">
-      <div class="max-w-4xl mx-auto px-6">
-        <h2 class="text-3xl md:text-4xl text-center uppercase text-michigan-blue font-bold mb-8">Sponsorship Levels</h2>
-        <div class="space-y-8">
-          <!-- Platinum -->
-          <div class="border-l-4 border-mrover-accent pl-6">
-            <h3 class="text-2xl font-bold text-michigan-blue mb-3">Platinum - $5,000 or greater</h3>
-            <ul class="space-y-2 text-gray-700">
-              <li>Includes all Gold, Silver, and Bronze benefits plus the following:</li>
-              <li>Access to the team for videos, case studies, etc.</li>
-              <li>Featured logo on our rover during competition.</li>
-              <li>Most prominent logos on website, t-shirts, and presentations</li>
-            </ul>
-          </div>
-
-          <!-- Gold -->
-          <div class="border-l-4 border-yellow-500 pl-6">
-            <h3 class="text-2xl font-bold text-michigan-blue mb-3">Gold - $3000 or greater</h3>
-            <ul class="space-y-2 text-gray-700">
-              <li>Includes all Silver and Bronze benefits plus the following:</li>
-              <li>Exclusive access to recruiting events hosted by MRover.</li>
-              <li>Primary logos on website, t-shirts, and presentations</li>
-              <li>Social media post recognizing/thanking the sponsor.</li>
-            </ul>
-          </div>
-
-          <!-- Silver -->
-          <div class="border-l-4 border-gray-400 pl-6">
-            <h3 class="text-2xl font-bold text-michigan-blue mb-3">Silver - $1000</h3>
-            <ul class="space-y-2 text-gray-700">
-              <li>Includes all Bronze benefits plus the following:</li>
-              <li>Secondary logo on website, t-shirts, and presentations</li>
-              <li>Exclusive meetings with the MRover team</li>
-            </ul>
-          </div>
-
-          <!-- Bronze -->
-          <div class="border-l-4 border-amber-700 pl-6">
-            <h3 class="text-2xl font-bold text-michigan-blue mb-3">Bronze - $500</h3>
-            <ul class="space-y-2 text-gray-700">
-              <li>Resume book containing resumes of all team members</li>
-              <li>Tertiary logo on website, t-shirts, and all official presentations</li>
-              <li>Monthly updates via email newsletter</li>
-            </ul>
-          </div>
-
-          <p class="text-gray-500 italic text-center pt-6">We are also willing to accommodate non-monetary donations.</p>
+    <section class="section section-levels">
+      <div class="container">
+        <h2 class="section-title">Sponsorship Tiers</h2>
+        <div class="levels-grid">
+          {sponsorshipLevels.map((level) => (
+            <div class={`level-card level-${level.color}`}>
+              <div class="level-header">
+                <span class="level-name">{level.name}</span>
+                <span class="level-amount">{level.amount}</span>
+              </div>
+              <ul class="level-benefits">
+                {level.benefits.map((benefit) => (
+                  <li>{benefit}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
+        <p class="levels-note">We also accommodate non-monetary donations and custom partnerships.</p>
+      </div>
+    </section>
+
+    <!-- Donate -->
+    <section class="section section-donate">
+      <div class="container">
+        <div class="donate-content">
+          <div class="donate-text">
+            <h2 class="section-title">Individual Donations</h2>
+            <p>Support our mission with a donation of any size. All donors receive our newsletter and recognition on our website.</p>
+          </div>
+          <a
+            href="https://leadersandbest.umich.edu/find/#!/give/basket/fund/933717"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="donate-button"
+          >
+            Donate Now
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section section-contact">
+      <div class="container">
+        <h2 class="section-title">Ready to Partner?</h2>
+        <p class="contact-text">Reach out to discuss sponsorship opportunities</p>
+        <a href="mailto:rover@umich.edu" class="contact-email">rover@umich.edu</a>
       </div>
     </section>
 
@@ -126,8 +157,330 @@ import AllSponsors from "@/components/AllSponsors.astro";
 </BaseLayout>
 
 <style>
-  ul {
-    list-style-type: disc;
-    margin-left: 1.5rem;
+  .sponsor-page {
+    background: #0a0808;
+    color: white;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .section {
+    padding: 5rem 0;
+  }
+
+  .section-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 3rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    height: 70vh;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(10,8,8,1) 100%);
+  }
+
+  .hero-content {
+    position: relative;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0 0 1rem 0;
+    text-shadow: 0 0 40px rgba(255, 140, 0, 0.3);
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 2.5rem 0;
+    letter-spacing: 0.1em;
+  }
+
+  .hero-cta {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: #FF8C00;
+    color: black;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .hero-cta:hover {
+    background: #ff9f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(255, 140, 0, 0.3);
+  }
+
+  /* Info Grid */
+  .section-dark {
+    background: #0a0808;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .info-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .info-card:hover {
+    border-color: rgba(255, 140, 0, 0.3);
+    background: rgba(255, 140, 0, 0.05);
+  }
+
+  .info-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 1.5rem;
+    color: #FF8C00;
+  }
+
+  .info-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .info-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .info-card p {
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* Sponsorship Levels */
+  .section-levels {
+    background: linear-gradient(to bottom, #0a0808 0%, #111 100%);
+  }
+
+  .levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .level-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .level-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .level-header {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .level-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .level-amount {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .level-platinum .level-header { background: linear-gradient(135deg, rgba(229, 228, 226, 0.15) 0%, rgba(180, 180, 180, 0.1) 100%); }
+  .level-platinum .level-name { color: #e5e4e2; }
+
+  .level-gold .level-header { background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(218, 165, 32, 0.1) 100%); }
+  .level-gold .level-name { color: #ffd700; }
+
+  .level-silver .level-header { background: linear-gradient(135deg, rgba(192, 192, 192, 0.15) 0%, rgba(169, 169, 169, 0.1) 100%); }
+  .level-silver .level-name { color: #c0c0c0; }
+
+  .level-bronze .level-header { background: linear-gradient(135deg, rgba(205, 127, 50, 0.15) 0%, rgba(184, 115, 51, 0.1) 100%); }
+  .level-bronze .level-name { color: #cd7f32; }
+
+  .level-benefits {
+    list-style: none;
+    margin: 0;
+    padding: 1.5rem;
+  }
+
+  .level-benefits li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+  }
+
+  .level-benefits li:last-child {
+    margin-bottom: 0;
+  }
+
+  .level-benefits li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 6px;
+    height: 6px;
+    background: #FF8C00;
+    border-radius: 50%;
+  }
+
+  .levels-note {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    margin-top: 2.5rem;
+  }
+
+  /* Donate */
+  .section-donate {
+    background: #FF8C00;
+    color: black;
+  }
+
+  .section-donate .section-title {
+    color: black;
+  }
+
+  .donate-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .donate-content {
+      flex-direction: row;
+      text-align: left;
+      justify-content: space-between;
+    }
+  }
+
+  .donate-text {
+    max-width: 600px;
+  }
+
+  .donate-text .section-title {
+    text-align: left;
+    margin-bottom: 1rem;
+  }
+
+  .donate-text p {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  .donate-button {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: black;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .donate-button:hover {
+    background: #1a1a1a;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Contact */
+  .section-contact {
+    background: #0a0808;
+    text-align: center;
+    padding: 6rem 0;
+  }
+
+  .contact-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .contact-email {
+    display: inline-block;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 600;
+    color: #FF8C00;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .contact-email:hover {
+    text-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    .section {
+      padding: 3rem 0;
+    }
+
+    .donate-text .section-title {
+      text-align: center;
+    }
   }
 </style>

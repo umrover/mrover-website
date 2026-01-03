@@ -1,78 +1,187 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const executives = [
+  { title: "President", name: "Isabel Boncher", email: "iboncher@umich.edu" },
+  { title: "Vice President", name: "Caden Burkhardt", email: "cadenb@umich.edu" },
+  { title: "Chief Engineer", name: "Neven Johnson", email: "neven@umich.edu" },
+  { title: "External Relations Officer", name: "Riya Desai", email: "riyad@umich.edu" },
+  { title: "Treasurer", name: "Vanya Krishna", email: "vanyak@umich.edu" },
+];
 ---
 
 <BaseLayout title="Contact - University of Michigan Mars Rover Team">
-  <!-- Full Page Background with Content -->
-  <div
-    class="relative min-h-screen bg-cover bg-center bg-fixed"
-    style="background-image: url('/images/festifall2022.jpg');"
-  >
-    <div class="absolute inset-0 bg-black/80"></div>
+  <div class="contact-page">
+    <div class="hero-bg" style="background-image: url('/images/festifall2022.jpg');"></div>
+    <div class="hero-overlay"></div>
 
-    <!-- Contact Info -->
-    <section class="relative z-10 py-16 md:py-20">
-      <div class="max-w-4xl mx-auto px-6 text-center">
-        <!-- Team Contact -->
-        <div class="mb-16">
-          <h2 class="text-3xl md:text-4xl font-bold text-mrover-accent mb-6">The Team</h2>
-          <div class="space-y-2 text-white/80">
-            <p><a href="mailto:rover@umich.edu" class="text-mrover-accent hover:text-mrover-accent/80 font-semibold">rover@umich.edu</a></p>
-            <p>University of Michigan</p>
-            <p>Wilson Student Team Project Center</p>
-            <p>2603 Draper, Ann Arbor, MI 48109-2101</p>
-          </div>
+    <div class="content">
+      <!-- Team Contact -->
+      <section class="team-section">
+        <h1 class="page-title">Contact Us</h1>
+        <a href="mailto:rover@umich.edu" class="team-email">rover@umich.edu</a>
+        <div class="team-address">
+          <p>University of Michigan</p>
+          <p>Wilson Student Team Project Center</p>
+          <p>2603 Draper, Ann Arbor, MI 48109-2101</p>
         </div>
+      </section>
 
-        <!-- Executive Board -->
-        <div>
-          <h2 class="text-3xl md:text-4xl font-bold text-mrover-accent mb-12">Executive Board</h2>
-
-          <div class="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto">
-            <!-- President -->
-            <div class="space-y-2 bg-black/60 backdrop-blur p-6 rounded-lg border border-michigan-blue/50 w-64">
-              <h3 class="text-xl font-semibold text-mrover-accent">President</h3>
-              <p class="text-white">Isabel Boncher</p>
-              <p>
-                <a href="mailto:iboncher@umich.edu" class="text-michigan-blue hover:text-michigan-blue/80 text-sm"
-                  >iboncher@umich.edu</a>
-              </p>
+      <!-- Executive Board -->
+      <section class="exec-section">
+        <h2 class="section-title">Executive Board</h2>
+        <div class="exec-grid">
+          {executives.map((exec) => (
+            <div class="exec-card">
+              <span class="exec-title">{exec.title}</span>
+              <span class="exec-name">{exec.name}</span>
+              <a href={`mailto:${exec.email}`} class="exec-email">{exec.email}</a>
             </div>
-
-            <!-- Vice President -->
-            <div class="space-y-2 bg-black/60 backdrop-blur p-6 rounded-lg border border-michigan-blue/50 w-64">
-              <h3 class="text-xl font-semibold text-mrover-accent">Vice President</h3>
-              <p class="text-white">Caden Burkhardt</p>
-              <p>
-                <a href="mailto:cadenb@umich.edu" class="text-michigan-blue hover:text-michigan-blue/80 text-sm">cadenb@umich.edu</a>
-              </p>
-            </div>
-
-            <!-- Chief Engineer -->
-            <div class="space-y-2 bg-black/60 backdrop-blur p-6 rounded-lg border border-michigan-blue/50 w-64">
-              <h3 class="text-xl font-semibold text-mrover-accent">Chief Engineer</h3>
-              <p class="text-white">Neven Johnson</p>
-              <p><a href="mailto:neven@umich.edu" class="text-michigan-blue hover:text-michigan-blue/80 text-sm">neven@umich.edu</a></p>
-            </div>
-
-            <!-- External Relations Officer -->
-            <div class="space-y-2 bg-black/60 backdrop-blur p-6 rounded-lg border border-michigan-blue/50 w-64">
-              <h3 class="text-xl font-semibold text-mrover-accent">External Relations Officer</h3>
-              <p class="text-white">Riya Desai</p>
-              <p><a href="mailto:riyad@umich.edu" class="text-michigan-blue hover:text-michigan-blue/80 text-sm">riyad@umich.edu</a></p>
-            </div>
-
-            <!-- Treasurer -->
-            <div class="space-y-2 bg-black/60 backdrop-blur p-6 rounded-lg border border-michigan-blue/50 w-64">
-              <h3 class="text-xl font-semibold text-mrover-accent">Treasurer</h3>
-              <p class="text-white">Vanya Krishna</p>
-              <p>
-                <a href="mailto:vanyak@umich.edu" class="text-michigan-blue hover:text-michigan-blue/80 text-sm">vanyak@umich.edu</a>
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </div>
 </BaseLayout>
+
+<style>
+  .contact-page {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(10,8,8,0.95) 100%);
+  }
+
+  .content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+  }
+
+  /* Team Section */
+  .team-section {
+    text-align: center;
+    margin-bottom: 5rem;
+  }
+
+  .page-title {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0 0 1.5rem 0;
+    color: white;
+    text-shadow: 0 0 40px rgba(255, 140, 0, 0.3);
+  }
+
+  .team-email {
+    display: inline-block;
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 600;
+    color: #FF8C00;
+    text-decoration: none;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+  }
+
+  .team-email:hover {
+    text-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
+  }
+
+  .team-address {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.8;
+  }
+
+  .team-address p {
+    margin: 0;
+  }
+
+  /* Executive Section */
+  .exec-section {
+    text-align: center;
+  }
+
+  .section-title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    margin: 0 0 2.5rem 0;
+    letter-spacing: 0.05em;
+  }
+
+  .exec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .exec-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .exec-card:hover {
+    border-color: rgba(255, 140, 0, 0.4);
+    background: rgba(255, 140, 0, 0.05);
+    transform: translateY(-2px);
+  }
+
+  .exec-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #FF8C00;
+  }
+
+  .exec-name {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: white;
+  }
+
+  .exec-email {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .exec-email:hover {
+    color: #FF8C00;
+  }
+
+  @media (max-width: 600px) {
+    .content {
+      padding: 4rem 1.5rem;
+    }
+
+    .exec-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

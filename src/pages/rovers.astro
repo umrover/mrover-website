@@ -84,19 +84,20 @@ const gridRovers = reversedRovers.slice(3);
       </div>
     </section>
 
-    <!-- Content Display Area -->
-    <div id="content" class="content-section hidden">
-      <div class="glass-panel">
+  </div>
+
+  <!-- Modal Overlay -->
+  <div id="rover-modal" class="modal-overlay hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-container">
+      <div class="modal-content">
         <div class="content-grid">
-          <!-- Text Content -->
           <div class="text-content">
             <div id="content-title"></div>
             <div id="content-text" class="prose"></div>
           </div>
-
-          <!-- Slideshow -->
           <div class="slideshow-wrapper">
-             <div id="content-slideshow" class="slideshow"></div>
+            <div id="content-slideshow" class="slideshow"></div>
           </div>
         </div>
       </div>
@@ -121,20 +122,42 @@ const gridRovers = reversedRovers.slice(3);
       slides[slideIndex].style.display = 'block';
     }
 
-    // Expose for onclick handlers
     window.plusSlides = function(n) {
       showSlides(slideIndex + n);
     }
 
-    function smoothScrollTo(element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+    function openModal() {
+      const modal = document.getElementById('rover-modal');
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = scrollbarWidth + 'px';
+      requestAnimationFrame(() => {
+        modal.classList.add('visible');
       });
     }
 
+    function closeModal() {
+      const modal = document.getElementById('rover-modal');
+      modal.classList.remove('visible');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+      }, 300);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-      const contentSection = document.getElementById('content');
+      const modal = document.getElementById('rover-modal');
+      const backdrop = modal.querySelector('.modal-backdrop');
+
+      backdrop.addEventListener('click', closeModal);
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
 
       document.querySelectorAll('a[href="#content"][id]').forEach(tile => {
         tile.addEventListener('click', function(event) {
@@ -145,45 +168,35 @@ const gridRovers = reversedRovers.slice(3);
           const descElements = this.querySelectorAll('.desc');
           const slideElements = this.querySelectorAll('.slide');
 
-          // Populate Title
           const contentTitle = document.getElementById('content-title');
           contentTitle.innerHTML = `<h2 class="detail-title">${year} <span class="detail-separator">//</span> ${name}</h2>`;
 
-          // Populate Text
           const contentText = document.getElementById('content-text');
           contentText.innerHTML = '';
           descElements.forEach(desc => {
             contentText.insertAdjacentHTML('beforeend', `<p>${desc.textContent}</p>`);
           });
 
-          // Populate Slideshow
           const contentSlideshow = document.getElementById('content-slideshow');
           contentSlideshow.innerHTML = '';
-          
+
           if (slideElements.length > 0) {
             slideElements.forEach(slide => {
               contentSlideshow.insertAdjacentHTML('beforeend',
                 `<img class="slide fade" src="/${slide.textContent}">`
               );
             });
-            
+
             if (slideElements.length > 1) {
               contentSlideshow.insertAdjacentHTML('beforeend', '<a class="prev" onclick="plusSlides(-1)">&#10094;</a>');
               contentSlideshow.insertAdjacentHTML('beforeend', '<a class="next" onclick="plusSlides(1)">&#10095;</a>');
             }
-            
+
             slideIndex = 0;
             showSlides(0);
           }
 
-          // Show content section
-          contentSection.classList.remove('hidden');
-          contentSection.classList.add('visible');
-          
-          // Scroll to it
-          setTimeout(() => {
-             smoothScrollTo(contentSection);
-          }, 100);
+          openModal();
         });
       });
     });
@@ -432,40 +445,67 @@ const gridRovers = reversedRovers.slice(3);
         opacity: 1;
     }
 
-    /* Detail Content */
-    .content-section {
+    /* Modal */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         padding: 2rem;
-        margin-bottom: 4rem;
+    }
+
+    .modal-overlay.hidden {
+        display: none;
+    }
+
+    .modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
         opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.5s ease, transform 0.5s ease;
-        display: none; /* Initially hidden */
+        transition: opacity 0.3s ease;
     }
 
-    .content-section.visible {
-        display: block;
+    .modal-overlay.visible .modal-backdrop {
         opacity: 1;
-        transform: translateY(0);
     }
 
-    .glass-panel {
+    .modal-container {
+        position: relative;
         max-width: 1200px;
-        margin: 0 auto;
-        background: rgba(10, 10, 10, 0.7);
+        max-height: 90vh;
+        width: 100%;
+        background: rgba(10, 10, 10, 0.95);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-left: 4px solid #FF8C00;
         border-radius: 8px;
-        padding: 3rem;
         box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        opacity: 0;
+        transform: scale(0.95) translateY(20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        overflow: hidden;
+    }
+
+    .modal-overlay.visible .modal-container {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    .modal-content {
+        padding: 2rem;
+        max-height: 90vh;
+        overflow-y: auto;
     }
 
     .content-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 4rem;
-        align-items: start;
+        align-items: center;
     }
 
     @media (max-width: 900px) {
@@ -473,8 +513,11 @@ const gridRovers = reversedRovers.slice(3);
             grid-template-columns: 1fr;
             gap: 2rem;
         }
-        .glass-panel {
-            padding: 2rem;
+        .modal-overlay {
+            padding: 1rem;
+        }
+        .modal-content {
+            padding: 1.5rem;
         }
     }
 
@@ -506,22 +549,15 @@ const gridRovers = reversedRovers.slice(3);
         border-radius: 8px;
         overflow: hidden;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(0,0,0,0.3);
-        aspect-ratio: 4/3;
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
 
     .slideshow {
         width: 100%;
-        height: 100%;
+        display: block;
     }
 
     .slide {
         width: 100%;
-        height: 100%;
-        object-fit: cover;
         display: none;
     }
 
