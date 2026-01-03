@@ -1,12 +1,19 @@
 import { create } from 'zustand'
-import type Lenis from 'lenis'
+
+interface ScrollData {
+  scroll: number
+  limit: number
+  velocity: number
+  direction: number
+  progress: number
+}
 
 interface StoreState {
-  lenis: Lenis | null
-  setLenis: (lenis: Lenis | null) => void
+  scrollData: ScrollData | null
+  setScrollData: (data: ScrollData) => void
 }
 
 export const useStore = create<StoreState>((set) => ({
-  lenis: null,
-  setLenis: (lenis) => set({ lenis }),
+  scrollData: null,
+  setScrollData: (scrollData) => set({ scrollData }),
 }))

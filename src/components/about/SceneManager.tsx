@@ -1,6 +1,5 @@
 import { useStore } from '../../lib/store'
 import { useEffect, useRef } from 'react'
-import Lenis from 'lenis'
 import { AboutExperience } from './AboutExperience'
 import { ProgressBar } from './ProgressBar'
 import { BRANCHES } from './SceneConfig'
@@ -8,7 +7,7 @@ import { BRANCHES } from './SceneConfig'
 const TOTAL_SECTIONS = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
 
 export function SceneManager() {
-  const setLenis = useStore((state) => state.setLenis)
+  const setScrollData = useStore((state) => state.setScrollData)
   const currentSectionRef = useRef(0)
   const targetSectionRef = useRef(0)
   const isAnimatingRef = useRef(false)
@@ -27,21 +26,20 @@ export function SceneManager() {
 
     const isMobile = window.matchMedia('(max-width: 768px)').matches || 'ontouchstart' in window
 
-    const lenis = new Lenis({
-      duration: isMobile ? 0.8 : 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: false,
-      syncTouch: true,
-      touchMultiplier: isMobile ? 1 : 2,
-    })
+    const emitScroll = () => {
+      const scroll = window.scrollY
+      const limit = document.documentElement.scrollHeight - window.innerHeight
+      setScrollData({
+        scroll,
+        limit,
+        velocity: 0,
+        direction: 0,
+        progress: limit > 0 ? scroll / limit : 0
+      })
+    }
 
-    setLenis(lenis)
-
-    const update = (time: number) => lenis.raf(time * 1000)
-    requestAnimationFrame(function raf(time) {
-      update(time)
-      requestAnimationFrame(raf)
-    })
+    window.addEventListener('scroll', emitScroll, { passive: true })
+    emitScroll()
 
     const getScrollForSection = (section: number) => {
       const clamped = Math.max(0, Math.min(section, TOTAL_SECTIONS - 1))
@@ -72,8 +70,6 @@ export function SceneManager() {
       const duration = 600
       const startTime = performance.now()
 
-      lenis.stop()
-
       const animate = (now: number) => {
         const elapsed = now - startTime
         const t = Math.min(elapsed / duration, 1)
@@ -87,7 +83,6 @@ export function SceneManager() {
           window.scrollTo(0, targetScroll)
           currentSectionRef.current = clampedTarget
           isAnimatingRef.current = false
-          lenis.start()
 
           if (queuedDirectionRef.current !== null) {
             const nextSection = currentSectionRef.current + queuedDirectionRef.current
@@ -137,8 +132,7 @@ export function SceneManager() {
       document.addEventListener('touchend', handleTouchEnd, { passive: true })
 
       return () => {
-        lenis.destroy()
-        setLenis(null)
+        window.removeEventListener('scroll', emitScroll)
         document.removeEventListener('touchstart', handleTouchStart)
         document.removeEventListener('touchmove', handleTouchMove)
         document.removeEventListener('touchend', handleTouchEnd)
@@ -204,14 +198,13 @@ export function SceneManager() {
     window.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => {
-      lenis.destroy()
-      setLenis(null)
+      window.removeEventListener('scroll', emitScroll)
       document.removeEventListener('wheel', handleWheel)
       document.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('scroll', handleScroll)
       if (wheelTimeout) clearTimeout(wheelTimeout)
     }
-  }, [setLenis])
+  }, [setScrollData])
 
   return (
     <>
