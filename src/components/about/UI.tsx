@@ -13,7 +13,7 @@ export function useIsMobile() {
   return isMobile
 }
 
-export function LoadingOverlay({ progress, visible }: { progress: number; visible: boolean }) {
+export function LoadingOverlay({ progress, visible, message }: { progress: number; visible: boolean; message?: string }) {
   if (!visible) return null
   return (
     <div style={{
@@ -51,6 +51,17 @@ export function LoadingOverlay({ progress, visible }: { progress: number; visibl
           transition: 'width 0.2s ease-out'
         }} />
       </div>
+      {message && (
+        <div style={{
+          marginTop: '12px',
+          color: 'rgba(255, 255, 255, 0.5)',
+          fontFamily: "'Rajdhani', monospace",
+          fontSize: '0.9rem',
+          letterSpacing: '0.05em'
+        }}>
+          {message}
+        </div>
+      )}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )

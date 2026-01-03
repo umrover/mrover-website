@@ -81,15 +81,26 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
 export function AboutExperience() {
   const [roverLoaded, setRoverLoaded] = useState(false)
   const isMobile = useIsMobile()
-  const { progress } = useProgress()
+  const { progress, item } = useProgress()
 
   const handleRoverLoad = useCallback(() => {
     setRoverLoaded(true)
   }, [])
 
+  let loadingMessage = item
+  if (item) {
+    if (item.includes('http') || item.includes('github') || item.includes('polyhaven')) {
+      loadingMessage = 'Loading Environment...'
+    } else {
+      // Extract just the filename from the path
+      const parts = item.split('/')
+      loadingMessage = `Loading ${parts[parts.length - 1]}...`
+    }
+  }
+
   return (
     <>
-      <LoadingOverlay progress={progress} visible={!roverLoaded} />
+      <LoadingOverlay progress={progress} visible={!roverLoaded} message={loadingMessage} />
       <ProgressIndicator visible={roverLoaded} isMobile={isMobile} />
       <div style={{
         position: 'fixed',
