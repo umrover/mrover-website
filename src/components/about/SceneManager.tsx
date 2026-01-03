@@ -11,8 +11,7 @@ export function SceneManager() {
   const setLenis = useStore((state) => state.setLenis)
   const currentSectionRef = useRef(0)
   const isAnimatingRef = useRef(false)
-  const queuedDirectionRef = useRef<number | null>(null)
-  const animationStartTimeRef = useRef(0)
+  const animationEndTimeRef = useRef(0)
 
   useEffect(() => {
     const header = document.querySelector('header')
@@ -21,12 +20,15 @@ export function SceneManager() {
     }
 
     window.scrollTo(0, 0)
+    currentSectionRef.current = 0
+
     const isMobile = window.matchMedia('(max-width: 768px)').matches || 'ontouchstart' in window
 
     const lenis = new Lenis({
       duration: isMobile ? 0.8 : 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: false,
+      wheelEventsTarget: document.createElement('div'),
       syncTouch: true,
       touchMultiplier: isMobile ? 1 : 2,
     })
@@ -43,23 +45,16 @@ export function SceneManager() {
       return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1)) * window.innerHeight
     }
 
-    const getSectionFromScroll = () => {
-      const section = Math.round(window.scrollY / window.innerHeight)
-      return Math.max(0, Math.min(section, TOTAL_SECTIONS - 1))
-    }
-
     const animateToSection = (targetSection: number) => {
       if (isAnimatingRef.current) return
-      const current = getSectionFromScroll()
-      if (targetSection === current) return
+
+      const clampedTarget = Math.max(0, Math.min(targetSection, TOTAL_SECTIONS - 1))
+      if (clampedTarget === currentSectionRef.current) return
 
       isAnimatingRef.current = true
-      currentSectionRef.current = targetSection
-      queuedDirectionRef.current = null
-      animationStartTimeRef.current = performance.now()
 
       const startScroll = window.scrollY
-      const targetScroll = getScrollForSection(targetSection)
+      const targetScroll = getScrollForSection(clampedTarget)
       const distance = targetScroll - startScroll
       const duration = 600
       const startTime = performance.now()
@@ -74,12 +69,9 @@ export function SceneManager() {
         if (t < 1) {
           requestAnimationFrame(animate)
         } else {
+          currentSectionRef.current = clampedTarget
           isAnimatingRef.current = false
-          if (queuedDirectionRef.current !== null) {
-            const nextSection = Math.max(0, Math.min(TOTAL_SECTIONS - 1, currentSectionRef.current + queuedDirectionRef.current))
-            queuedDirectionRef.current = null
-            animateToSection(nextSection)
-          }
+          animationEndTimeRef.current = performance.now()
         }
       }
 
@@ -104,6 +96,8 @@ export function SceneManager() {
       }
 
       const handleTouchEnd = (e: TouchEvent) => {
+        if (isAnimatingRef.current) return
+
         const touchEndY = e.changedTouches[0].clientY
         const deltaY = touchStartY - touchEndY
         const deltaTime = Date.now() - touchStartTime
@@ -113,13 +107,7 @@ export function SceneManager() {
 
         if (isSwipe) {
           const direction = deltaY > 0 ? 1 : -1
-          if (isAnimatingRef.current) {
-            queuedDirectionRef.current = direction
-            return
-          }
-          const current = getSectionFromScroll()
-          const next = Math.max(0, Math.min(TOTAL_SECTIONS - 1, current + direction))
-          animateToSection(next)
+          animateToSection(currentSectionRef.current + direction)
         }
       }
 
@@ -139,16 +127,15 @@ export function SceneManager() {
     let wheelAccumulator = 0
     let wheelTimeout: ReturnType<typeof setTimeout> | null = null
     const wheelThreshold = 50
+    const cooldownMs = 150
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault()
 
-      if (isAnimatingRef.current) {
-        const timeSinceStart = performance.now() - animationStartTimeRef.current
-        if (timeSinceStart > 200) {
-          const direction = e.deltaY > 0 ? 1 : -1
-          queuedDirectionRef.current = direction
-        }
+      if (isAnimatingRef.current) return
+
+      const timeSinceEnd = performance.now() - animationEndTimeRef.current
+      if (timeSinceEnd < cooldownMs) {
         return
       }
 
@@ -160,29 +147,26 @@ export function SceneManager() {
       }, 150)
 
       if (Math.abs(wheelAccumulator) >= wheelThreshold) {
-        const current = getSectionFromScroll()
         const direction = wheelAccumulator > 0 ? 1 : -1
-        const next = Math.max(0, Math.min(TOTAL_SECTIONS - 1, current + direction))
         wheelAccumulator = 0
-        animateToSection(next)
+        animateToSection(currentSectionRef.current + direction)
       }
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isAnimatingRef.current) return
 
-      const current = getSectionFromScroll()
-      let next = current
+      let next = currentSectionRef.current
 
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
         e.preventDefault()
-        next = Math.min(TOTAL_SECTIONS - 1, current + 1)
+        next = currentSectionRef.current + 1
       } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
         e.preventDefault()
-        next = Math.max(0, current - 1)
+        next = currentSectionRef.current - 1
       }
 
-      if (next !== current) {
+      if (next !== currentSectionRef.current) {
         animateToSection(next)
       }
     }
