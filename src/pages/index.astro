@@ -21,7 +21,7 @@ import { StarsBackground } from "@/components/StarsBackground";
         style="height: clamp(180px, 22vh, 300px);"
         data-intro-container
       >
-        <img src="/logos/block_M.png" alt="Block M" class="absolute w-50 h-50 object-contain" data-block-m />
+        <img src="/logos/block_M.png" alt="Block M" class="absolute w-32 h-32 sm:w-50 sm:h-50 object-contain" data-block-m />
         <img
           src="/logos/logo_light_top.svg"
           alt="Logo Top"
@@ -289,30 +289,12 @@ import { StarsBackground } from "@/components/StarsBackground";
         new Typed("[data-typing-text]", {
           strings: ["./mrover"],
           typeSpeed: 80,
-          showCursor: true,
-          cursorChar: "\u2588",
+          showCursor: false,
           onComplete: () => {
-            setTimeout(() => {
-              const cursor = document.querySelector(".typed-cursor") as HTMLElement;
-              if (cursor) {
-                cursor.style.display = "none";
-              }
-
-              gsap.to("[data-option]", {
-                opacity: 1,
-                x: 0,
-                duration: 0.3,
-                stagger: 0.15,
-                ease: "power2.out",
-                onComplete: () => {
-                  gsap.to("[data-final-prompt]", {
-                    opacity: 1,
-                    duration: 0.3,
-                    ease: "power2.out",
-                  });
-                },
-              });
-            }, 300);
+            document.querySelectorAll("[data-option]").forEach((el) => {
+              (el as HTMLElement).style.opacity = "1";
+            });
+            (document.querySelector("[data-final-prompt]") as HTMLElement).style.opacity = "1";
           },
         });
       });
