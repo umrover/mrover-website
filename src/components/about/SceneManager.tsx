@@ -7,9 +7,15 @@ const TOTAL_SECTIONS = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
 
 export function SceneManager() {
   useEffect(() => {
+    let resizeObserver: ResizeObserver | null = null
     const header = document.querySelector('header')
     if (header) {
-      document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`)
+      const updateHeaderHeight = () => {
+        document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`)
+      }
+      updateHeaderHeight()
+      resizeObserver = new ResizeObserver(updateHeaderHeight)
+      resizeObserver.observe(header)
     }
 
     window.scrollTo(0, 0)
@@ -113,6 +119,7 @@ export function SceneManager() {
       document.removeEventListener('touchend', handleTouchEnd)
       document.removeEventListener('keydown', handleKeyDown)
       if (wheelTimer) clearTimeout(wheelTimer)
+      if (resizeObserver) resizeObserver.disconnect()
     }
   }, [])
 
