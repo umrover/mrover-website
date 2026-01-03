@@ -57,11 +57,11 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
       <CameraController />
 
       <Suspense fallback={null}>
-        <group position={[0, -25, 0]}>
+        <group position={[0, -35, 0]}>
           <Rover onLoaded={() => setStandardReady(true)} />
         </group>
 
-        <group position={[0, -25 - BRANCH_SPACING, 0]}>
+        <group position={[0, -35 - BRANCH_SPACING, 0]}>
           <Rover isWireframe configId="mechanical" onLoaded={() => setWireframeReady(true)} />
         </group>
 

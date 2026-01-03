@@ -8,6 +8,7 @@ import { StarsBackground } from "@/components/StarsBackground";
   description="The Michigan Mars Rover Team (MRover) is a student-run, multidisciplinary team building rovers for Mars exploration and competing in the University Rover Challenge."
   image="https://mrover.org/images/SAR_GOBLUESHOT.png"
 >
+  <div class="fixed inset-0 bg-black -z-20"></div>
   <StarsBackground client:only="react" />
 
   <!-- Hero Section -->
@@ -244,7 +245,6 @@ import { StarsBackground } from "@/components/StarsBackground";
   :global(html),
   :global(body) {
     overflow-x: hidden;
-    background-color: #000000;
   }
 
   [data-hero-buttons],
