@@ -18,7 +18,7 @@ export default defineConfig({
     react(),
     sitemap(),
     compress({
-      CSS: true,
+      CSS: false,
       HTML: true,
       JavaScript: true,
       Image: false,

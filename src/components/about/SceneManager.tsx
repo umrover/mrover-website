@@ -53,6 +53,9 @@ export function SceneManager() {
 
       isAnimatingRef.current = true
 
+      lenis.stop()
+      document.body.style.overflow = 'hidden'
+
       const startScroll = window.scrollY
       const targetScroll = getScrollForSection(clampedTarget)
       const distance = targetScroll - startScroll
@@ -69,6 +72,9 @@ export function SceneManager() {
         if (t < 1) {
           requestAnimationFrame(animate)
         } else {
+          window.scrollTo(0, targetScroll)
+          document.body.style.overflow = ''
+          lenis.start()
           currentSectionRef.current = clampedTarget
           isAnimatingRef.current = false
           animationEndTimeRef.current = performance.now()

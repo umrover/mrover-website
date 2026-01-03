@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  font-size: 16px;
+}
+
 @theme {
   /* MRover Brand Colors */
   --color-michigan-blue: #00274c;
