@@ -1,5 +1,5 @@
 import { useStore } from '../lib/store'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 
 interface ScrollData {
   scroll: number
@@ -10,13 +10,14 @@ interface ScrollData {
 }
 
 export function useScroll(callback: (data: ScrollData) => void) {
-  const scrollData = useStore((state) => state.scrollData)
-  const callbackRef = useRef(callback)
-  callbackRef.current = callback
+  const lenis = useStore((state) => state.lenis)
 
   useEffect(() => {
-    if (scrollData) {
-      callbackRef.current(scrollData)
+    if (!lenis) return
+    lenis.on('scroll', callback)
+
+    return () => {
+      lenis.off('scroll', callback)
     }
-  }, [scrollData])
+  }, [lenis, callback])
 }
