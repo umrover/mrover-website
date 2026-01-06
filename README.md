@@ -115,34 +115,11 @@ Find the entry by its `name` field and update `subteam.name` or `subteam.desc`.
 
 ---
 
-### Modifying Sponsor Information
+### Modifying Sponsors
 
-Edit `src/data/sponsors.json`.
+Edit `src/data/sponsors.json`. Platinum sponsors (level 4) also appear in the footer.
 
-#### Sponsor Entry Format
-
-```json
-{
-  "name": "Company Name",
-  "image_path": "/sponsorImages/company-logo.png",
-  "rurl": "https://company-website.com",
-  "level": 4
-}
-```
-
-#### Sponsor Levels
-
-| Level | Tier     |
-|-------|----------|
-| 4     | Platinum |
-| 3     | Gold     |
-| 2     | Silver   |
-| 1     | Bronze   |
-
-#### Adding a New Sponsor
-
-1. Add the logo image to `public/sponsorImages/`
-2. Add an entry to `src/data/sponsors.json`
+See [guides/sponsors.md](guides/sponsors.md) for detailed instructions.
 
 ---
 

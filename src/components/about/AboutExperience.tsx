@@ -71,7 +71,7 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
         ))}
       </Suspense>
 
-      <EffectComposer enableNormalPass={false} multisampling={0}>
+      <EffectComposer enableNormalPass={false} multisampling={4}>
         <Vignette darkness={0.4} offset={0.3} />
       </EffectComposer>
     </>
