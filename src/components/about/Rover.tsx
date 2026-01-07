@@ -52,7 +52,7 @@ export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: 
     loader.packages = { mrover: '/urdf' }
 
     const gltfLoader = new GLTFLoader(manager)
-    loader.loadMeshCb = (path, _manager, onComplete) => {
+    ;(loader as any).loadMeshCb = (path: string, _manager: THREE.LoadingManager, onComplete: (obj: THREE.Object3D) => void) => {
       gltfLoader.load(path, (gltf) => {
         onComplete(gltf.scene)
       }, undefined, (err) => {

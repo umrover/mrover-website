@@ -21,3 +21,4 @@ bun.lock
 .vscode/
 .idea/
 
+.venv/
