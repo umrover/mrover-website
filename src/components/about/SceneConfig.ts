@@ -114,73 +114,6 @@ const BRANCH_DEFINITIONS: Branch[] = [
     ],
   },
   {
-    name: 'Software',
-    color: '#2196F3',
-    accent: '#BBDEFB',
-    sections: [
-      {
-        name: 'navigation',
-        subteam: {
-          name: 'Navigation',
-          desc: 'Uses A* pathfinding to plan obstacle-avoiding routes as part of the Autonomy team.',
-        },
-        camera: { x: -300, y: 80, z: 280 },
-        lookAt: { x: 0, y: 20, z: 0 },
-        model: {
-          urdfPath: '/urdf/rover/rover.urdf',
-          position: [0, -35, 0],
-          rotation: [0, -Math.PI / 3, 0],
-          wireframe: WIREFRAME_PRESETS.mechanical,
-        },
-      },
-      {
-        name: 'localization',
-        subteam: {
-          name: 'Localization',
-          desc: 'Determines rover position and orientation as part of the Autonomy team using sensor fusion and mapping.',
-        },
-        camera: { x: -180, y: 80, z: 280 },
-        lookAt: { x: 0, y: 20, z: 0 },
-      },
-      {
-        name: 'perception',
-        subteam: {
-          name: 'Perception',
-          desc: 'Identifies environmental features and objects as part of the Autonomy team using camera and sensor data.',
-        },
-        camera: { x: -60, y: 80, z: 280 },
-        lookAt: { x: 0, y: 20, z: 0 },
-      },
-      {
-        name: 'drone',
-        subteam: {
-          name: 'Drone',
-          desc: 'Develops manual and autonomous drone capable of reading signs, locating objects, and communications support during delivery missions.',
-        },
-        camera: { x: 60, y: 80, z: 280 },
-        lookAt: { x: 0, y: 20, z: 0 },
-      },
-      {
-        name: 'esw-controls',
-        subteam: {
-          name: 'Embedded Software',
-          desc: 'Writes low-level driver code abstracting manufacturer libraries in C and Python for other programming teams.',
-        },
-        camera: { x: 180, y: 80, z: 280 },
-        lookAt: { x: 0, y: 20, z: 0 },
-      },
-      {
-        name: 'teleop',
-        subteam: {
-          name: 'Teleoperation',
-          desc: 'Creates driver-rover interfaces through base station GUIs, control solutions for complex systems, and custom build infrastructure.',
-        },
-        camera: { x: 300, y: 80, z: 280 },
-        lookAt: { x: 0, y: 20, z: 0 },
-      },
-    ],
-  },
-  {
     name: 'Mechanical',
     color: '#00274C',
     accent: '#FFCB05',
@@ -290,6 +223,73 @@ const BRANCH_DEFINITIONS: Branch[] = [
           desc: 'Ensures wireless RF communication between base station and rover through equipment testing and selection.',
         },
         camera: { x: 200, y: 70, z: 220 },
+        lookAt: { x: 0, y: 20, z: 0 },
+      },
+    ],
+  },
+  {
+    name: 'Software',
+    color: '#2196F3',
+    accent: '#BBDEFB',
+    sections: [
+      {
+        name: 'navigation',
+        subteam: {
+          name: 'Navigation',
+          desc: 'Uses A* pathfinding to plan obstacle-avoiding routes as part of the Autonomy team.',
+        },
+        camera: { x: -300, y: 80, z: 280 },
+        lookAt: { x: 0, y: 20, z: 0 },
+        model: {
+          urdfPath: '/urdf/rover/rover.urdf',
+          position: [0, -35, 0],
+          rotation: [0, -Math.PI / 3, 0],
+          wireframe: WIREFRAME_PRESETS.mechanical,
+        },
+      },
+      {
+        name: 'localization',
+        subteam: {
+          name: 'Localization',
+          desc: 'Determines rover position and orientation as part of the Autonomy team using sensor fusion and mapping.',
+        },
+        camera: { x: -180, y: 80, z: 280 },
+        lookAt: { x: 0, y: 20, z: 0 },
+      },
+      {
+        name: 'perception',
+        subteam: {
+          name: 'Perception',
+          desc: 'Identifies environmental features and objects as part of the Autonomy team using camera and sensor data.',
+        },
+        camera: { x: -60, y: 80, z: 280 },
+        lookAt: { x: 0, y: 20, z: 0 },
+      },
+      {
+        name: 'drone',
+        subteam: {
+          name: 'Drone',
+          desc: 'Develops manual and autonomous drone capable of reading signs, locating objects, and communications support during delivery missions.',
+        },
+        camera: { x: 60, y: 80, z: 280 },
+        lookAt: { x: 0, y: 20, z: 0 },
+      },
+      {
+        name: 'esw-controls',
+        subteam: {
+          name: 'Embedded Software',
+          desc: 'Writes low-level driver code abstracting manufacturer libraries in C and Python for other programming teams.',
+        },
+        camera: { x: 180, y: 80, z: 280 },
+        lookAt: { x: 0, y: 20, z: 0 },
+      },
+      {
+        name: 'teleop',
+        subteam: {
+          name: 'Teleoperation',
+          desc: 'Creates driver-rover interfaces through base station GUIs, control solutions for complex systems, and custom build infrastructure.',
+        },
+        camera: { x: 300, y: 80, z: 280 },
         lookAt: { x: 0, y: 20, z: 0 },
       },
     ],
