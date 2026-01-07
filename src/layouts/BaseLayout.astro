@@ -58,6 +58,7 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
     }}
     extend={{
       link: [
+        { rel: 'preload', href: '/logos/logo_light_trimmed.svg', as: 'image', type: 'image/svg+xml' },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/icons/apple-touch-icon.png' },
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/icons/favicon-32x32.png' },
@@ -66,7 +67,6 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).toString(
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Inter:wght@200;300;400;500;600;700;800&family=Rajdhani:wght@300;400;500;600;700&display=swap' },
-        { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' },
       ],
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },

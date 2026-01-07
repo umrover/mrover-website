@@ -41,6 +41,9 @@ export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: 
     const manager = new THREE.LoadingManager()
     const loader = new URDFLoader(manager)
     let loadedRobot: THREE.Object3D | null = null
+    const timeoutIds: number[] = []
+    const edgesResources: { geometry: THREE.BufferGeometry; material: THREE.Material }[] = []
+    let isMounted = true
 
     // Get config or use defaults
     const config = (configId && WIREFRAME_CONFIGS[configId]) || {
@@ -119,13 +122,14 @@ export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: 
 
                 // 2. Edges
                 const threshold = config.overrides?.[resolvedName] ?? config.threshold
-                console.log(`[Rover] Mesh: "${child.name}" resolved to: "${resolvedName}". Using threshold: ${threshold}`)
+                // console.log(`[Rover] Mesh: "${child.name}" resolved to: "${resolvedName}". Using threshold: ${threshold}`)
                 const edgesGeo = new THREE.EdgesGeometry(child.geometry, threshold)
-                const edgesMat = new THREE.LineBasicMaterial({ 
+                const edgesMat = new THREE.LineBasicMaterial({
                   color: config.color,
                   transparent: true,
                   opacity: config.lineOpacity
                 })
+                edgesResources.push({ geometry: edgesGeo, material: edgesMat })
                 const edges = new THREE.LineSegments(edgesGeo, edgesMat)
                 child.add(edges)
               } else {
@@ -138,8 +142,9 @@ export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: 
                   if (mat.map && !mat.map.image) {
                     texturePromises.push(new Promise<void>((resolve) => {
                       const checkLoaded = () => {
+                        if (!isMounted) return resolve()
                         if (mat.map?.image) resolve()
-                        else setTimeout(checkLoaded, 50)
+                        else timeoutIds.push(window.setTimeout(checkLoaded, 50))
                       }
                       checkLoaded()
                     }))
@@ -157,21 +162,34 @@ export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: 
           }
 
           if (isWireframe) {
-            setRobot(loadedRobot)
-            onLoaded?.()
-          } else {
-            Promise.all(texturePromises).then(() => {
+            if (isMounted) {
               setRobot(loadedRobot)
               onLoaded?.()
+            }
+          } else {
+            Promise.all(texturePromises).then(() => {
+              if (isMounted) {
+                setRobot(loadedRobot)
+                onLoaded?.()
+              }
             })
           }
         } else {
           // Keep checking if meshes are still being added
-          setTimeout(checkMeshes, 100)
+          timeoutIds.push(window.setTimeout(checkMeshes, 100))
         }
       }
 
       checkMeshes()
+    }
+
+    return () => {
+      isMounted = false
+      timeoutIds.forEach(id => clearTimeout(id))
+      edgesResources.forEach(({ geometry, material }) => {
+        geometry.dispose()
+        material.dispose()
+      })
     }
   }, [isWireframe, configId])
 

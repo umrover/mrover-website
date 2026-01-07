@@ -1,3 +1,7 @@
+---
+import { Github, Twitter, Instagram, Youtube } from 'lucide-react';
+---
+
 <!-- Color band transition -->
 <div class="flex flex-col">
   <div class="h-2 bg-michigan-blue"></div>
@@ -6,31 +10,39 @@
 
 <div class="bg-white">
   <div class="max-w-content mx-auto px-6 lg:px-8 pt-8 pb-4">
-  <div class="flex justify-center items-center space-x-8 text-4xl text-michigan-blue">
+  <div class="flex justify-center items-center space-x-8 text-michigan-blue">
     <a
-      class="fa fa-github hover:text-mrover-accent transition-colors"
+      class="hover:text-mrover-accent transition-colors"
       target="_blank"
       rel="noopener noreferrer"
       href="https://github.com/umrover/mrover-ros"
-      aria-label="GitHub"></a>
+      aria-label="GitHub">
+      <Github size={36} />
+    </a>
     <a
-      class="fa fa-twitter hover:text-mrover-accent transition-colors"
+      class="hover:text-mrover-accent transition-colors"
       target="_blank"
       rel="noopener noreferrer"
       href="https://twitter.com/umrover"
-      aria-label="Twitter"></a>
+      aria-label="Twitter">
+      <Twitter size={36} />
+    </a>
     <a
-      class="fa fa-instagram hover:text-mrover-accent transition-colors"
+      class="hover:text-mrover-accent transition-colors"
       target="_blank"
       rel="noopener noreferrer"
       href="https://www.instagram.com/umrover/"
-      aria-label="Instagram"></a>
+      aria-label="Instagram">
+      <Instagram size={36} />
+    </a>
     <a
-      class="fa fa-youtube-play hover:text-mrover-accent transition-colors"
+      class="hover:text-mrover-accent transition-colors"
       target="_blank"
       rel="noopener noreferrer"
       href="https://www.youtube.com/channel/UCGQuDeJxL2HAH8deR6OT7yA"
-      aria-label="YouTube"></a>
+      aria-label="YouTube">
+      <Youtube size={36} />
+    </a>
   </div>
   </div>
 </div>

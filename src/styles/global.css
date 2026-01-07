@@ -92,30 +92,6 @@ pre > code {
   padding-left: 0;
 }
 
-.fa {
-  color: inherit;
-  text-decoration: none;
-}
-
-.fa-instagram {
-  border-radius: 8px;
-  background-color: rgba(0,0,0,0);
-  padding: 2px 5px;
-}
-
-.fa-instagram:hover {
-  background: radial-gradient(circle at 33% 100%, #FED373 4%, #F15245 30%, #D92E7F 62%, #9B36B7 85%, #515ECF);
-  color: white;
-}
-
-.fa-twitter:hover {
-  color: #00aced;
-}
-
-.fa-youtube-play:hover {
-  color: #bb0000;
-}
-
 .center {
   display: block;
   margin-left: auto;

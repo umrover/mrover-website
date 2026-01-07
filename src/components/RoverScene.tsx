@@ -51,6 +51,8 @@ export default function RoverScene() {
     const cursor = { x: 0, y: 0 };
     let rover: any = null;
     let jointTweenObject: any = {};
+    let timeline: gsap.core.Timeline | null = null;
+    let animationFrameId: number;
 
     // Scene setup
     const scene = new THREE.Scene();
@@ -82,7 +84,7 @@ export default function RoverScene() {
       console.log("Loading complete!");
 
       // Animate the rover
-      const timeline = gsap.timeline({ repeat: -1, yoyo: true });
+      timeline = gsap.timeline({ repeat: -1, yoyo: true });
 
       timeline.to(rover.position, {
         x: 50,
@@ -198,12 +200,14 @@ export default function RoverScene() {
       cameraGroup.rotation.y += (targetTiltY - cameraGroup.rotation.y) * 0.01;
       cameraGroup.rotation.x += (targetTiltX - cameraGroup.rotation.x) * 0.01;
       renderer.render(scene, camera);
-      window.requestAnimationFrame(tick);
+      animationFrameId = window.requestAnimationFrame(tick);
     };
     tick();
 
     // Cleanup
     return () => {
+      cancelAnimationFrame(animationFrameId);
+      timeline?.kill();
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("dblclick", handleDoubleClick);
