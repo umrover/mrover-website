@@ -127,7 +127,7 @@ export function AboutExperience() {
           }}
           camera={{ fov: 50, near: 0.1, far: 10000, position: [0, 100, 400] }}
           shadows={!isMobile}
-          dpr={isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5)}
+          dpr={Math.min(window.devicePixelRatio, isMobile ? 2 : 1.5)}
         >
           <Suspense fallback={null}>
             <Scene isMobile={isMobile} onAllModelsLoaded={handleAllModelsLoaded} />

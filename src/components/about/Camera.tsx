@@ -6,7 +6,7 @@ import { lerp } from '../../lib/maths'
 import { getScrollState } from './utils'
 
 export function CameraController() {
-  const { camera, size } = useThree()
+  const { camera } = useThree()
   const scrollRef = useRef(0)
   const windowHeightRef = useRef(0)
   const lookAtTarget = useRef(new THREE.Vector3())
@@ -27,19 +27,14 @@ export function CameraController() {
 
     const { sectionProgress, fromSection, toSection } = getScrollState(scrollRef.current, windowHeightRef.current)
 
-    const aspect = size.width / size.height
-    const isMobileAspect = aspect < 0.8
-    const xScale = isMobileAspect ? 0.3 : 1
-    const zScale = isMobileAspect ? 1.4 : 1
-
     camera.position.set(
-      lerp(fromSection.camera.x, toSection.camera.x, sectionProgress) * xScale,
+      lerp(fromSection.camera.x, toSection.camera.x, sectionProgress),
       lerp(fromSection.camera.y, toSection.camera.y, sectionProgress),
-      lerp(fromSection.camera.z, toSection.camera.z, sectionProgress) * zScale
+      lerp(fromSection.camera.z, toSection.camera.z, sectionProgress)
     )
 
     lookAtTarget.current.set(
-      lerp(fromSection.lookAt.x, toSection.lookAt.x, sectionProgress) * xScale,
+      lerp(fromSection.lookAt.x, toSection.lookAt.x, sectionProgress),
       lerp(fromSection.lookAt.y, toSection.lookAt.y, sectionProgress),
       lerp(fromSection.lookAt.z, toSection.lookAt.z, sectionProgress)
     )
