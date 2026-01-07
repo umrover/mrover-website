@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import URDFLoader from 'urdf-loader'
 
 const defaultJointValues: Record<string, number> = {
@@ -51,7 +52,10 @@ export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: 
 
     loader.packages = { mrover: '/urdf' }
 
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/')
     const gltfLoader = new GLTFLoader(manager)
+    gltfLoader.setDRACOLoader(dracoLoader)
     ;(loader as any).loadMeshCb = (path: string, _manager: THREE.LoadingManager, onComplete: (obj: THREE.Object3D) => void) => {
       gltfLoader.load(path, (gltf) => {
         onComplete(gltf.scene)
