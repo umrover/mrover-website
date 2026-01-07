@@ -24,7 +24,7 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
         gl.compile(scene, camera)
         compiled.current = true
       }
-      
+
       framesRendered.current++
       if (framesRendered.current > 15) {
         onRoverLoad()

@@ -21,7 +21,27 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     build: {
-      sourcemap: true
+      sourcemap: true,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('three') && !id.includes('@react-three')) {
+                return 'three-core'
+              }
+              if (id.includes('@react-three')) {
+                return 'react-three'
+              }
+              if (id.includes('gsap')) {
+                return 'gsap'
+              }
+              if (id.includes('react') || id.includes('scheduler')) {
+                return 'react-vendor'
+              }
+            }
+          }
+        }
+      }
     }
   }
 });

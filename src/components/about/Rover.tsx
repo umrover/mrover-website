@@ -4,6 +4,31 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import URDFLoader from 'urdf-loader'
 
+function processInChunks<T>(
+  items: T[],
+  processItem: (item: T, index: number) => void,
+  chunkSize: number,
+  onComplete: () => void
+) {
+  let index = 0
+  function processChunk() {
+    const end = Math.min(index + chunkSize, items.length)
+    for (; index < end; index++) {
+      processItem(items[index], index)
+    }
+    if (index < items.length) {
+      requestAnimationFrame(processChunk)
+    } else {
+      onComplete()
+    }
+  }
+  if (items.length > 0) {
+    requestAnimationFrame(processChunk)
+  } else {
+    onComplete()
+  }
+}
+
 const defaultJointValues: Record<string, number> = {
   chassis_to_arm_a: 24.14,
   arm_a_to_arm_b: -0.785,
@@ -95,85 +120,95 @@ export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: 
           loadedRobot!.rotation.x = -Math.PI / 2
           const texturePromises: Promise<void>[] = []
 
+          // Collect all meshes first
+          const meshes: THREE.Mesh[] = []
           loadedRobot!.traverse((child: THREE.Object3D) => {
-            if (child instanceof THREE.Mesh) {
-              // Resolve the most meaningful name (either mesh name or URDF link name)
-              let resolvedName = child.name
-              let p: THREE.Object3D | null = child.parent
-              while (p && p !== loadedRobot && (!resolvedName || resolvedName === '')) {
-                if (p.name) resolvedName = p.name
-                p = p.parent
-              }
+            if (child instanceof THREE.Mesh) meshes.push(child)
+          })
 
-              if (isWireframe) {
-                child.castShadow = false
-                child.receiveShadow = false
-                
-                // 1. Base Material
-                child.material = new THREE.MeshStandardMaterial({
-                  color: '#000814',
-                  transparent: true,
-                  opacity: config.meshOpacity,
-                  metalness: 0.8,
-                  roughness: 0.2,
-                  depthWrite: false,
-                  side: THREE.DoubleSide
-                })
+          const processMesh = (child: THREE.Mesh) => {
+            if (!isMounted) return
 
-                // 2. Edges
-                const threshold = config.overrides?.[resolvedName] ?? config.threshold
-                // console.log(`[Rover] Mesh: "${child.name}" resolved to: "${resolvedName}". Using threshold: ${threshold}`)
-                const edgesGeo = new THREE.EdgesGeometry(child.geometry, threshold)
-                const edgesMat = new THREE.LineBasicMaterial({
-                  color: config.color,
-                  transparent: true,
-                  opacity: config.lineOpacity
-                })
-                edgesResources.push({ geometry: edgesGeo, material: edgesMat })
-                const edges = new THREE.LineSegments(edgesGeo, edgesMat)
-                child.add(edges)
-              } else {
-                // Standard PBR Look
-                child.castShadow = true
-                child.receiveShadow = true
-                const mat = child.material as THREE.MeshStandardMaterial
-                if (mat instanceof THREE.MeshStandardMaterial) {
-                  mat.roughness = Math.min(mat.roughness, 0.7)
-                  if (mat.map && !mat.map.image) {
-                    texturePromises.push(new Promise<void>((resolve) => {
-                      const checkLoaded = () => {
-                        if (!isMounted) return resolve()
-                        if (mat.map?.image) resolve()
-                        else timeoutIds.push(window.setTimeout(checkLoaded, 50))
-                      }
-                      checkLoaded()
-                    }))
-                  }
+            // Resolve the most meaningful name (either mesh name or URDF link name)
+            let resolvedName = child.name
+            let p: THREE.Object3D | null = child.parent
+            while (p && p !== loadedRobot && (!resolvedName || resolvedName === '')) {
+              if (p.name) resolvedName = p.name
+              p = p.parent
+            }
+
+            if (isWireframe) {
+              child.castShadow = false
+              child.receiveShadow = false
+
+              // 1. Base Material
+              child.material = new THREE.MeshStandardMaterial({
+                color: '#000814',
+                transparent: true,
+                opacity: config.meshOpacity,
+                metalness: 0.8,
+                roughness: 0.2,
+                depthWrite: false,
+                side: THREE.DoubleSide
+              })
+
+              // 2. Edges
+              const threshold = config.overrides?.[resolvedName] ?? config.threshold
+              const edgesGeo = new THREE.EdgesGeometry(child.geometry, threshold)
+              const edgesMat = new THREE.LineBasicMaterial({
+                color: config.color,
+                transparent: true,
+                opacity: config.lineOpacity
+              })
+              edgesResources.push({ geometry: edgesGeo, material: edgesMat })
+              const edges = new THREE.LineSegments(edgesGeo, edgesMat)
+              child.add(edges)
+            } else {
+              // Standard PBR Look
+              child.castShadow = true
+              child.receiveShadow = true
+              const mat = child.material as THREE.MeshStandardMaterial
+              if (mat instanceof THREE.MeshStandardMaterial) {
+                mat.roughness = Math.min(mat.roughness, 0.7)
+                if (mat.map && !mat.map.image) {
+                  texturePromises.push(new Promise<void>((resolve) => {
+                    const checkLoaded = () => {
+                      if (!isMounted) return resolve()
+                      if (mat.map?.image) resolve()
+                      else timeoutIds.push(window.setTimeout(checkLoaded, 50))
+                    }
+                    checkLoaded()
+                  }))
                 }
               }
             }
-          })
-
-          const robotWithJoints = loadedRobot as THREE.Object3D & { setJointValue?: (name: string, value: number) => void }
-          if (robotWithJoints.setJointValue) {
-            for (const [joint, value] of Object.entries(defaultJointValues)) {
-              robotWithJoints.setJointValue(joint, value)
-            }
           }
 
-          if (isWireframe) {
-            if (isMounted) {
+          const finishProcessing = () => {
+            if (!isMounted) return
+
+            const robotWithJoints = loadedRobot as THREE.Object3D & { setJointValue?: (name: string, value: number) => void }
+            if (robotWithJoints.setJointValue) {
+              for (const [joint, value] of Object.entries(defaultJointValues)) {
+                robotWithJoints.setJointValue(joint, value)
+              }
+            }
+
+            if (isWireframe) {
               setRobot(loadedRobot)
               onLoaded?.()
+            } else {
+              Promise.all(texturePromises).then(() => {
+                if (isMounted) {
+                  setRobot(loadedRobot)
+                  onLoaded?.()
+                }
+              })
             }
-          } else {
-            Promise.all(texturePromises).then(() => {
-              if (isMounted) {
-                setRobot(loadedRobot)
-                onLoaded?.()
-              }
-            })
           }
+
+          // Process meshes in chunks to avoid blocking main thread
+          processInChunks(meshes, processMesh, 3, finishProcessing)
         } else {
           // Keep checking if meshes are still being added
           timeoutIds.push(window.setTimeout(checkMeshes, 100))
