@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import URDFLoader from 'urdf-loader'
 
 const defaultJointValues: Record<string, number> = {
@@ -26,7 +27,8 @@ const WIREFRAME_CONFIGS: Record<string, {
     overrides: {
       // tune specific meshes by name here
       // 'wheel_left_mesh': 45, 
-      'chassis': 16
+      'chassis_1': 16,
+      'chassis_3': 16
     }
   }
 }
@@ -48,6 +50,16 @@ export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: 
     }
 
     loader.packages = { mrover: '/urdf' }
+
+    const gltfLoader = new GLTFLoader(manager)
+    loader.loadMeshCb = (path, _manager, onComplete) => {
+      gltfLoader.load(path, (gltf) => {
+        onComplete(gltf.scene)
+      }, undefined, (err) => {
+        console.error('Failed to load mesh:', path, err)
+      })
+    }
+
     loader.load('/urdf/rover/rover.urdf', (result) => {
       loadedRobot = result
     })
@@ -103,7 +115,7 @@ export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: 
 
                 // 2. Edges
                 const threshold = config.overrides?.[resolvedName] ?? config.threshold
-                // console.log(`[Rover] Mesh: "${child.name}" resolved to: "${resolvedName}". Using threshold: ${threshold}`)
+                console.log(`[Rover] Mesh: "${child.name}" resolved to: "${resolvedName}". Using threshold: ${threshold}`)
                 const edgesGeo = new THREE.EdgesGeometry(child.geometry, threshold)
                 const edgesMat = new THREE.LineBasicMaterial({ 
                   color: config.color,

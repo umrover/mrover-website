@@ -19,7 +19,7 @@ import { BRANCHES } from "@/components/about/SceneConfig";
             <div class="branch-slides flex flex-1 items-stretch">
               {branch.sections.map((section) => (
                 <section
-                  class={`min-w-screen w-screen h-dvh flex flex-col p-0 px-16 pb-16 box-border pointer-events-none shrink-0 ${section.name === 'mission-intro' ? 'justify-center items-center' : 'justify-end items-end'}`}
+                  class={`min-w-full w-full h-dvh flex flex-col p-0 px-16 pb-16 box-border pointer-events-none shrink-0 ${section.name === 'mission-intro' ? 'justify-center items-center' : 'justify-end items-end'}`}
                   data-id={section.name}
                 >
                   {section.name === 'mission-intro' ? (
