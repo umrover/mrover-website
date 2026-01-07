@@ -13,10 +13,13 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
   const { gl, scene, camera } = useThree()
   const [standardReady, setStandardReady] = useState(false)
   const [wireframeReady, setWireframeReady] = useState(false)
+  const [suspensionReady, setSuspensionReady] = useState(false)
+  const [chassisReady, setChassisReady] = useState(false)
+  const [armReady, setArmReady] = useState(false)
   const framesRendered = useRef(0)
   const compiled = useRef(false)
 
-  const roverReady = standardReady && wireframeReady
+  const roverReady = standardReady && wireframeReady && suspensionReady && chassisReady && armReady
 
   useFrame(() => {
     if (roverReady) {
@@ -63,6 +66,39 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
 
         <group position={[0, -35 - BRANCH_SPACING, 0]}>
           <Rover isWireframe configId="mechanical" onLoaded={() => setWireframeReady(true)} />
+        </group>
+
+        <group position={[-400, 35 - BRANCH_SPACING * 2, 0]}>
+          <Rover
+            isWireframe
+            configId="mobility"
+            urdfPath="/urdf/rover/left_suspension.urdf"
+            onLoaded={() => setSuspensionReady(true)}
+            rotation={[0, -Math.PI/6, 0]}
+            showAxes
+          />
+        </group>
+
+        <group position={[400, -35 - BRANCH_SPACING * 2, 0]}>
+          <Rover
+            isWireframe
+            configId="chassis"
+            urdfPath="/urdf/rover/chassis.urdf"
+            onLoaded={() => setChassisReady(true)}
+            rotation={[0, -Math.PI/6, 0]}
+            showAxes
+          />
+        </group>
+
+        <group position={[1180, 20 - BRANCH_SPACING * 2, 0]}>
+          <Rover
+            isWireframe
+            configId="arm"
+            urdfPath="/urdf/rover/arm.urdf"
+            onLoaded={() => setArmReady(true)}
+            rotation={[0, -Math.PI/6, 0]}
+            showAxes
+          />
         </group>
 
         <Stage />

@@ -38,6 +38,12 @@ const defaultJointValues: Record<string, number> = {
   gripper_link: 0,
 }
 
+const BLUEPRINT_COLOR = '#0a5f7a'
+const BLUEPRINT_LINE_OPACITY = 0.7
+const BLUEPRINT_MESH_OPACITY = 0.06
+const DEFAULT_THRESHOLD = 20
+const WHEEL_THRESHOLD = 60
+
 const WIREFRAME_CONFIGS: Record<string, {
   threshold: number
   color: string
@@ -46,20 +52,65 @@ const WIREFRAME_CONFIGS: Record<string, {
   overrides?: Record<string, number>
 }> = {
   mechanical: {
-    threshold: 30,        // Default threshold for this rover
-    color: '#00f2ff',     // Cyan neon
-    lineOpacity: 0.6,
-    meshOpacity: 0.1,     // Ghostly body
+    threshold: DEFAULT_THRESHOLD,
+    color: BLUEPRINT_COLOR,
+    lineOpacity: BLUEPRINT_LINE_OPACITY,
+    meshOpacity: BLUEPRINT_MESH_OPACITY,
     overrides: {
-      // tune specific meshes by name here
-      // 'wheel_left_mesh': 45, 
+      'chassis_1': 16,
+      'chassis_3': 16,
+      'front_left_wheel_link': WHEEL_THRESHOLD,
+      'center_left_wheel_link': WHEEL_THRESHOLD,
+      'back_left_wheel_link': WHEEL_THRESHOLD,
+      'front_right_wheel_link': WHEEL_THRESHOLD,
+      'center_right_wheel_link': WHEEL_THRESHOLD,
+      'back_right_wheel_link': WHEEL_THRESHOLD
+    }
+  },
+  mobility: {
+    threshold: DEFAULT_THRESHOLD,
+    color: BLUEPRINT_COLOR,
+    lineOpacity: BLUEPRINT_LINE_OPACITY,
+    meshOpacity: BLUEPRINT_MESH_OPACITY,
+    overrides: {
+      'front_left_wheel_link': WHEEL_THRESHOLD,
+      'center_left_wheel_link': WHEEL_THRESHOLD,
+      'back_left_wheel_link': WHEEL_THRESHOLD
+    }
+  },
+  chassis: {
+    threshold: DEFAULT_THRESHOLD,
+    color: BLUEPRINT_COLOR,
+    lineOpacity: BLUEPRINT_LINE_OPACITY,
+    meshOpacity: BLUEPRINT_MESH_OPACITY,
+    overrides: {
       'chassis_1': 16,
       'chassis_3': 16
     }
+  },
+  arm: {
+    threshold: DEFAULT_THRESHOLD,
+    color: BLUEPRINT_COLOR,
+    lineOpacity: BLUEPRINT_LINE_OPACITY,
+    meshOpacity: BLUEPRINT_MESH_OPACITY
   }
 }
 
-export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: () => void; isWireframe?: boolean; configId?: string }) {
+export function Rover({
+  onLoaded,
+  isWireframe = false,
+  configId,
+  urdfPath = '/urdf/rover/rover.urdf',
+  rotation = [0, -Math.PI / 3, 0],
+  showAxes = false
+}: {
+  onLoaded?: () => void
+  isWireframe?: boolean
+  configId?: string
+  urdfPath?: string
+  rotation?: [number, number, number]
+  showAxes?: boolean
+}) {
   const [robot, setRobot] = useState<THREE.Object3D | null>(null)
 
   useEffect(() => {
@@ -92,7 +143,7 @@ export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: 
       })
     }
 
-    loader.load('/urdf/rover/rover.urdf', (result) => {
+    loader.load(urdfPath, (result) => {
       loadedRobot = result
     })
 
@@ -226,13 +277,14 @@ export function Rover({ onLoaded, isWireframe = false, configId }: { onLoaded?: 
         material.dispose()
       })
     }
-  }, [isWireframe, configId])
+  }, [isWireframe, configId, urdfPath])
 
   if (!robot) return null
 
   return (
-    <group rotation-y={-Math.PI / 3}>
+    <group rotation={rotation}>
       <primitive object={robot} />
+      {showAxes && <axesHelper args={[100]} />}
     </group>
   )
 }

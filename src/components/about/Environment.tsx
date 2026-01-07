@@ -72,8 +72,9 @@ export function BranchPlaceholder({ branchIndex }: { branchIndex: number }) {
     meshRef.current.rotation.x += 0.002
   })
 
-  // We skip branch 1 (Mechanical) because we are rendering a Wireframe Rover there now
-  if (branchIndex === 1) return null
+  // Skip branches with custom 3D models
+  // Branch 1 = Software (wireframe rover), Branch 2 = Mechanical (suspension)
+  if (branchIndex === 1 || branchIndex === 2) return null
 
   return (
     <group position={[0, yOffset, 0]}>

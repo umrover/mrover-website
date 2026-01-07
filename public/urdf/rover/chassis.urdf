@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<robot name="chassis">
+  <link name="base_link"/>
+  <link name="chassis_link">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/rover_chassis.glb"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="base_to_chassis" type="fixed">
+    <parent link="base_link"/>
+    <child link="chassis_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+</robot>

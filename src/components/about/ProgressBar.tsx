@@ -1,11 +1,13 @@
 import { useRef, useCallback } from 'react'
 import { useScroll } from '../../hooks/use-scroll'
 import { BRANCHES } from './SceneConfig'
+import { useScrollState } from './scrollState'
 
 const TOTAL_SECTIONS = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
 
 export function ProgressBar() {
   const barRef = useRef<HTMLDivElement>(null)
+  const { animateToSection } = useScrollState()
 
   useScroll(useCallback(({ scroll, limit }: { scroll: number; limit: number }) => {
     if (!barRef.current) return
@@ -18,7 +20,7 @@ export function ProgressBar() {
     const clickY = e.clientY - rect.top
     const progress = clickY / rect.height
     const targetSection = Math.round(progress * (TOTAL_SECTIONS - 1))
-    window.scrollTo({ top: targetSection * window.innerHeight, behavior: 'smooth' })
+    animateToSection(targetSection)
   }
 
   return (

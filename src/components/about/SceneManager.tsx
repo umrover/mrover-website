@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
 import { AboutExperience } from './AboutExperience'
 import { ProgressBar } from './ProgressBar'
-import { BRANCHES } from './SceneConfig'
-
-const TOTAL_SECTIONS = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
+import { useScrollState } from './scrollState'
 
 export function SceneManager() {
+  const { getCurrentSection, animateToSection } = useScrollState()
+
   useEffect(() => {
     let resizeObserver: ResizeObserver | null = null
     const header = document.querySelector('header')
@@ -19,39 +19,6 @@ export function SceneManager() {
     }
 
     window.scrollTo(0, 0)
-
-    let currentSection = 0
-    let isAnimating = false
-
-    const animateToSection = (targetSection: number) => {
-      const clamped = Math.max(0, Math.min(targetSection, TOTAL_SECTIONS - 1))
-      if (clamped === currentSection || isAnimating) return
-
-      isAnimating = true
-      currentSection = clamped
-
-      const targetY = clamped * window.innerHeight
-      const startY = window.scrollY
-      const distance = targetY - startY
-      const duration = 400
-      const startTime = performance.now()
-
-      const animate = (now: number) => {
-        const elapsed = now - startTime
-        const progress = Math.min(elapsed / duration, 1)
-        const eased = 1 - Math.pow(1 - progress, 3)
-
-        window.scrollTo(0, startY + distance * eased)
-
-        if (progress < 1) {
-          requestAnimationFrame(animate)
-        } else {
-          isAnimating = false
-        }
-      }
-
-      requestAnimationFrame(animate)
-    }
 
     let wheelDelta = 0
     let wheelTimer: ReturnType<typeof setTimeout> | null = null
@@ -67,7 +34,7 @@ export function SceneManager() {
       if (Math.abs(wheelDelta) >= 30) {
         const direction = wheelDelta > 0 ? 1 : -1
         wheelDelta = 0
-        animateToSection(currentSection + direction)
+        animateToSection(getCurrentSection() + direction)
       }
     }
 
@@ -91,7 +58,7 @@ export function SceneManager() {
 
       const deltaY = touchStartY - e.changedTouches[0].clientY
       if (Math.abs(deltaY) < 30) return
-      animateToSection(currentSection + (deltaY > 0 ? 1 : -1))
+      animateToSection(getCurrentSection() + (deltaY > 0 ? 1 : -1))
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -103,7 +70,9 @@ export function SceneManager() {
         e.preventDefault()
         direction = -1
       }
-      if (direction !== 0) animateToSection(currentSection + direction)
+      if (direction !== 0) {
+        animateToSection(getCurrentSection() + direction)
+      }
     }
 
     document.addEventListener('wheel', handleWheel, { passive: false })
@@ -121,7 +90,7 @@ export function SceneManager() {
       if (wheelTimer) clearTimeout(wheelTimer)
       if (resizeObserver) resizeObserver.disconnect()
     }
-  }, [])
+  }, [animateToSection, getCurrentSection])
 
   return (
     <>
