@@ -33,7 +33,7 @@ export function SceneManager() {
       const targetY = clamped * window.innerHeight
       const startY = window.scrollY
       const distance = targetY - startY
-      const duration = 600
+      const duration = 400
       const startTime = performance.now()
 
       const animate = (now: number) => {
