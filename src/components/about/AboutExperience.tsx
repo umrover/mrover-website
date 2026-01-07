@@ -1,5 +1,5 @@
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { Environment, useProgress } from '@react-three/drei'
+import { useProgress } from '@react-three/drei'
 import { EffectComposer, Vignette } from '@react-three/postprocessing'
 import { useRef, Suspense, useCallback, useState } from 'react'
 import * as THREE from 'three'
@@ -36,7 +36,7 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
     <>
       <Atmosphere />
       <Stars count={isMobile ? 2000 : 3000} />
-      <Environment preset="sunset" environmentIntensity={0.7} />
+      <ambientLight intensity={0.4} color={0xfff8f0} />
 
       <directionalLight
         position={[200, 300, 150]}
