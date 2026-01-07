@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useScroll } from '../../hooks/use-scroll'
 import { lerp } from '../../lib/maths'
-import { ALL_SECTIONS, BRANCH_SPACING } from './SceneConfig'
+import { ALL_SECTIONS, BRANCHES, BRANCH_SPACING, getBranchesWithModels } from './SceneConfig'
 import { getScrollState } from './utils'
 
 export function Stars({ count = 8000 }) {
@@ -62,46 +62,57 @@ export function Stars({ count = 8000 }) {
   )
 }
 
-export function BranchPlaceholder({ branchIndex }: { branchIndex: number }) {
-  const meshRef = useRef<THREE.Mesh>(null)
-  const yOffset = -BRANCH_SPACING * branchIndex
+export function BranchPlaceholder() {
+  const meshRefs = useRef<(THREE.Mesh | null)[]>([])
+  const branchesWithModels = useMemo(() => getBranchesWithModels(), [])
 
   useFrame(() => {
-    if (document.hidden || !meshRef.current) return
-    meshRef.current.rotation.y += 0.003
-    meshRef.current.rotation.x += 0.002
+    if (document.hidden) return
+    meshRefs.current.forEach((mesh) => {
+      if (mesh) {
+        mesh.rotation.y += 0.003
+        mesh.rotation.x += 0.002
+      }
+    })
   })
 
-  // Skip branches with custom 3D models
-  // Branch 1 = Software (wireframe rover), Branch 2 = Mechanical (suspension)
-  if (branchIndex === 1 || branchIndex === 2) return null
+  const placeholderBranches = BRANCHES.map((_, i) => i).filter(
+    (i) => i > 0 && !branchesWithModels.includes(i)
+  )
 
   return (
-    <group position={[0, yOffset, 0]}>
-      <mesh ref={meshRef}>
-        <boxGeometry args={[60, 60, 60]} />
-        <meshBasicMaterial wireframe color="#ffffff" />
-      </mesh>
-      <sprite position={[0, 0, 35]} scale={[30, 30, 1]}>
-        <spriteMaterial color="#ffffff" opacity={0.8} transparent>
-          <canvasTexture
-            attach="map"
-            image={(() => {
-              const canvas = document.createElement('canvas')
-              canvas.width = 64
-              canvas.height = 64
-              const ctx = canvas.getContext('2d')!
-              ctx.fillStyle = '#ffffff'
-              ctx.font = 'bold 48px Arial'
-              ctx.textAlign = 'center'
-              ctx.textBaseline = 'middle'
-              ctx.fillText(String(branchIndex), 32, 32)
-              return canvas
-            })()}
-          />
-        </spriteMaterial>
-      </sprite>
-    </group>
+    <>
+      {placeholderBranches.map((branchIndex, i) => {
+        const yOffset = -BRANCH_SPACING * branchIndex
+        return (
+          <group key={branchIndex} position={[0, yOffset, 0]}>
+            <mesh ref={(el) => (meshRefs.current[i] = el)}>
+              <boxGeometry args={[60, 60, 60]} />
+              <meshBasicMaterial wireframe color="#ffffff" />
+            </mesh>
+            <sprite position={[0, 0, 35]} scale={[30, 30, 1]}>
+              <spriteMaterial color="#ffffff" opacity={0.8} transparent>
+                <canvasTexture
+                  attach="map"
+                  image={(() => {
+                    const canvas = document.createElement('canvas')
+                    canvas.width = 64
+                    canvas.height = 64
+                    const ctx = canvas.getContext('2d')!
+                    ctx.fillStyle = '#ffffff'
+                    ctx.font = 'bold 48px Arial'
+                    ctx.textAlign = 'center'
+                    ctx.textBaseline = 'middle'
+                    ctx.fillText(String(branchIndex), 32, 32)
+                    return canvas
+                  })()}
+                />
+              </spriteMaterial>
+            </sprite>
+          </group>
+        )
+      })}
+    </>
   )
 }
 

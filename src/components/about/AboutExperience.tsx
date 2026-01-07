@@ -1,28 +1,29 @@
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { useProgress } from '@react-three/drei'
 import { EffectComposer, Vignette } from '@react-three/postprocessing'
-import { useRef, Suspense, useCallback, useState } from 'react'
+import { useRef, Suspense, useCallback, useState, useMemo } from 'react'
 import * as THREE from 'three'
-import { BRANCHES, BRANCH_SPACING } from './SceneConfig'
-import { Rover } from './Rover'
+import { getAllModels } from './SceneConfig'
+import { URDFModel } from './URDFModel'
 import { Stars, Atmosphere, Stage, BranchPlaceholder } from './Environment'
 import { CameraController } from './Camera'
 import { LoadingOverlay, ProgressIndicator, useIsMobile } from './UI'
 
-function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () => void }) {
+function Scene({ isMobile, onAllModelsLoaded }: { isMobile: boolean; onAllModelsLoaded: () => void }) {
   const { gl, scene, camera } = useThree()
-  const [standardReady, setStandardReady] = useState(false)
-  const [wireframeReady, setWireframeReady] = useState(false)
-  const [suspensionReady, setSuspensionReady] = useState(false)
-  const [chassisReady, setChassisReady] = useState(false)
-  const [armReady, setArmReady] = useState(false)
+  const models = useMemo(() => getAllModels(), [])
+  const [loadedCount, setLoadedCount] = useState(0)
   const framesRendered = useRef(0)
   const compiled = useRef(false)
 
-  const roverReady = standardReady && wireframeReady && suspensionReady && chassisReady && armReady
+  const allModelsReady = loadedCount === models.length
+
+  const handleModelLoaded = useCallback(() => {
+    setLoadedCount((c) => c + 1)
+  }, [])
 
   useFrame(() => {
-    if (roverReady) {
+    if (allModelsReady) {
       if (!compiled.current) {
         gl.compile(scene, camera)
         compiled.current = true
@@ -30,7 +31,7 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
 
       framesRendered.current++
       if (framesRendered.current > 15) {
-        onRoverLoad()
+        onAllModelsLoaded()
       }
     }
   })
@@ -60,51 +61,20 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
       <CameraController />
 
       <Suspense fallback={null}>
-        <group position={[0, -35, 0]}>
-          <Rover onLoaded={() => setStandardReady(true)} />
-        </group>
-
-        <group position={[0, -35 - BRANCH_SPACING, 0]}>
-          <Rover isWireframe configId="mechanical" onLoaded={() => setWireframeReady(true)} />
-        </group>
-
-        <group position={[-400, 35 - BRANCH_SPACING * 2, 0]}>
-          <Rover
-            isWireframe
-            configId="mobility"
-            urdfPath="/urdf/rover/left_suspension.urdf"
-            onLoaded={() => setSuspensionReady(true)}
-            rotation={[0, -Math.PI/6, 0]}
-            showAxes
+        {models.map(({ section }) => (
+          <URDFModel
+            key={section.name}
+            urdfPath={section.model!.urdfPath}
+            position={section.model!.position}
+            rotation={section.model!.rotation}
+            wireframe={section.model!.wireframe}
+            floating={section.model!.floating}
+            onLoaded={handleModelLoaded}
           />
-        </group>
-
-        <group position={[400, -35 - BRANCH_SPACING * 2, 0]}>
-          <Rover
-            isWireframe
-            configId="chassis"
-            urdfPath="/urdf/rover/chassis.urdf"
-            onLoaded={() => setChassisReady(true)}
-            rotation={[0, -Math.PI/6, 0]}
-            showAxes
-          />
-        </group>
-
-        <group position={[1180, 20 - BRANCH_SPACING * 2, 0]}>
-          <Rover
-            isWireframe
-            configId="arm"
-            urdfPath="/urdf/rover/arm.urdf"
-            onLoaded={() => setArmReady(true)}
-            rotation={[0, -Math.PI/6, 0]}
-            showAxes
-          />
-        </group>
+        ))}
 
         <Stage />
-        {BRANCHES.slice(1).map((_, i) => (
-          <BranchPlaceholder key={i + 1} branchIndex={i + 1} />
-        ))}
+        <BranchPlaceholder />
       </Suspense>
 
       <EffectComposer enableNormalPass={false} multisampling={4}>
@@ -115,12 +85,12 @@ function Scene({ isMobile, onRoverLoad }: { isMobile: boolean; onRoverLoad: () =
 }
 
 export function AboutExperience() {
-  const [roverLoaded, setRoverLoaded] = useState(false)
+  const [modelsLoaded, setModelsLoaded] = useState(false)
   const isMobile = useIsMobile()
   const { progress, item } = useProgress()
 
-  const handleRoverLoad = useCallback(() => {
-    setRoverLoaded(true)
+  const handleAllModelsLoaded = useCallback(() => {
+    setModelsLoaded(true)
   }, [])
 
   let loadingMessage = item
@@ -128,7 +98,6 @@ export function AboutExperience() {
     if (item.includes('http') || item.includes('github') || item.includes('polyhaven')) {
       loadingMessage = 'Loading Environment...'
     } else {
-      // Extract just the filename from the path
       const parts = item.split('/')
       loadingMessage = `Loading ${parts[parts.length - 1]}...`
     }
@@ -136,24 +105,32 @@ export function AboutExperience() {
 
   return (
     <>
-      <LoadingOverlay progress={progress} visible={!roverLoaded} message={loadingMessage} />
-      <ProgressIndicator visible={roverLoaded} isMobile={isMobile} />
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        pointerEvents: 'none',
-        zIndex: 0,
-        opacity: roverLoaded ? 1 : 0,
-        transition: 'opacity 1s ease',
-      }}>
+      <LoadingOverlay progress={progress} visible={!modelsLoaded} message={loadingMessage} />
+      <ProgressIndicator visible={modelsLoaded} isMobile={isMobile} />
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          pointerEvents: 'none',
+          zIndex: 0,
+          opacity: modelsLoaded ? 1 : 0,
+          transition: 'opacity 1s ease',
+        }}
+      >
         <Canvas
-          gl={{ antialias: !isMobile, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.5, powerPreference: 'high-performance' }}
+          gl={{
+            antialias: !isMobile,
+            alpha: false,
+            toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 1.5,
+            powerPreference: 'high-performance',
+          }}
           camera={{ fov: 50, near: 0.1, far: 10000, position: [0, 100, 400] }}
           shadows={!isMobile}
           dpr={isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5)}
         >
           <Suspense fallback={null}>
-            <Scene isMobile={isMobile} onRoverLoad={handleRoverLoad} />
+            <Scene isMobile={isMobile} onAllModelsLoaded={handleAllModelsLoaded} />
           </Suspense>
         </Canvas>
       </div>

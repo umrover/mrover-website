@@ -1,3 +1,19 @@
+export interface WireframeConfig {
+  threshold: number
+  color: string
+  lineOpacity: number
+  meshOpacity: number
+  overrides?: Record<string, number>
+}
+
+export interface ModelConfig {
+  urdfPath: string
+  position: [number, number, number]
+  rotation: [number, number, number]
+  wireframe?: WireframeConfig
+  floating?: boolean
+}
+
 export interface SectionTarget {
   name: string
   label?: string
@@ -8,6 +24,7 @@ export interface SectionTarget {
   }
   camera: { x: number; y: number; z: number }
   lookAt: { x: number; y: number; z: number }
+  model?: ModelConfig
 }
 
 export interface Branch {
@@ -18,9 +35,57 @@ export interface Branch {
 }
 
 export const BRANCH_SPACING = 800
+export const DEBUG_AXES = true
 
-// Reorder branches by moving entire blocks up/down
-// Reorder sections within a branch by moving entries within the sections array
+const BLUEPRINT_COLOR = '#0a7acc'
+const BLUEPRINT_LINE_OPACITY = 0.7
+const BLUEPRINT_MESH_OPACITY = 0.06
+const DEFAULT_THRESHOLD = 20
+const WHEEL_THRESHOLD = 90
+
+const WIREFRAME_PRESETS = {
+  mechanical: {
+    threshold: DEFAULT_THRESHOLD,
+    color: BLUEPRINT_COLOR,
+    lineOpacity: BLUEPRINT_LINE_OPACITY,
+    meshOpacity: BLUEPRINT_MESH_OPACITY,
+    overrides: {
+      'chassis_1': 16,
+      'chassis_3': 16,
+      'left_wheel-mesh': WHEEL_THRESHOLD,
+      'left_wheel_001-mesh': WHEEL_THRESHOLD,
+      'right_wheel-mesh': WHEEL_THRESHOLD,
+      'right_wheel_001-mesh': WHEEL_THRESHOLD,
+    },
+  },
+  mobility: {
+    threshold: DEFAULT_THRESHOLD,
+    color: BLUEPRINT_COLOR,
+    lineOpacity: BLUEPRINT_LINE_OPACITY,
+    meshOpacity: BLUEPRINT_MESH_OPACITY,
+    overrides: {
+      'left_wheel-mesh': WHEEL_THRESHOLD,
+      'left_wheel_001-mesh': WHEEL_THRESHOLD,
+    },
+  },
+  chassis: {
+    threshold: DEFAULT_THRESHOLD,
+    color: BLUEPRINT_COLOR,
+    lineOpacity: BLUEPRINT_LINE_OPACITY,
+    meshOpacity: BLUEPRINT_MESH_OPACITY,
+    overrides: {
+      chassis_1: 16,
+      chassis_3: 16,
+    },
+  },
+  arm: {
+    threshold: DEFAULT_THRESHOLD,
+    color: BLUEPRINT_COLOR,
+    lineOpacity: BLUEPRINT_LINE_OPACITY,
+    meshOpacity: BLUEPRINT_MESH_OPACITY,
+  },
+} as const satisfies Record<string, WireframeConfig>
+
 const BRANCH_DEFINITIONS: Branch[] = [
   {
     name: 'Mission',
@@ -32,11 +97,17 @@ const BRANCH_DEFINITIONS: Branch[] = [
         label: 'The Mission',
         camera: { x: 0, y: 200, z: 600 },
         lookAt: { x: 0, y: 0, z: 0 },
+        model: {
+          urdfPath: '/urdf/rover/rover.urdf',
+          position: [0, -35, 0],
+          rotation: [0, -Math.PI / 3, 0],
+        },
       },
       {
         name: 'mission',
         label: 'The Mission',
-        description: "The Michigan Mars Rover Team designs, builds, and tests a Mars rover prototype to compete in the University Rover Challenge. Our interdisciplinary team of students pushes the boundaries of what's possible in student-led space exploration.",
+        description:
+          "The Michigan Mars Rover Team designs, builds, and tests a Mars rover prototype to compete in the University Rover Challenge. Our interdisciplinary team of students pushes the boundaries of what's possible in student-led space exploration.",
         camera: { x: 0, y: 80, z: 350 },
         lookAt: { x: 0, y: 20, z: 0 },
       },
@@ -55,6 +126,12 @@ const BRANCH_DEFINITIONS: Branch[] = [
         },
         camera: { x: -300, y: 80, z: 280 },
         lookAt: { x: 0, y: 20, z: 0 },
+        model: {
+          urdfPath: '/urdf/rover/rover.urdf',
+          position: [0, -35, 0],
+          rotation: [0, -Math.PI / 3, 0],
+          wireframe: WIREFRAME_PRESETS.mechanical,
+        },
       },
       {
         name: 'localization',
@@ -116,6 +193,13 @@ const BRANCH_DEFINITIONS: Branch[] = [
         },
         camera: { x: -400, y: 60, z: 180 },
         lookAt: { x: -400, y: 30, z: 0 },
+        model: {
+          urdfPath: '/urdf/rover/left_suspension.urdf',
+          position: [-400, 35, 0],
+          rotation: [0, -Math.PI / 6, 0],
+          wireframe: WIREFRAME_PRESETS.mobility,
+          floating: true,
+        },
       },
       {
         name: 'chassis',
@@ -125,6 +209,13 @@ const BRANCH_DEFINITIONS: Branch[] = [
         },
         camera: { x: 400, y: 60, z: 180 },
         lookAt: { x: 400, y: 30, z: 0 },
+        model: {
+          urdfPath: '/urdf/rover/chassis.urdf',
+          position: [400, -35, 0],
+          rotation: [0, -Math.PI / 6, 0],
+          wireframe: WIREFRAME_PRESETS.chassis,
+          floating: true,
+        },
       },
       {
         name: 'robotic-arm',
@@ -134,6 +225,13 @@ const BRANCH_DEFINITIONS: Branch[] = [
         },
         camera: { x: 1200, y: 60, z: 180 },
         lookAt: { x: 1200, y: 30, z: 0 },
+        model: {
+          urdfPath: '/urdf/rover/arm.urdf',
+          position: [1180, 20, 0],
+          rotation: [0, -Math.PI / 6, 0],
+          wireframe: WIREFRAME_PRESETS.arm,
+          floating: true,
+        },
       },
     ],
   },
@@ -199,10 +297,20 @@ const BRANCH_DEFINITIONS: Branch[] = [
 ]
 
 function offsetSections(sections: SectionTarget[], yOffset: number): SectionTarget[] {
-  return sections.map(s => ({
+  return sections.map((s) => ({
     ...s,
     camera: { ...s.camera, y: s.camera.y + yOffset },
     lookAt: { ...s.lookAt, y: s.lookAt.y + yOffset },
+    model: s.model
+      ? {
+          ...s.model,
+          position: [s.model.position[0], s.model.position[1] + yOffset, s.model.position[2]] as [
+            number,
+            number,
+            number,
+          ],
+        }
+      : undefined,
   }))
 }
 
@@ -211,5 +319,27 @@ export const BRANCHES: Branch[] = BRANCH_DEFINITIONS.map((branch, i) => ({
   sections: offsetSections(branch.sections, -BRANCH_SPACING * i),
 }))
 
-export const ALL_SECTIONS = BRANCHES.flatMap(b => b.sections)
+export const ALL_SECTIONS = BRANCHES.flatMap((b) => b.sections)
 export const TOTAL_SECTIONS = ALL_SECTIONS.length
+
+export function getAllModels(): { section: SectionTarget; branchIndex: number }[] {
+  const models: { section: SectionTarget; branchIndex: number }[] = []
+  BRANCHES.forEach((branch, branchIndex) => {
+    branch.sections.forEach((section) => {
+      if (section.model) {
+        models.push({ section, branchIndex })
+      }
+    })
+  })
+  return models
+}
+
+export function getBranchesWithModels(): number[] {
+  const branches = new Set<number>()
+  BRANCHES.forEach((branch, branchIndex) => {
+    if (branch.sections.some((s) => s.model)) {
+      branches.add(branchIndex)
+    }
+  })
+  return Array.from(branches)
+}
