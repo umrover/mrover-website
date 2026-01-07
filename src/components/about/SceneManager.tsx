@@ -1,8 +1,7 @@
-import { useEffect, lazy, Suspense } from 'react'
+import { useEffect } from 'react'
+import { AboutExperience } from './AboutExperience'
 import { ProgressBar } from './ProgressBar'
 import { BRANCHES } from './SceneConfig'
-
-const AboutExperience = lazy(() => import('./AboutExperience').then(m => ({ default: m.AboutExperience })))
 
 const TOTAL_SECTIONS = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
 
@@ -126,9 +125,7 @@ export function SceneManager() {
 
   return (
     <>
-      <Suspense fallback={null}>
-        <AboutExperience />
-      </Suspense>
+      <AboutExperience />
       <ProgressBar />
     </>
   )
