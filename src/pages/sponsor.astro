@@ -75,39 +75,39 @@ const sponsorshipLevels = [
     </section>
 
     <!-- Why Sponsor -->
-    <section class="py-20 bg-[#0a0808]">
+    <section class="py-28 bg-[#0a0808]">
       <div class="max-w-[1200px] mx-auto px-8">
-        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold uppercase text-center tracking-wide !mb-14">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold uppercase text-center tracking-wide !mb-16">
           Why Sponsor MRover?
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="bg-white/[0.03] border border-white/[0.08] rounded-lg p-8 text-center transition-all hover:border-mrover-accent/30 hover:bg-mrover-accent/5">
-            <div class="w-12 h-12 mx-auto mb-6 text-mrover-accent">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div class="bg-white/[0.03] border border-white/[0.08] rounded-lg p-10 text-center transition-all hover:border-mrover-accent/30 hover:bg-mrover-accent/5">
+            <div class="w-12 h-12 mx-auto mb-8 text-mrover-accent">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
               </svg>
             </div>
-            <h3 class="text-xl font-semibold mb-3">Materials & Prototypes</h3>
+            <h3 class="text-xl font-semibold mb-4">Materials & Prototypes</h3>
             <p class="text-white/60 leading-relaxed">Fund cutting-edge components and rapid prototyping for our rovers</p>
           </div>
-          <div class="bg-white/[0.03] border border-white/[0.08] rounded-lg p-8 text-center transition-all hover:border-mrover-accent/30 hover:bg-mrover-accent/5">
-            <div class="w-12 h-12 mx-auto mb-6 text-mrover-accent">
+          <div class="bg-white/[0.03] border border-white/[0.08] rounded-lg p-10 text-center transition-all hover:border-mrover-accent/30 hover:bg-mrover-accent/5">
+            <div class="w-12 h-12 mx-auto mb-8 text-mrover-accent">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
             </div>
-            <h3 class="text-xl font-semibold mb-3">Outreach & Education</h3>
+            <h3 class="text-xl font-semibold mb-4">Outreach & Education</h3>
             <p class="text-white/60 leading-relaxed">Support STEM education and inspire the next generation of engineers</p>
           </div>
-          <div class="bg-white/[0.03] border border-white/[0.08] rounded-lg p-8 text-center transition-all hover:border-mrover-accent/30 hover:bg-mrover-accent/5">
-            <div class="w-12 h-12 mx-auto mb-6 text-mrover-accent">
+          <div class="bg-white/[0.03] border border-white/[0.08] rounded-lg p-10 text-center transition-all hover:border-mrover-accent/30 hover:bg-mrover-accent/5">
+            <div class="w-12 h-12 mx-auto mb-8 text-mrover-accent">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-full h-full">
                 <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
               </svg>
             </div>
-            <h3 class="text-xl font-semibold mb-3">Competition Travel</h3>
+            <h3 class="text-xl font-semibold mb-4">Competition Travel</h3>
             <p class="text-white/60 leading-relaxed">Send our team to international rover competitions worldwide</p>
           </div>
         </div>
@@ -115,19 +115,19 @@ const sponsorshipLevels = [
     </section>
 
     <!-- Sponsorship Levels -->
-    <section class="py-20 bg-gradient-to-b from-[#0a0808] to-[#111]">
+    <section class="py-28 bg-gradient-to-b from-[#0a0808] to-[#111]">
       <div class="max-w-[1200px] mx-auto px-8">
-        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold uppercase text-center tracking-wide !mb-14">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold uppercase text-center tracking-wide !mb-16">
           Sponsorship Tiers
         </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {sponsorshipLevels.map((level) => (
             <div class="bg-white/[0.02] border border-white/10 rounded-lg overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
               <div class={`p-6 flex justify-between items-center border-b border-white/10 ${level.headerBg}`}>
                 <span class={`text-xl font-bold uppercase tracking-wide ${level.nameColor}`}>{level.name}</span>
                 <span class="text-lg font-semibold text-white/70">{level.amount}</span>
               </div>
-              <ul class="p-6 space-y-3">
+              <ul class="!p-3 space-y-4">
                 {level.benefits.map((benefit) => (
                   <li class="flex items-start gap-3 text-white/80 leading-relaxed">
                     <span class="w-1.5 h-1.5 rounded-full bg-mrover-accent mt-2 shrink-0"></span>
@@ -138,16 +138,16 @@ const sponsorshipLevels = [
             </div>
           ))}
         </div>
-        <p class="text-center text-white/50 italic mt-10">
+        <p class="text-center text-white/50 italic mt-12">
           We also accommodate non-monetary donations and custom partnerships.
         </p>
       </div>
     </section>
 
     <!-- Donate -->
-    <section class="py-20 bg-mrover-accent text-black">
+    <section class="py-24 bg-mrover-accent text-black">
       <div class="max-w-[1200px] mx-auto px-8">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-12 text-center md:text-left">
           <div class="max-w-xl">
             <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold uppercase mb-4 tracking-wide">
               Individual Donations
@@ -169,12 +169,12 @@ const sponsorshipLevels = [
     </section>
 
     <!-- Contact -->
-    <section class="py-24 bg-[#0a0808] text-center">
+    <section class="py-28 bg-[#0a0808] text-center">
       <div class="max-w-[1200px] mx-auto px-8">
-        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold uppercase mb-12 tracking-wide">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold uppercase mb-14 tracking-wide">
           Ready to Partner?
         </h2>
-        <p class="text-lg text-white/60 mb-6">
+        <p class="text-lg text-white/60 mb-8">
           Reach out to discuss sponsorship opportunities
         </p>
         <a
