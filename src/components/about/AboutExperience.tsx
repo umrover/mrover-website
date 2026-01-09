@@ -3,9 +3,12 @@ import { useProgress } from '@react-three/drei'
 import { EffectComposer, Vignette } from '@react-three/postprocessing'
 import { useRef, Suspense, useCallback, useState, useMemo } from 'react'
 import * as THREE from 'three'
-import { getAllModels } from './SceneConfig'
+import { getAllModels, ALL_SECTIONS } from './SceneConfig'
+import { useScroll } from '../../hooks/use-scroll'
+import { getScrollState } from './utils'
 import { URDFModel } from './URDFModel'
 import { Terrain } from './Terrain'
+import { Satellite } from './Satellite'
 import { Stars, Atmosphere, Stage, BranchPlaceholder } from './Environment'
 import { CameraController } from './Camera'
 import { LoadingOverlay, ProgressIndicator, useIsMobile } from './UI'
@@ -13,9 +16,19 @@ import { LoadingOverlay, ProgressIndicator, useIsMobile } from './UI'
 function Scene({ isMobile, onAllModelsLoaded }: { isMobile: boolean; onAllModelsLoaded: () => void }) {
   const { gl, scene, camera } = useThree()
   const models = useMemo(() => getAllModels(), [])
+  const satellites = useMemo(() => ALL_SECTIONS.filter((s) => s.satellite), [])
   const [loadedCount, setLoadedCount] = useState(0)
   const framesRendered = useRef(0)
   const compiled = useRef(false)
+  const scrollRef = useRef(0)
+  const windowHeightRef = useRef(typeof window !== 'undefined' ? window.innerHeight : 800)
+  const currentSectionRef = useRef('')
+
+  useScroll(useCallback(({ scroll }: { scroll: number }) => {
+    scrollRef.current = scroll
+    const { fromSection } = getScrollState(scroll, windowHeightRef.current)
+    currentSectionRef.current = fromSection.name
+  }, []))
 
   const allModelsReady = loadedCount === models.length
 
@@ -87,6 +100,20 @@ function Scene({ isMobile, onAllModelsLoaded }: { isMobile: boolean; onAllModels
 
         <Stage />
         <BranchPlaceholder />
+
+        {satellites.map((section) => {
+          const idx = ALL_SECTIONS.findIndex((s) => s.name === section.name)
+          return (
+            <group key={`satellite-${section.name}`} position={[0, section.camera.y - 80, 0]}>
+              <Satellite
+                config={section.satellite!}
+                sectionIndex={idx}
+                scrollRef={scrollRef}
+                windowHeightRef={windowHeightRef}
+              />
+            </group>
+          )
+        })}
       </Suspense>
 
       <EffectComposer enableNormalPass={false} multisampling={4}>

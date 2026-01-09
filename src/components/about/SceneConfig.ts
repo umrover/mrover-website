@@ -13,6 +13,13 @@ export interface TerrainConfig {
   roughness: number
 }
 
+export interface SatelliteConfig {
+  modelPath: string
+  position: [number, number, number]
+  rotation: [number, number, number]
+  scale: number
+}
+
 export interface ModelConfig {
   urdfPath: string
   position: [number, number, number]
@@ -34,6 +41,7 @@ export interface SectionTarget {
   camera: { x: number; y: number; z: number }
   lookAt: { x: number; y: number; z: number }
   model?: ModelConfig
+  satellite?: SatelliteConfig
 }
 
 export interface Branch {
@@ -264,22 +272,28 @@ const BRANCH_DEFINITIONS: Branch[] = [
         },
       },
       {
-        name: 'localization',
-        subteam: {
-          name: 'Localization',
-          desc: 'Determines rover position and orientation as part of the Autonomy team using sensor fusion and mapping.',
-        },
-        camera: { x: -180, y: 80, z: 280 },
-        lookAt: { x: 0, y: 20, z: 0 },
-      },
-      {
         name: 'perception',
         subteam: {
           name: 'Perception',
           desc: 'Identifies environmental features and objects as part of the Autonomy team using camera and sensor data.',
         },
-        camera: { x: -60, y: 80, z: 280 },
+        camera: { x: -180, y: 80, z: 280 },
         lookAt: { x: 0, y: 20, z: 0 },
+      },
+      {
+        name: 'localization',
+        subteam: {
+          name: 'Localization',
+          desc: 'Determines rover position and orientation as part of the Autonomy team using sensor fusion and mapping.',
+        },
+        camera: { x: 50, y: 20, z: 180 },
+        lookAt: { x: 0, y: 250, z: -200 },
+        satellite: {
+          modelPath: '/models/satellite.glb',
+          position: [0, 500, -250],
+          rotation: [Math.PI / 2, 0, 0],
+          scale: 3,
+        },
       },
       {
         name: 'drone',
