@@ -6,12 +6,21 @@ export interface WireframeConfig {
   overrides?: Record<string, number>
 }
 
+export interface TerrainConfig {
+  radius: number
+  gridSize: number
+  scrollSpeed: number
+  roughness: number
+}
+
 export interface ModelConfig {
   urdfPath: string
   position: [number, number, number]
   rotation: [number, number, number]
   wireframe?: WireframeConfig
   floating?: boolean
+  terrain?: TerrainConfig
+  wheelSpeed?: number
 }
 
 export interface SectionTarget {
@@ -243,8 +252,15 @@ const BRANCH_DEFINITIONS: Branch[] = [
         model: {
           urdfPath: '/urdf/rover/rover.urdf',
           position: [0, -35, 0],
-          rotation: [0, -Math.PI / 3, 0],
+          rotation: [0, -Math.PI / 2, 0],
           wireframe: WIREFRAME_PRESETS.mechanical,
+          terrain: {
+            radius: 150,
+            gridSize: 20,
+            scrollSpeed: -60,
+            roughness: 4,
+          },
+          wheelSpeed: 3,
         },
       },
       {

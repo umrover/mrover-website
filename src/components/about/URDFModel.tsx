@@ -53,8 +53,26 @@ interface URDFModelProps {
   rotation: [number, number, number]
   wireframe?: WireframeConfig
   floating?: boolean
+  wheelSpeed?: number
   onLoaded?: () => void
 }
+
+type URDFJoint = {
+  setJointValue: (value: number) => void
+}
+
+type RobotWithJoints = THREE.Object3D & {
+  joints?: Record<string, URDFJoint>
+}
+
+const WHEEL_JOINTS = [
+  'left_bogie_to_front_left_wheel',
+  'left_bogie_to_center_left_wheel',
+  'left_rocker_to_back_left_wheel',
+  'right_bogie_to_front_right_wheel',
+  'right_bogie_to_center_right_wheel',
+  'right_rocker_to_back_right_wheel',
+]
 
 export function URDFModel({
   urdfPath,
@@ -62,9 +80,11 @@ export function URDFModel({
   rotation,
   wireframe,
   floating = false,
+  wheelSpeed = 0,
   onLoaded,
 }: URDFModelProps) {
   const [robot, setRobot] = useState<THREE.Object3D | null>(null)
+  const robotRef = useRef<RobotWithJoints | null>(null)
   const groupRef = useRef<THREE.Group>(null)
 
   useEffect(() => {
@@ -209,12 +229,14 @@ export function URDFModel({
 
             if (wireframe) {
               console.log(`[URDFModel] Ready: ${urdfPath}`)
+              robotRef.current = loadedRobot as RobotWithJoints
               setRobot(loadedRobot)
               onLoaded?.()
             } else {
               Promise.all(texturePromises).then(() => {
                 if (isMounted) {
                   console.log(`[URDFModel] Ready: ${urdfPath}`)
+                  robotRef.current = loadedRobot as RobotWithJoints
                   setRobot(loadedRobot)
                   onLoaded?.()
                 }
@@ -241,10 +263,17 @@ export function URDFModel({
     }
   }, [urdfPath, wireframe])
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock }, delta) => {
     if (floating && groupRef.current) {
       const t = clock.getElapsedTime()
       groupRef.current.rotation.y = rotation[1] + Math.sin(t * 0.3) * 0.15
+    }
+
+    if (wheelSpeed !== 0 && robotRef.current?.joints) {
+      const wheelRotation = clock.getElapsedTime() * wheelSpeed
+      for (const jointName of WHEEL_JOINTS) {
+        robotRef.current.joints[jointName]?.setJointValue(wheelRotation)
+      }
     }
   })
 

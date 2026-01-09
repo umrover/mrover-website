@@ -5,6 +5,7 @@ import { useRef, Suspense, useCallback, useState, useMemo } from 'react'
 import * as THREE from 'three'
 import { getAllModels } from './SceneConfig'
 import { URDFModel } from './URDFModel'
+import { Terrain } from './Terrain'
 import { Stars, Atmosphere, Stage, BranchPlaceholder } from './Environment'
 import { CameraController } from './Camera'
 import { LoadingOverlay, ProgressIndicator, useIsMobile } from './UI'
@@ -62,15 +63,26 @@ function Scene({ isMobile, onAllModelsLoaded }: { isMobile: boolean; onAllModels
 
       <Suspense fallback={null}>
         {models.map(({ section }) => (
-          <URDFModel
-            key={section.name}
-            urdfPath={section.model!.urdfPath}
-            position={section.model!.position}
-            rotation={section.model!.rotation}
-            wireframe={section.model!.wireframe}
-            floating={section.model!.floating}
-            onLoaded={handleModelLoaded}
-          />
+          <group key={section.name}>
+            <URDFModel
+              urdfPath={section.model!.urdfPath}
+              position={section.model!.position}
+              rotation={section.model!.rotation}
+              wireframe={section.model!.wireframe}
+              floating={section.model!.floating}
+              wheelSpeed={section.model!.wheelSpeed}
+              onLoaded={handleModelLoaded}
+            />
+            {section.model!.terrain && (
+              <Terrain
+                position={section.model!.position}
+                radius={section.model!.terrain.radius}
+                gridSize={section.model!.terrain.gridSize}
+                scrollSpeed={section.model!.terrain.scrollSpeed}
+                roughness={section.model!.terrain.roughness}
+              />
+            )}
+          </group>
         ))}
 
         <Stage />

@@ -120,8 +120,8 @@ export function Atmosphere() {
   const { scene } = useThree()
 
   useEffect(() => {
-    scene.background = new THREE.Color(0x0a0808)
-    scene.fog = new THREE.FogExp2(0x1a1410, 0.00025)
+    scene.background = new THREE.Color(0x060610)
+    scene.fog = new THREE.FogExp2(0x0a0a14, 0.00025)
     return () => {
       scene.background = null
       scene.fog = null
