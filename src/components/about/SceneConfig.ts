@@ -288,6 +288,8 @@ const BRANCH_DEFINITIONS: Branch[] = [
         },
         camera: { x: 50, y: 20, z: 180 },
         lookAt: { x: 0, y: 250, z: -200 },
+        // "Low Poly Satellite" by Rectilon (https://skfb.ly/6TTRr)
+        // Licensed under CC BY 4.0 (http://creativecommons.org/licenses/by/4.0/)
         satellite: {
           modelPath: '/models/satellite.glb',
           position: [0, 500, -250],

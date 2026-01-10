@@ -12,9 +12,12 @@ function Stars({ count = 1500 }) {
     const colorArr = new Float32Array(count * 3)
 
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 100
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 100
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 30 - 10
+      const theta = Math.random() * Math.PI * 2
+      const phi = Math.acos(2 * Math.random() - 1)
+      const r = 20 + Math.random() * 40
+      pos[i * 3] = r * Math.sin(phi) * Math.cos(theta)
+      pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
+      pos[i * 3 + 2] = r * Math.cos(phi)
 
       sizeArr[i] = Math.random() * 0.08 + 0.02
 

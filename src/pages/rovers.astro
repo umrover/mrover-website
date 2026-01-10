@@ -40,7 +40,7 @@ const gridRovers = reversedRovers.slice(3);
             <div class="text-lg leading-relaxed text-white/70 mb-6">
               <p class="m-0">{rover.desc[0].substring(0, 150)}...</p>
             </div>
-            <span class="inline-flex items-center text-white font-medium uppercase tracking-[0.1em] text-sm opacity-80 transition-all duration-300 group-hover:text-mrover-accent group-hover:opacity-100 group-hover:pl-2.5">
+            <span class="inline-flex items-center text-white font-medium uppercase tracking-widest text-sm opacity-80 transition-all duration-300 group-hover:text-mrover-accent group-hover:opacity-100 group-hover:pl-2.5">
               Read More &rarr;
             </span>
           </div>
@@ -83,7 +83,7 @@ const gridRovers = reversedRovers.slice(3);
 
             <div class="absolute inset-0 bg-linear-to-t from-black/95 via-black/50 to-transparent flex flex-col justify-end p-6 transition-all duration-300 group-hover:from-black/95 group-hover:via-black/60 group-hover:to-black/20">
               <h3 class="text-4xl font-semibold text-white m-0 leading-none" style="font-family: 'Panchang', sans-serif;">{rover.year}</h3>
-              <p class="text-lg text-mrover-accent mt-2 font-medium tracking-[0.1em] uppercase opacity-80 transition-opacity duration-300 group-hover:opacity-100">{rover.name}</p>
+              <p class="text-lg text-mrover-accent mt-2 font-medium tracking-widest uppercase opacity-80 transition-opacity duration-300 group-hover:opacity-100">{rover.name}</p>
             </div>
           </a>
         ))}
@@ -92,7 +92,7 @@ const gridRovers = reversedRovers.slice(3);
   </div>
 
   <!-- Modal Overlay -->
-  <div id="rover-modal" class="modal-overlay fixed inset-0 z-100 flex items-center justify-center p-8 hidden">
+  <div id="rover-modal" class="modal-overlay fixed inset-0 z-100 flex items-center justify-center p-8">
     <div class="modal-backdrop absolute inset-0 bg-black/85 opacity-0 transition-opacity duration-300"></div>
     <div class="modal-container relative max-w-content max-h-[90vh] w-full bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 border-l-4 border-l-mrover-accent rounded-lg shadow-[0_30px_60px_rgba(0,0,0,0.5)] opacity-0 scale-95 translate-y-5 transition-all duration-300 overflow-hidden">
       <div class="p-8 max-h-[90vh] overflow-y-auto">
