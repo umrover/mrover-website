@@ -30,6 +30,7 @@ Push to `main` and GitHub Pages deploys automatically.
 | Pages and Navigation | `src/pages/*.astro` | [docs/content.md](docs/content.md) |
 | 3D models and effects | `src/components/about/SceneConfig.ts` | [docs/3d-models.md](docs/3d-models.md) |
 | Images | `public/images/` | [docs/content.md](docs/content.md) |
+| Custom domain and HTTPS | DNS records, SSL certs | [docs/github-pages-dns.md](docs/github-pages-dns.md) |
 
 ## Project Structure
 
