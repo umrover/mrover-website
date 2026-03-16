@@ -4,26 +4,29 @@ import sponsors from "@/data/sponsors.json";
 const platinumSponsors = sponsors.filter((sponsor) => sponsor.level >= 4);
 ---
 
-<div class="bg-white">
-  <div class="max-w-content mx-auto px-6 lg:px-8 pb-12 pt-8">
-    <div class="flex flex-wrap justify-center items-center gap-8 mx-auto max-w-6xl mb-8">
-      {
-        platinumSponsors.map((sponsor) => (
-          <div class="w-40 md:w-48 lg:w-56 shrink-0">
-            <a
-              href={sponsor.rurl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="block hover:opacity-75 transition-opacity"
-            >
-              <img src={`/${sponsor.image_path}`} alt={`${sponsor.name} logo`} class="w-full h-auto" />
-            </a>
-          </div>
-        ))
-      }
+<div class="bg-[#0a0808] border-t border-white/10">
+  <div class="max-w-content mx-auto px-6 lg:px-8 pb-10 pt-8">
+    <p class="text-center text-xs font-mono uppercase tracking-widest text-white/40 mb-8">Platinum Sponsors</p>
+
+    <div class="flex flex-wrap justify-center items-center gap-12">
+      {platinumSponsors.map((sponsor) => (
+        <a
+          href={sponsor.rurl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="shrink-0 hover:opacity-60 transition-opacity"
+        >
+          <img
+            src={`/${sponsor.image_path}`}
+            alt={`${sponsor.name} logo`}
+            class="h-[120px] w-auto max-w-[220px] object-contain"
+          />
+        </a>
+      ))}
     </div>
-    <div class="text-center">
-      <a href="/sponsor" class="text-michigan-blue hover:text-mrover-accent transition-colors font-semibold">See All Sponsors</a>
+
+    <div class="text-center mt-8">
+      <a href="/sponsor" class="text-white/50 hover:text-mrover-accent transition-colors text-sm font-mono">See All Sponsors</a>
     </div>
   </div>
 </div>

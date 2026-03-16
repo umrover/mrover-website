@@ -1,110 +1,98 @@
 [
   {
-    "name": "Ford",
-    "image_path": "sponsorImages/ford.png",
-    "rurl": "https://www.ford.com/",
-    "level": 4
-  },
-  {
-    "name": "Texas Instruments",
-    "image_path": "sponsorImages/ti.png",
-    "rurl": "http://www.ti.com/",
-    "level": 4
-  },
-  {
-    "name": "FUTEK",
-    "image_path": "sponsorImages/futek.png",
-    "rurl": "http://www.futek.com/",
-    "level": 4
-  },
-  {
     "name": "College of Engineering",
-    "image_path": "sponsorImages/coe.png",
-    "rurl": "http://www.engin.umich.edu/",
+    "image_path": "sponsorImages/platinum/sponsor_coe.png",
+    "rurl": "https://engin.umich.edu/",
     "level": 4
   },
   {
     "name": "Michigan IPE",
-    "image_path": "sponsorImages/IPE.png",
-    "rurl": "https://ipe.engin.umich.edu",
+    "image_path": "sponsorImages/platinum/sponsor_ipe.png",
+    "rurl": "https://ipe.engin.umich.edu/",
     "level": 4
   },
   {
-    "name": "Umich Computer Science Engineering",
-    "image_path": "sponsorImages/cse2.png",
-    "rurl": "https://cse.umich.edu/",
-    "level": 3
+    "name": "Michigan Space Grant Consortium",
+    "image_path": "sponsorImages/platinum/sponsor_msgc.png",
+    "rurl": "https://msgc.umich.edu/",
+    "level": 4
   },
   {
-    "name": "Umich Electrical and Computer Engineering",
-    "image_path": "sponsorImages/ece.png",
+    "name": "UM Electrical and Computer Engineering",
+    "image_path": "sponsorImages/gold/sponsor_ece.png",
     "rurl": "https://ece.umich.edu/",
     "level": 3
   },
   {
-    "name": "Aptiv",
-    "image_path": "sponsorImages/aptiv.png",
-    "rurl": "https://www.aptiv.com/",
+    "name": "Gene Haas Foundation",
+    "image_path": "sponsorImages/gold/sponsor_genehaas.png",
+    "rurl": "https://ghaasfoundation.org/",
+    "level": 3
+  },
+  {
+    "name": "UM Aerospace Engineering",
+    "image_path": "sponsorImages/silver/sponsor_aero.png",
+    "rurl": "https://aero.engin.umich.edu/",
     "level": 2
   },
   {
-    "name": "Blue Origin",
-    "image_path": "sponsorImages/blue-origin.png",
-    "rurl": "https://www.blueorigin.com/",
+    "name": "UM Computer Science and Engineering",
+    "image_path": "sponsorImages/silver/sponsor_cse.png",
+    "rurl": "https://cse.engin.umich.edu/",
     "level": 2
   },
   {
-    "name": "Umich Mechanical Engineering",
-    "image_path": "sponsorImages/me.png",
-    "rurl": "https://me.engin.umich.edu/",
+    "name": "Ford",
+    "image_path": "sponsorImages/silver/sponsor_ford.svg",
+    "rurl": "https://www.ford.com/",
     "level": 2
   },
   {
-    "name": "Raytheon",
-    "image_path": "sponsorImages/raytheon.png",
-    "rurl": "http://www.raytheon.com/",
+    "name": "FXB Flight Vehicle Institute",
+    "image_path": "sponsorImages/silver/sponsor_fxbfvi.png",
+    "rurl": "https://fxbfvi.engin.umich.edu/",
     "level": 2
   },
   {
-    "name": "Siemens",
-    "image_path": "sponsorImages/siemens.png",
-    "rurl": "https://www.siemens.com",
+    "name": "Polymaker",
+    "image_path": "sponsorImages/silver/sponsor_polymaker.png",
+    "rurl": "https://www.polymaker.com/",
     "level": 2
   },
   {
-    "name": "Swanton Welding Company",
-    "image_path": "sponsorImages/swanton.png",
-    "rurl": "https://swantonweld.com",
-    "level": 2
-  },
-  {
-    "name": "Aubrees",
-    "image_path": "sponsorImages/aubrees.png",
-    "rurl": "https://aubrees.com/",
+    "name": "Caterpillar",
+    "image_path": "sponsorImages/bronze/sponsor_caterpillar.png",
+    "rurl": "https://www.caterpillar.com/",
     "level": 1
   },
   {
-    "name": "Umich LSA Physics",
-    "image_path": "sponsorImages/lsaphysics.png",
+    "name": "Central Student Government",
+    "image_path": "sponsorImages/bronze/sponsor_csg.png",
+    "rurl": "https://csg.umich.edu/",
+    "level": 1
+  },
+  {
+    "name": "Engineering Student Government",
+    "image_path": "sponsorImages/bronze/sponsor_esg.png",
+    "rurl": "https://esg.engin.umich.edu/",
+    "level": 1
+  },
+  {
+    "name": "UM LSA Physics",
+    "image_path": "sponsorImages/bronze/sponsor_lsaphysics.png",
     "rurl": "https://lsa.umich.edu/physics",
     "level": 1
   },
   {
-    "name": "Protocase",
-    "image_path": "sponsorImages/protocase.png",
-    "rurl": "http://www.protocase.com/",
+    "name": "UM Mechanical Engineering",
+    "image_path": "sponsorImages/bronze/sponsor_me.png",
+    "rurl": "https://me.engin.umich.edu/",
     "level": 1
   },
   {
-    "name": "Redbull",
-    "image_path": "sponsorImages/redbull_bg.png",
-    "rurl": "https://www.redbull.com/us-en/",
-    "level": 1
-  },
-  {
-    "name": "UM Robotics",
-    "image_path": "sponsorImages/um-robotics.png",
-    "rurl": "https://robotics.umich.edu/",
+    "name": "Texas Instruments",
+    "image_path": "sponsorImages/bronze/sponsor_ti.png",
+    "rurl": "https://www.ti.com/",
     "level": 1
   }
 ]
