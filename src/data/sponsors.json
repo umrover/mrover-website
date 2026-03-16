@@ -61,8 +61,14 @@
   },
   {
     "name": "Caterpillar",
-    "image_path": "sponsorImages/bronze/sponsor_caterpillar.png",
+    "image_path": "sponsorImages/silver/sponsor_caterpillar.png",
     "rurl": "https://www.caterpillar.com/",
+    "level": 2
+  },
+  {
+    "name": "Varda Space Industries",
+    "image_path": "sponsorImages/bronze/sponsor_varda.png",
+    "rurl": "https://varda.com/",
     "level": 1
   },
   {
