@@ -15,6 +15,7 @@ const navPages: Page[] = [
 ];
 
 const visiblePages = navPages.filter((page) => !page.hideInHeader).sort((a, b) => a.weight - b.weight);
+const currentPath = Astro.url.pathname.replace(/\/$/, '');
 ---
 
 <header class="sticky top-0 z-50 bg-black border-b border-mrover-accent shadow-lg shadow-mrover-accent/30">
@@ -29,7 +30,8 @@ const visiblePages = navPages.filter((page) => !page.hideInHeader).sort((a, b) =
           visiblePages.map((page) => (
             <a
               href={page.url}
-              class="text-sm font-semibold uppercase text-mrover-accent transition-colors"
+              aria-current={currentPath === page.url ? 'page' : undefined}
+              class="text-sm font-semibold uppercase text-mrover-accent transition-colors aria-[current=page]:underline aria-[current=page]:underline-offset-4"
             >
               {page.title.replace(/ /g, '_')}
             </a>
@@ -53,7 +55,8 @@ const visiblePages = navPages.filter((page) => !page.hideInHeader).sort((a, b) =
               visiblePages.map((page) => (
                 <a
                   href={page.url}
-                  class="block px-4 py-3 text-sm font-semibold uppercase text-mrover-accent hover:bg-mrover-accent/10 transition-colors"
+                  aria-current={currentPath === page.url ? 'page' : undefined}
+                  class="block px-4 py-3 text-sm font-semibold uppercase text-mrover-accent hover:bg-mrover-accent/10 transition-colors aria-[current=page]:bg-mrover-accent/10"
                 >
                   {page.title.replace(/ /g, '_')}
                 </a>

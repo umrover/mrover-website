@@ -128,7 +128,7 @@ export function URDFModel({
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/')
     const gltfLoader = new GLTFLoader(manager)
     gltfLoader.setDRACOLoader(dracoLoader)
-    ;(loader as any).loadMeshCb = (
+    loader.loadMeshCb = (
       path: string,
       _manager: THREE.LoadingManager,
       onComplete: (obj: THREE.Object3D) => void

@@ -4,8 +4,6 @@ import { ProgressBar } from './ProgressBar'
 import { useScrollState } from './scrollState'
 
 export function SceneManager() {
-  const { getCurrentSection, animateToSection } = useScrollState()
-
   useEffect(() => {
     const staticLoader = document.getElementById('static-loader')
     if (staticLoader) {
@@ -29,6 +27,8 @@ export function SceneManager() {
 
     let wheelDelta = 0
     let wheelTimer: ReturnType<typeof setTimeout> | null = null
+    let lastScrollTime = 0
+    const SCROLL_COOLDOWN = 450
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault()
@@ -38,10 +38,13 @@ export function SceneManager() {
       if (wheelTimer) clearTimeout(wheelTimer)
       wheelTimer = setTimeout(() => { wheelDelta = 0 }, 100)
 
-      if (Math.abs(wheelDelta) >= 30) {
+      const now = performance.now()
+      if (Math.abs(wheelDelta) >= 30 && now - lastScrollTime >= SCROLL_COOLDOWN) {
         const direction = wheelDelta > 0 ? 1 : -1
         wheelDelta = 0
-        animateToSection(getCurrentSection() + direction)
+        lastScrollTime = now
+        const { targetSection, animateToSection } = useScrollState.getState()
+        animateToSection(targetSection + direction)
       }
     }
 
@@ -65,7 +68,8 @@ export function SceneManager() {
 
       const deltaY = touchStartY - e.changedTouches[0].clientY
       if (Math.abs(deltaY) < 30) return
-      animateToSection(getCurrentSection() + (deltaY > 0 ? 1 : -1))
+      const { targetSection, animateToSection } = useScrollState.getState()
+      animateToSection(targetSection + (deltaY > 0 ? 1 : -1))
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -78,7 +82,8 @@ export function SceneManager() {
         direction = -1
       }
       if (direction !== 0) {
-        animateToSection(getCurrentSection() + direction)
+        const { targetSection, animateToSection } = useScrollState.getState()
+        animateToSection(targetSection + direction)
       }
     }
 
@@ -97,7 +102,7 @@ export function SceneManager() {
       if (wheelTimer) clearTimeout(wheelTimer)
       if (resizeObserver) resizeObserver.disconnect()
     }
-  }, [animateToSection, getCurrentSection])
+  }, [])
 
   return (
     <>

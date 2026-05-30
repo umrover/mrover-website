@@ -142,6 +142,13 @@ const breadcrumbList = {
     import gsap from "gsap";
     import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+    declare global {
+      interface Window {
+        __lenis: InstanceType<typeof Lenis>
+        __Lenis: typeof Lenis
+      }
+    }
+
     const path = window.location.pathname.replace(/\/$/, '');
     if (path !== '/about') {
       gsap.registerPlugin(ScrollTrigger);
@@ -151,8 +158,8 @@ const breadcrumbList = {
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       });
 
-      (window as any).__lenis = lenis;
-      (window as any).__Lenis = Lenis;
+      window.__lenis = lenis;
+      window.__Lenis = Lenis;
 
       function raf(time: number) {
         lenis.raf(time);

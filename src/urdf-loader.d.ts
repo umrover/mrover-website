@@ -4,6 +4,11 @@ declare module "urdf-loader" {
   export default class URDFLoader extends THREE.Loader {
     constructor(manager?: THREE.LoadingManager);
     packages: { [key: string]: string };
+    loadMeshCb: (
+      path: string,
+      manager: THREE.LoadingManager,
+      onComplete: (obj: THREE.Object3D) => void
+    ) => void;
     load(
       url: string,
       onLoad: (robot: THREE.Object3D) => void,

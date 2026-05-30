@@ -50,6 +50,8 @@ export interface ModelConfig {
 export interface SectionTarget {
   name: string
   label?: string
+  navLabel?: string
+  layout?: 'intro' | 'mission'
   description?: string
   subteam?: {
     name: string
@@ -168,6 +170,8 @@ const BRANCH_DEFINITIONS: Branch[] = [
       {
         name: 'mission-intro',
         label: 'The Mission',
+        navLabel: 'Title',
+        layout: 'intro',
         camera: { x: 0, y: 200, z: 600 },
         lookAt: { x: 0, y: 0, z: 0 },
         model: {
@@ -179,6 +183,8 @@ const BRANCH_DEFINITIONS: Branch[] = [
       {
         name: 'mission',
         label: 'The Mission',
+        navLabel: 'Mission Statement',
+        layout: 'mission',
         description:
           "The Michigan Mars Rover Team designs, builds, and tests a Mars rover prototype to compete in the University Rover Challenge. Our interdisciplinary team of students pushes the boundaries of what's possible in student-led space exploration.",
         camera: { x: 0, y: 80, z: 350 },
