@@ -54,6 +54,7 @@ export interface SectionTarget {
   subteam?: {
     name: string
     desc: string
+    docsUrl?: string
   }
   camera: { x: number; y: number; z: number }
   lookAt: { x: number; y: number; z: number }
@@ -316,6 +317,7 @@ const BRANCH_DEFINITIONS: Branch[] = [
         subteam: {
           name: 'Embedded Hardware',
           desc: 'Designs custom circuit boards for actuator control, sensor signal reception, and data connections between electronics and external components.',
+          docsUrl: 'https://docs.mrover.org/esw/overview/',
         },
         camera: { x: 400, y: 70, z: 220 },
         lookAt: { x: 400, y: 20, z: 0 },
@@ -358,6 +360,7 @@ const BRANCH_DEFINITIONS: Branch[] = [
         subteam: {
           name: 'Perception',
           desc: 'Identifies environmental features and objects as part of the Autonomy team using camera and sensor data.',
+          docsUrl: 'https://docs.mrover.org/perception/overview/',
         },
         camera: { x: -200, y: 60, z: 200 },
         lookAt: { x: 50, y: 0, z: 0 },
@@ -394,6 +397,7 @@ const BRANCH_DEFINITIONS: Branch[] = [
         subteam: {
           name: 'Navigation',
           desc: 'Uses A* pathfinding to plan obstacle-avoiding routes as part of the Autonomy team.',
+          docsUrl: 'https://docs.mrover.org/navigation/overview/',
         },
         camera: { x: -300, y: 80, z: 280 },
         lookAt: { x: 0, y: 20, z: 0 },
@@ -403,6 +407,7 @@ const BRANCH_DEFINITIONS: Branch[] = [
         subteam: {
           name: 'Localization',
           desc: 'Determines rover position and orientation as part of the Autonomy team using sensor fusion and mapping.',
+          docsUrl: 'https://docs.mrover.org/localization/overview/',
         },
         camera: { x: 50, y: 20, z: 180 },
         lookAt: { x: 0, y: 250, z: -200 },
@@ -420,6 +425,7 @@ const BRANCH_DEFINITIONS: Branch[] = [
         subteam: {
           name: 'Drone',
           desc: 'Develops manual and autonomous drone capable of reading signs, locating objects, and communications support during delivery missions.',
+          docsUrl: 'https://docs.mrover.org/drone/overview/',
         },
         camera: { x: 400, y: 500, z: 450 },
         lookAt: { x: -100, y: 200, z: 180 },
@@ -436,6 +442,7 @@ const BRANCH_DEFINITIONS: Branch[] = [
         subteam: {
           name: 'Teleoperation',
           desc: 'Builds the base station GUI with mission views, control interfaces for arm and drive systems, 3D visualization, and camera streaming.',
+          docsUrl: 'https://docs.mrover.org/teleop/overview/',
         },
         camera: { x: 180, y: 80, z: 280 },
         lookAt: { x: 0, y: 20, z: 0 },
@@ -446,6 +453,7 @@ const BRANCH_DEFINITIONS: Branch[] = [
         subteam: {
           name: 'Embedded Software',
           desc: 'Writes low-level driver code abstracting manufacturer libraries in C and Python for other programming teams.',
+          docsUrl: 'https://docs.mrover.org/esw/overview/',
         },
         camera: { x: 300, y: 80, z: 280 },
         lookAt: { x: 0, y: 20, z: 0 },

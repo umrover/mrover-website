@@ -51,6 +51,17 @@ import { BRANCHES } from "@/components/about/SceneConfig";
                     <div class="card w-[calc(100vw-2rem)] md:w-[500px] min-h-[180px] p-6 bg-[#0e0e0e]/50 backdrop-blur-md text-white pointer-events-auto flex flex-col" style={`border: 1px solid var(--branch-accent, rgba(255,255,255,0.3));`}>
                       <h2 class="text-xl md:text-3xl font-semibold uppercase leading-tight mb-4 break-keep" style={`font-family: 'Panchang', sans-serif; color: var(--branch-accent, #FF8C00);`}>{section.subteam?.name}</h2>
                       <p class="text-base md:text-xl leading-relaxed text-white/90 m-0">{section.subteam?.desc}</p>
+                      {section.subteam?.docsUrl && (
+                        <a
+                          href={section.subteam.docsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="mt-4 self-start text-sm font-semibold uppercase tracking-widest px-4 py-2 border transition-colors duration-200"
+                          style={`border-color: var(--branch-accent, rgba(255,255,255,0.3)); color: var(--branch-accent, #FF8C00);`}
+                        >
+                          View Docs
+                        </a>
+                      )}
                     </div>
                   )}
                 </section>
