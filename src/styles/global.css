@@ -16,6 +16,8 @@ html {
 
   /* Semantic Surface Colors */
   --color-surface-dark: #0a0808;
+  --color-space-navy: #0c2340;
+  --color-label-blue: #4a8fc8;
 
   --color-grey: #828282;
   --color-grey-light: #d3d3d3;

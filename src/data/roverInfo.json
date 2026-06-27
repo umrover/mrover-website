@@ -1,5 +1,14 @@
 [
   {
+    "year": "2026",
+    "name": "Phil",
+    "image_path": "roverImages/2026/PHIL.webp",
+    "desc": [
+      "Description coming soon."
+    ],
+    "slideshow": ["roverImages/2026/PHIL.webp"]
+  },
+  {
     "year": "2025",
     "name": "Kiwi",
     "image_path": "roverImages/2025/KIWI.jpg",

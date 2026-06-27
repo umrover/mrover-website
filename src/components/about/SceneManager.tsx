@@ -28,7 +28,7 @@ export function SceneManager() {
     let wheelDelta = 0
     let wheelTimer: ReturnType<typeof setTimeout> | null = null
     let lastScrollTime = 0
-    const SCROLL_COOLDOWN = 450
+    const SCROLL_COOLDOWN = 300
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault()
