@@ -15,7 +15,7 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap(),
-    // compress(),
+    compress({ CSS: false }),
   ],
   vite: {
     plugins: [tailwindcss()],
