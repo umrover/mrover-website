@@ -126,7 +126,8 @@ export function URDFModel({
 
     const dracoLoader = new DRACOLoader()
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/')
-    loader.loadMeshCb = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(loader as any).loadMeshCb = (
       path: string,
       _manager: THREE.LoadingManager,
       _material: THREE.Material | null,
