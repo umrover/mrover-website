@@ -305,7 +305,7 @@ export function AboutExperience() {
             powerPreference: 'high-performance',
           }}
           camera={{ fov: isMobile ? 65 : 50, near: 0.1, far: 10000, position: [0, 100, 400] }}
-          shadows={!isMobile}
+          shadows={isMobile ? false : THREE.PCFShadowMap}
           dpr={Math.min(window.devicePixelRatio, isMobile ? 2 : 1.5)}
         >
           <Suspense fallback={null}>

@@ -12,208 +12,337 @@ import { StarsBackground } from "@/components/StarsBackground";
   <StarsBackground client:only="react" />
 
   <main id="main-content">
-  <div class="relative flex flex-col items-center justify-center text-center py-36 md:py-48">
-    <div class="relative z-10 px-6 flex flex-col items-center gap-7">
+  <div
+    class="relative flex items-center justify-center font-sans"
+    style="min-height: 100dvh;"
+    data-hero
+  >
+    <div class="relative z-10 text-center px-6 max-w-5xl py-20">
       <h1 class="sr-only">MRover - University of Michigan Mars Rover Team</h1>
-      <img
-        src="/logos/logo_light_trimmed.svg"
-        alt="MRover"
-        class="hero-item w-[min(78vw,420px)] h-auto"
-        style="--delay: 0.15s"
-      />
-      <p class="hero-item text-white/45 font-mono text-xs sm:text-sm tracking-[0.25em] uppercase" style="--delay: 0.4s">
-        University of Michigan · Mars Rover Team
-      </p>
-      <div class="hero-item flex flex-wrap gap-3 justify-center" style="--delay: 0.6s">
-        <a href="/join" class="px-7 py-3 text-sm font-semibold uppercase tracking-widest text-black bg-mrover-accent rounded hover:bg-[#ff9f2f] transition-colors duration-200">
-          Join the Team
-        </a>
-        <a href="/rovers" class="px-7 py-3 text-sm font-semibold uppercase tracking-widest text-white border border-white/20 rounded hover:border-mrover-accent/60 transition-colors duration-200">
-          Our Rovers
-        </a>
+      <div
+        class="relative mb-0 flex items-center justify-center w-full"
+        style="height: clamp(180px, 22vh, 300px);"
+        data-intro-container
+      >
+        <img src="/logos/block_M.png" alt="Block M" class="absolute w-32 h-32 sm:w-50 sm:h-50 object-contain" data-block-m />
+        <img
+          src="/logos/logo_light_top.svg"
+          alt="Logo Top"
+          class="absolute opacity-0"
+          data-logo-top
+          style="transform: translateY(clamp(50px, 10vh, 100px)); width: min(90vw, 500px); height: auto;"
+        />
+        <img
+          src="/logos/logo_light_bottom.svg"
+          alt="Logo Bottom"
+          class="absolute opacity-0"
+          data-logo-bottom
+          style="transform: translateY(clamp(120px, 20vh, 220px)); width: min(90vw, 500px); height: auto;"
+        />
+      </div>
+      <div class="font-mono text-white w-[min(90vw,500px)] mx-auto" data-hero-buttons>
+        <div
+          class="border border-mrover-accent/30 bg-transparent rounded-xl p-4 sm:p-6 shadow-[0_0_30px_-5px_rgba(255,140,0,0.15)]"
+          data-terminal-bg
+          style="backdrop-filter: blur(0px);"
+        >
+          <div class="w-full">
+            <div class="text-sm sm:text-lg flex items-center flex-wrap">
+              <span class="text-mrover-accent mr-2 sm:mr-3 whitespace-nowrap">user@mrover:~$</span>
+              <span class="text-white" data-typing-text></span>
+            </div>
+            <div class="flex flex-col gap-1 w-full mt-2">
+              <a
+                href="/about"
+                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded"
+                data-option
+              >
+                <span class="text-mrover-accent w-4">></span>
+                <span class="text-white font-mono tracking-wide hover:underline">about</span>
+              </a>
+              <a
+                href="/join"
+                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded"
+                data-option
+              >
+                <span class="text-mrover-accent w-4">></span>
+                <span class="text-white font-mono tracking-wide hover:underline">join</span>
+              </a>
+              <a
+                href="/sponsor"
+                class="no-underline flex items-center gap-2 py-1 px-0 transition-all hover:text-mrover-accent rounded"
+                data-option
+              >
+                <span class="text-mrover-accent w-4">></span>
+                <span class="text-white font-mono tracking-wide hover:underline">sponsor</span>
+              </a>
+            </div>
+            <div class="text-sm sm:text-lg flex items-center mt-2" data-final-prompt>
+              <span class="text-mrover-accent mr-2 sm:mr-3">user@mrover:~$</span>
+              <span class="inline-block w-2.5 h-5 bg-white" style="animation: blink 1.2s infinite;"></span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="font-sans">
+    <section class="py-24 md:py-32 relative">
+      <div class="max-w-6xl mx-auto px-6 lg:px-12 relative z-10">
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div class="space-y-6" data-fade-in>
+            <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight tracking-wide">WHO WE ARE</h2>
+            <div class="h-1 w-20 bg-mrover-accent rounded-full"></div>
+            <p class="text-white/70 text-lg leading-relaxed font-sans">
+              <span class="text-mrover-accent font-semibold">Student-run, multidisciplinary team</span> building rovers for Mars exploration. We unite students across all years and majors, from Engineering to LSA, to inspire passion for space and develop engineering excellence.
+            </p>
+          </div>
+          <div
+            class="relative rounded-xl overflow-hidden shadow-2xl border border-white/10"
+            data-fade-in
+            data-delay="0.2"
+          >
+            <img src="/images/SAR_GOBLUESHOT.webp" alt="Mars Rover Team" class="w-full h-auto" />
+            <div class="absolute inset-0 bg-linear-to-t from-[#0a0808]/80 to-transparent opacity-60"></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <!-- WHO WE ARE — image bleeds to container right edge -->
-    <section class="relative overflow-hidden">
-      <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#1a3a5c]/70 to-transparent pointer-events-none"></div>
-
-      <div class="relative max-w-[1400px] mx-auto py-24 md:py-32">
-        <div class="relative max-w-6xl mx-auto px-6 md:px-12 z-10">
-          <div class="grid md:grid-cols-2">
-            <div class="space-y-6 md:pr-16" data-fade-in>
-              <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight tracking-wide font-display">WHO WE ARE</h2>
-              <p class="text-white/70 text-lg leading-relaxed">
-                <span class="text-mrover-accent font-semibold">Student-run, multidisciplinary team</span> building rovers for Mars exploration. We unite students across all years and majors, from Engineering to LSA, to inspire passion for space and develop engineering excellence.
-              </p>
-              <a href="/about" class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white border border-white/20 rounded hover:border-mrover-accent/60 transition-colors duration-200">
-                Meet the Team &rarr;
+    <section class="py-24 md:py-32 relative">
+      <div class="max-w-6xl mx-auto px-6 lg:px-12 relative z-10">
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div class="order-2 md:order-1" data-fade-in data-delay="0.2">
+            <div class="relative aspect-video rounded-xl overflow-hidden shadow-[0_0_40px_-10px_rgba(255,140,0,0.1)] border border-white/10">
+              <iframe
+                class="w-full h-full"
+                src="https://www.youtube-nocookie.com/embed/QMt2GuHuyyI?si=Z9nYiCQTfpR1cdBd"
+                title="MRover Video"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+            </div>
+          </div>
+          <div class="space-y-6 order-1 md:order-2" data-fade-in>
+            <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight tracking-wide">WHAT WE DO</h2>
+            <div class="h-1 w-20 bg-mrover-accent rounded-full"></div>
+            <p class="text-white/70 text-lg leading-relaxed font-sans">
+              We're a competition-oriented team aiming to win the <span class="text-mrover-accent font-semibold">University Rover Challenge (URC)</span> at Mars Desert Research Station, Utah. We compete against teams from around the world at URC, and secured <span class="text-mrover-accent font-semibold">11th place</span> with KIWI!
+            </p>
+            <div class="pt-4">
+              <a href="/rovers" class="inline-block group">
+                <button
+                  class="px-8 py-3 text-base font-semibold uppercase tracking-widest text-white border border-mrover-accent rounded hover:bg-mrover-accent hover:text-black transition-all duration-300 cursor-pointer shadow-[0_0_15px_-3px_rgba(255,140,0,0.3)] hover:shadow-[0_0_25px_-5px_rgba(255,140,0,0.5)]"
+                >
+                  Explore Our Rovers
+                </button>
               </a>
             </div>
           </div>
         </div>
-
-        <!-- image: normal flow on mobile, absolute within capped container on tablet+ -->
-        <div class="relative mt-10 px-6 md:px-0 md:absolute md:right-0 md:top-0 md:bottom-0 md:w-[54%] md:mt-0 overflow-hidden" data-fade-in data-delay="0.15">
-          <img src="/images/SAR_GOBLUESHOT.webp" alt="MRover team at competition" class="w-full h-60 sm:h-72 md:h-full object-cover object-top" />
-          <div class="absolute inset-y-0 left-0 w-2/5 bg-gradient-to-r from-[#0a0808] to-transparent hidden md:block pointer-events-none"></div>
-          <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0a0808]/60 to-transparent pointer-events-none"></div>
-        </div>
       </div>
     </section>
 
-    <!-- 02: WHAT WE DO — cinematic centered video -->
     <section class="py-24 md:py-32 relative">
-      <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#1a3a5c]/70 to-transparent pointer-events-none"></div>
-      <div class="max-w-5xl mx-auto px-6 lg:px-12">
-        <div class="text-center space-y-5 mb-10" data-fade-in>
-          <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight font-display">WHAT WE DO</h2>
-          <p class="text-white/70 text-lg leading-relaxed max-w-xl mx-auto">
-            We're a competition-oriented team aiming to win the <span class="text-mrover-accent font-semibold">University Rover Challenge (URC)</span> at Mars Desert Research Station, Utah. We compete against teams from around the world at URC, and secured <span class="text-mrover-accent font-semibold">5th place</span> with Phil!
-          </p>
-        </div>
-        <div class="relative aspect-video" data-fade-in data-delay="0.1">
-          <div class="absolute inset-x-0 top-0 h-px bg-mrover-accent/30"></div>
-          <div class="absolute inset-x-0 bottom-0 h-px bg-mrover-accent/30"></div>
-          <iframe
-            class="w-full h-full"
-            src="https://www.youtube-nocookie.com/embed/14LiaP-vALA"
-            title="MRover Video"
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen></iframe>
-        </div>
-        <div class="mt-7 text-center" data-fade-in data-delay="0.15">
-          <a href="/rovers" class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white border border-white/20 rounded hover:border-mrover-accent/60 transition-colors duration-200">
-            Explore Our Rovers &rarr;
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- WHERE WE ARE — image bleeds to container left edge -->
-    <section class="relative overflow-hidden">
-      <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#1a3a5c]/70 to-transparent pointer-events-none"></div>
-
-      <div class="relative max-w-[1400px] mx-auto py-24 md:py-32">
-        <!-- image: normal flow on mobile (shows above text), absolute within capped container on tablet+ -->
-        <div class="relative mb-10 px-6 md:px-0 md:absolute md:left-0 md:top-0 md:bottom-0 md:w-[50%] md:mb-0 overflow-hidden" data-fade-in>
-          <img src="/images/pit.webp" alt="MRover workspace at Wilson Center" class="w-full h-60 sm:h-72 md:h-full object-cover" />
-          <div class="absolute inset-y-0 right-0 w-2/5 bg-gradient-to-l from-[#0a0808] to-transparent hidden md:block pointer-events-none"></div>
-          <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0a0808]/60 to-transparent pointer-events-none"></div>
-        </div>
-
-        <div class="relative max-w-6xl mx-auto px-6 md:px-12 z-10">
-          <div class="grid md:grid-cols-2">
-            <div class="hidden md:block"></div>
-            <div class="space-y-6 md:pl-12" data-fade-in data-delay="0.15">
-              <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight tracking-wide font-display">WHERE WE ARE</h2>
-              <p class="text-white/70 text-lg leading-relaxed">
-                Find us at the <span class="text-white font-medium">Wilson Center</span> on North Campus throughout the week.
-              </p>
-              <p class="text-white/70 text-lg leading-relaxed">
-                Weekly team meetings: <span class="text-mrover-accent font-semibold">Sundays at 12pm</span> in <span class="text-white font-medium">1109 FXB</span>. Stop by anytime!
-              </p>
-              <a
-                href="https://www.google.com/maps/place/Wilson+Student+Team+Project+Center/@42.2932393,-83.7113722,19.82z"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white border border-white/20 rounded hover:border-mrover-accent/60 transition-colors duration-200"
-              >
-                <svg class="w-4 h-4 text-mrover-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+      <div class="max-w-6xl mx-auto px-6 lg:px-12 relative z-10">
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div class="space-y-6" data-fade-in>
+            <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight tracking-wide">WHERE WE ARE</h2>
+            <div class="h-1 w-20 bg-mrover-accent rounded-full"></div>
+            <p class="text-white/70 text-lg leading-relaxed font-sans">
+              Find us at the <span class="text-white font-medium">Wilson Center</span> on North Campus throughout the week.
+            </p>
+            <p class="text-white/70 text-lg leading-relaxed font-sans">
+              Weekly team meetings: <span class="text-mrover-accent font-semibold">Sundays at 12pm</span> in <span class="text-white font-medium">1109 FXB</span>. Stop by anytime!
+            </p>
+            <a
+              href="https://www.google.com/maps/place/Wilson+Student+Team+Project+Center/@42.2932393,-83.7113722,19.82z"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 text-mrover-accent hover:text-white transition-colors group"
+            >
+              <div class="p-2 rounded-full border border-mrover-accent/30 group-hover:border-mrover-accent group-hover:bg-mrover-accent/10 transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
-                Wilson Student Team Project Center
-              </a>
-            </div>
+              </div>
+              <span class="font-medium tracking-wide">Wilson Student Team Project Center</span>
+            </a>
+          </div>
+          <div
+            class="relative rounded-xl overflow-hidden shadow-2xl border border-white/10"
+            data-fade-in
+            data-delay="0.2"
+          >
+            <img src="/images/pit.webp" alt="Team workspace" class="w-full h-auto" />
+            <div class="absolute inset-0 bg-linear-to-t from-[#0a0808]/80 to-transparent opacity-60"></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- GET INVOLVED -->
     <section class="py-24 md:py-32 relative">
-      <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#1a3a5c]/70 to-transparent pointer-events-none"></div>
       <div class="max-w-6xl mx-auto px-6 lg:px-12 relative z-10">
-        <div class="text-center mb-12" data-fade-in>
-          <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight tracking-wide font-display">GET INVOLVED</h2>
+        <div class="text-center mb-16" data-fade-in>
+          <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight tracking-wide mb-4">GET INVOLVED</h2>
+          <div class="h-1 w-20 bg-mrover-accent rounded-full mx-auto"></div>
         </div>
         <div class="grid md:grid-cols-2 gap-8" data-fade-in data-delay="0.1">
-          <a href="/join" class="group block p-8 border border-white/10 rounded-xl hover:border-mrover-accent transition-all duration-300 hover:shadow-[0_0_30px_-10px_rgba(255,140,0,0.2)] bg-white/[0.02]">
+          <a href="/join" class="group block p-8 border border-white/10 rounded-xl hover:border-mrover-accent transition-all duration-300 hover:shadow-[0_0_30px_-10px_rgba(255,140,0,0.2)]">
             <div class="flex items-start gap-4">
-              <div class="w-12 h-12 bg-mrover-accent/10 border border-mrover-accent/20 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-mrover-accent transition-all duration-300">
+              <div class="w-12 h-12 bg-mrover-accent/10 border border-mrover-accent/20 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-mrover-accent group-hover:text-black transition-all duration-300">
                 <svg class="w-6 h-6 text-mrover-accent group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
               </div>
               <div>
-                <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-mrover-accent transition-colors font-display">JOIN US</h3>
-                <p class="text-white/60 leading-relaxed">Passionate about space exploration and engineering? We want you on the team.</p>
+                <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-mrover-accent transition-colors font-sans">JOIN US</h3>
+                <p class="text-white/60 leading-relaxed font-sans">
+                  Passionate about space exploration and engineering? We want you on the team.
+                </p>
               </div>
             </div>
           </a>
-          <a href="/sponsor" class="group block p-8 border border-white/10 rounded-xl hover:border-mrover-accent transition-all duration-300 hover:shadow-[0_0_30px_-10px_rgba(255,140,0,0.2)] bg-white/[0.02]">
+
+          <a href="/donate" class="group block p-8 border border-white/10 rounded-xl hover:border-mrover-accent transition-all duration-300 hover:shadow-[0_0_30px_-10px_rgba(255,140,0,0.2)]">
             <div class="flex items-start gap-4">
-              <div class="w-12 h-12 bg-mrover-accent/10 border border-mrover-accent/20 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-mrover-accent transition-all duration-300">
+              <div class="w-12 h-12 bg-mrover-accent/10 border border-mrover-accent/20 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-mrover-accent group-hover:text-black transition-all duration-300">
                 <svg class="w-6 h-6 text-mrover-accent group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
               <div>
-                <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-mrover-accent transition-colors font-display">SPONSOR US</h3>
-                <p class="text-white/60 leading-relaxed">Help us win URC. Every contribution, big or small, makes a difference.</p>
+                <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-mrover-accent transition-colors font-sans">SPONSOR US</h3>
+                <p class="text-white/60 leading-relaxed font-sans">
+                  Help us win URC. Every contribution, big or small, makes a difference.
+                </p>
               </div>
             </div>
           </a>
         </div>
       </div>
     </section>
-
   </div>
   </main>
 </BaseLayout>
 
 <style>
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
   :global(html),
   :global(body) {
     overflow-x: hidden;
   }
 
-  .hero-item {
-    opacity: 0;
-    animation: heroFade 0.7s ease forwards;
-    animation-delay: var(--delay, 0s);
-  }
-
-  @keyframes heroFade {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+  [data-hero-buttons],
+  [data-option],
+  [data-final-prompt] {
+    visibility: hidden;
   }
 </style>
 
 <script>
   import gsap from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import Typed from "typed.js";
 
   gsap.registerPlugin(ScrollTrigger);
 
-  document.querySelectorAll("[data-fade-in]").forEach((el) => {
-    const delay = parseFloat(el.getAttribute("data-delay") || "0");
-    gsap.from(el, {
-      scrollTrigger: {
-        trigger: el,
-        start: "top 85%",
-        toggleActions: "play none none reverse",
-      },
-      y: 30,
-      opacity: 0,
-      duration: 0.6,
-      delay,
-      ease: "power2.out",
+  function initAnimations() {
+    window.scrollTo(0, 0);
+
+    gsap.set("[data-hero-buttons]", { autoAlpha: 0 });
+    gsap.set("[data-option]", { autoAlpha: 0 });
+    gsap.set("[data-final-prompt]", { autoAlpha: 0 });
+
+    const introTimeline = gsap.timeline({ defaults: { ease: "power2.out" } });
+
+    introTimeline
+      .to("[data-block-m]", {
+        duration: 0.5,
+      })
+      .to("[data-block-m]", {
+        y: -150,
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.in",
+      })
+      .to({}, { duration: 0.3 })
+      .to("[data-logo-top]", {
+        y: 0,
+        opacity: 1,
+        duration: 0.5,
+        ease: "power2.out",
+      })
+      .to("[data-logo-bottom]", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out",
+      })
+      .to("[data-hero-buttons]", {
+        autoAlpha: 1,
+        duration: 0.3,
+      })
+      .add(() => {
+        gsap.to("[data-terminal-bg]", {
+          backdropFilter: "blur(4px)",
+          duration: 0.6,
+          ease: "power2.out",
+        });
+
+        new Typed("[data-typing-text]", {
+          strings: ["./mrover"],
+          typeSpeed: 80,
+          showCursor: false,
+          onComplete: () => {
+            gsap.to("[data-option]", {
+              autoAlpha: 1,
+              duration: 0.2,
+              stagger: 0.05,
+            });
+            gsap.to("[data-final-prompt]", {
+              autoAlpha: 1,
+              duration: 0.2,
+              delay: 0.15,
+            });
+          },
+        });
+      });
+
+    const fadeInElements = document.querySelectorAll("[data-fade-in]");
+
+    fadeInElements.forEach((element) => {
+      const delay = parseFloat(element.getAttribute("data-delay") || "0");
+
+      gsap.from(element, {
+        scrollTrigger: {
+          trigger: element,
+          start: "top 85%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
+        },
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+        delay: delay,
+        ease: "power2.out",
+      });
     });
-  });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAnimations);
+  } else {
+    initAnimations();
+  }
 </script>

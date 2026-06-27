@@ -33,12 +33,12 @@ function processInChunks<T>(
 }
 
 const DEFAULT_JOINT_VALUES: Record<string, number> = {
-  chassis_to_arm_a: 24.14,
+  chassis_to_arm_a: 0,
   arm_a_to_arm_b: -0.785,
   arm_b_to_arm_c: 1.91,
   arm_c_to_arm_d: -1,
   arm_d_to_arm_e: -1.57,
-  gripper_link: 0,
+  arm_e_to_arm_gripper: 0,
 }
 
 const DEFAULT_WIREFRAME: WireframeConfig = {
@@ -70,12 +70,12 @@ type RobotWithJoints = THREE.Object3D & {
 }
 
 const WHEEL_JOINTS = [
-  'left_bogie_to_front_left_wheel',
-  'left_bogie_to_center_left_wheel',
-  'left_rocker_to_back_left_wheel',
-  'right_bogie_to_front_right_wheel',
-  'right_bogie_to_center_right_wheel',
-  'right_rocker_to_back_right_wheel',
+  'left_rocker_to_front_left_wheel',
+  'left_lambda_front_to_center_left_wheel',
+  'left_lambda_rear_to_back_left_wheel',
+  'right_rocker_to_front_right_wheel',
+  'right_lambda_front_to_center_right_wheel',
+  'right_lambda_rear_to_back_right_wheel',
 ]
 
 const PROPELLER_JOINTS = [
@@ -86,12 +86,12 @@ const PROPELLER_JOINTS = [
 ]
 
 const ARM_JOINT_MAP: Record<keyof ArmJointValues, { joint: string; base: number }> = {
-  joint_a: { joint: 'chassis_to_arm_a', base: 24.14 },
+  joint_a: { joint: 'chassis_to_arm_a', base: 0 },
   joint_b: { joint: 'arm_a_to_arm_b', base: -0.785 },
   joint_c: { joint: 'arm_b_to_arm_c', base: 1.91 },
   joint_de_pitch: { joint: 'arm_c_to_arm_d', base: -1 },
   joint_de_roll: { joint: 'arm_d_to_arm_e', base: -1.57 },
-  gripper: { joint: 'gripper_link', base: 0 },
+  gripper: { joint: 'arm_e_to_arm_gripper', base: 0 },
 }
 
 export function URDFModel({
@@ -125,21 +125,25 @@ export function URDFModel({
     loader.packages = { mrover: '/urdf' }
 
     const dracoLoader = new DRACOLoader()
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/')
-    const gltfLoader = new GLTFLoader(manager)
-    gltfLoader.setDRACOLoader(dracoLoader)
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/')
     loader.loadMeshCb = (
       path: string,
       _manager: THREE.LoadingManager,
-      onComplete: (obj: THREE.Object3D) => void
+      _material: THREE.Material | null,
+      onComplete: (obj: THREE.Object3D, err?: Error) => void
     ) => {
+      const gltfLoader = new GLTFLoader(_manager)
+      gltfLoader.setDRACOLoader(dracoLoader)
       gltfLoader.load(
         path,
         (gltf) => {
           onComplete(gltf.scene)
         },
         undefined,
-        () => {}
+        (err) => {
+          console.error('Mesh load error:', path, err)
+          onComplete(new THREE.Object3D(), err as Error)
+        }
       )
     }
 
@@ -152,6 +156,8 @@ export function URDFModel({
 
       let lastMeshCount = 0
       let stableCount = 0
+      let pollCount = 0
+      const MAX_POLLS = 50
 
       const checkMeshes = () => {
         let currentMeshCount = 0
@@ -159,6 +165,7 @@ export function URDFModel({
           if (child instanceof THREE.Mesh) currentMeshCount++
         })
 
+        pollCount++
         if (currentMeshCount > 0 && currentMeshCount === lastMeshCount) {
           stableCount++
         } else {
@@ -166,7 +173,7 @@ export function URDFModel({
           lastMeshCount = currentMeshCount
         }
 
-        if (stableCount >= 3) {
+        if (stableCount >= 3 || (pollCount >= MAX_POLLS && currentMeshCount === lastMeshCount)) {
           loadedRobot!.rotation.x = -Math.PI / 2
           const texturePromises: Promise<void>[] = []
 

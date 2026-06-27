@@ -19,6 +19,9 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: ['use-sync-external-store/shim/with-selector']
+    },
     build: {
       sourcemap: false
     }

@@ -14,6 +14,7 @@ export function useIsMobile() {
 }
 
 export function LoadingOverlay({ progress, visible, message }: { progress: number; visible: boolean; message?: string }) {
+  if (!visible) return null
   return (
     <div style={{
       position: 'fixed',
@@ -24,9 +25,8 @@ export function LoadingOverlay({ progress, visible, message }: { progress: numbe
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      opacity: visible ? 1 : 0,
-      transition: 'opacity 0.8s ease',
-      pointerEvents: visible ? 'auto' : 'none',
+      transition: 'opacity 0.5s ease',
+      pointerEvents: 'none',
     }}>
       <div style={{
         width: '40px',
@@ -365,7 +365,7 @@ export function ProgressIndicator({ visible, isMobile }: { visible: boolean; isM
       left: '1.5rem',
       zIndex: 100,
       pointerEvents: 'auto',
-      fontFamily: "var(--font-sans)",
+      fontFamily: "'Rajdhani', system-ui, sans-serif",
     }}>
       {isMobile && (
         <button
