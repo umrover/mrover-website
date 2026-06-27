@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react'
+import { useRef, useCallback, useState, useEffect } from 'react'
 import { useScroll } from '../../hooks/use-scroll'
 import { BRANCHES } from './SceneConfig'
 import { useScrollState } from './scrollState'
@@ -6,47 +6,67 @@ import { useScrollState } from './scrollState'
 const TOTAL_SECTIONS = BRANCHES.reduce((acc, b) => acc + b.sections.length, 0)
 
 export function ProgressBar() {
-  const barRef = useRef<HTMLDivElement>(null)
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [windowHeight, setWindowHeight] = useState(0)
   const { animateToSection } = useScrollState()
 
-  useScroll(useCallback(({ scroll, limit }: { scroll: number; limit: number }) => {
-    if (!barRef.current) return
-    const progress = limit > 0 ? scroll / limit : 0
-    barRef.current.style.transform = `scaleY(${progress})`
-  }, []))
+  useEffect(() => {
+    const update = () => setWindowHeight(window.innerHeight)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const clickY = e.clientY - rect.top
-    const progress = clickY / rect.height
-    const targetSection = Math.round(progress * (TOTAL_SECTIONS - 1))
-    animateToSection(targetSection)
+  useScroll(useCallback(({ scroll }: { scroll: number }) => {
+    if (!windowHeight) return
+    const idx = Math.max(0, Math.min(Math.round(scroll / windowHeight), TOTAL_SECTIONS - 1))
+    setActiveIndex(idx)
+  }, [windowHeight]))
+
+  let globalIdx = 0
+  const dots: { branchAccent: string; sectionIdx: number }[] = []
+  for (const branch of BRANCHES) {
+    for (let i = 0; i < branch.sections.length; i++) {
+      dots.push({ branchAccent: branch.accent, sectionIdx: globalIdx })
+      globalIdx++
+    }
   }
 
   return (
     <div
-      onClick={handleClick}
       style={{
         position: 'fixed',
-        top: 0,
-        right: 0,
-        width: '4px',
-        height: '100%',
-        background: 'rgba(255, 255, 255, 0.1)',
-        zIndex: 1000,
-        cursor: 'pointer',
+        right: '1.25rem',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        zIndex: 100,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+        alignItems: 'center',
       }}
     >
-      <div
-        ref={barRef}
-        style={{
-          width: '100%',
-          height: '100%',
-          background: '#FF8C00',
-          transformOrigin: '50% 0',
-          transform: 'scaleY(0)',
-        }}
-      />
+      {dots.map(({ branchAccent, sectionIdx }) => {
+        const isActive = sectionIdx === activeIndex
+        return (
+          <button
+            key={sectionIdx}
+            onClick={() => animateToSection(sectionIdx)}
+            title={`Section ${sectionIdx + 1}`}
+            style={{
+              width: isActive ? '8px' : '6px',
+              height: isActive ? '8px' : '6px',
+              borderRadius: '50%',
+              background: isActive ? branchAccent : 'rgba(255,255,255,0.25)',
+              border: isActive ? `1px solid ${branchAccent}` : '1px solid rgba(255,255,255,0.1)',
+              padding: 0,
+              cursor: 'pointer',
+              transition: 'all 0.25s cubic-bezier(0.4,0,0.2,1)',
+              boxShadow: isActive ? `0 0 8px ${branchAccent}80` : 'none',
+            }}
+          />
+        )
+      })}
     </div>
   )
 }
