@@ -4,7 +4,8 @@
     "name": "Phil",
     "image_path": "roverImages/2026/PHIL.webp",
     "desc": [
-      "Description coming soon."
+      "Phil underwent significant design changes targeting shortcomings we've seen in the past. Most noticeably, the rover features a new fully sheet metal chassis with a new rear-mounted differential bar. Other mechanical improvements include a fully redesigned science payload system and a new shoulder joint improving the speed and range of motion of the robotic arm. The rover also features a new power distribution system, using a motherboard and daughter card design for increased modularity alongside new custom brushed motor controllers with support for 12 and 24 volt motors. The software stack includes optimizations to path generation and execution and new object detection models to improve autonomous traversal capabilities. ",
+      "Phil earned 5th place at URC this year and MRover took home URC's inaugural INCOSE systems engineering award."
     ],
     "slideshow": ["roverImages/2026/PHIL.webp"]
   },
