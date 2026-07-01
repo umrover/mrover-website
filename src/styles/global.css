@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "@fontsource-variable/space-grotesk";
 @import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/orbitron";
 @import "./panchang.css";
 
 html {
@@ -27,6 +28,7 @@ html {
   --font-sans: "Space Grotesk Variable", "Space Grotesk", system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
   --font-display: "Panchang", system-ui, sans-serif;
+  --font-orbitron: "Orbitron Variable", "Orbitron", sans-serif;
 
   /* Layout */
   --max-width-content: 1200px;

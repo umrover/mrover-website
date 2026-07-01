@@ -149,33 +149,30 @@ const breadcrumbList = {
       }
     }
 
-    const path = window.location.pathname.replace(/\/$/, '');
-    if (path !== '/about') {
-      gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger);
 
-      const lenis = new Lenis({
-        duration: 0.8,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      });
+    const lenis = new Lenis({
+      duration: 0.8,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    });
 
-      window.__lenis = lenis;
-      window.__Lenis = Lenis;
+    window.__lenis = lenis;
+    window.__Lenis = Lenis;
 
-      function raf(time: number) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      }
-
+    function raf(time: number) {
+      lenis.raf(time);
       requestAnimationFrame(raf);
-
-      lenis.on("scroll", ScrollTrigger.update);
-
-      gsap.ticker.add((time) => {
-        lenis.raf(time * 1000);
-      });
-
-      gsap.ticker.lagSmoothing(0);
     }
+
+    requestAnimationFrame(raf);
+
+    lenis.on("scroll", ScrollTrigger.update);
+
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+
+    gsap.ticker.lagSmoothing(0);
   </script>
 </head>
 

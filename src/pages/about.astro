@@ -1,142 +1,32 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import { SceneManager } from "@/components/about/SceneManager";
-import { BRANCHES } from "@/components/about/SceneConfig";
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { AboutPage } from '@/components/about/AboutPage'
 ---
 
-<BaseLayout title="About - University of Michigan Mars Rover Team" description="Meet the subteams behind MRover: Mechanical, Science, Electrical, and Software. See how each branch contributes to building our Mars rover." darkPage={true} showFooter={false}>
-  <!-- Static loading overlay shown before React hydrates -->
-  <div id="static-loader" class="fixed inset-0 z-[1000] bg-[#0a0808] flex flex-col items-center justify-center">
-    <div class="w-10 h-10 border-3 border-mrover-accent/30 border-t-mrover-accent rounded-full animate-spin"></div>
-    <div class="mt-5 text-white/60 text-sm">Loading...</div>
-  </div>
-
-  <div class="about-content-wrapper relative font-sans" style="clip-path: inset(0);">
-    <SceneManager client:only="react" />
-
-    <main id="main-content" class="relative z-1 text-white">
-      {BRANCHES.map((branch) => (
-        <div
-          class="branch-wrapper relative"
-          data-branch={branch.name}
-          style={`height: calc(${branch.sections.length} * 100dvh); --branch-color: ${branch.color}; --branch-accent: ${branch.accent};`}
-        >
-          <div class="sticky top-0 h-dvh overflow-hidden flex flex-col">
-            <div class="branch-slides flex flex-1 items-stretch">
-              {branch.sections.map((section) => (
-                <section
-                  class={`min-w-full w-full h-dvh flex flex-col p-0 px-4 pb-8 md:px-16 md:pb-16 box-border pointer-events-none shrink-0 ${section.name === 'mission-intro' ? 'justify-center items-center' : 'justify-end items-start md:items-end'}`}
-                  data-id={section.name}
-                >
-                  {section.layout === 'intro' ? (
-                    <div class="flex flex-col items-center">
-                      <h1 class="intro-title text-white m-0 leading-none tracking-[0.02em] text-center flex flex-col items-center select-none uppercase font-bold" style="font-family: 'Panchang', sans-serif; font-size: clamp(2.5rem, 12vw, 8rem);">
-                        {(section.label || '').split(' ').map((word: string, wordIndex: number) => (
-                          <div class="block overflow-hidden" style={`--word-index: ${wordIndex}`}>
-                            {word.split('').map((char: string, charIndex: number) => (
-                              <span class="char inline-block" style={`--char-index: ${charIndex}; --word-index: ${wordIndex}`}>
-                                {char}
-                              </span>
-                            ))}
-                          </div>
-                        ))}
-                      </h1>
-                    </div>
-                  ) : section.layout === 'mission' ? (
-                    <div class="card w-[calc(100vw-2rem)] md:w-[500px] min-h-[180px] p-6 bg-[#0e0e0e]/50 backdrop-blur-md text-white pointer-events-auto flex flex-col" style={`border: 1px solid var(--branch-accent, rgba(255,255,255,0.3));`}>
-                      <h2 class="text-xl md:text-3xl font-semibold uppercase leading-tight mb-4 break-keep" style={`font-family: 'Panchang', sans-serif; color: var(--branch-accent, #FF8C00);`}>Our Mission</h2>
-                      <p class="text-base md:text-xl leading-relaxed text-white/90 m-0">{section.description}</p>
-                    </div>
-                  ) : (
-                    <div class="card w-[calc(100vw-2rem)] md:w-[500px] min-h-[180px] p-6 bg-[#0e0e0e]/50 backdrop-blur-md text-white pointer-events-auto flex flex-col" style={`border: 1px solid var(--branch-accent, rgba(255,255,255,0.3));`}>
-                      <h2 class="text-xl md:text-3xl font-semibold uppercase leading-tight mb-4 break-keep" style={`font-family: 'Panchang', sans-serif; color: var(--branch-accent, #FF8C00);`}>{section.subteam?.name}</h2>
-                      <p class="text-base md:text-xl leading-relaxed text-white/90 m-0">{section.subteam?.desc}</p>
-                      {section.subteam?.docsUrl && (
-                        <a
-                          href={section.subteam.docsUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="mt-4 self-start text-sm font-semibold uppercase tracking-widest px-4 py-2 border transition-colors duration-200"
-                          style={`border-color: var(--branch-accent, rgba(255,255,255,0.3)); color: var(--branch-accent, #FF8C00);`}
-                        >
-                          View Docs
-                        </a>
-                      )}
-                    </div>
-                  )}
-                </section>
-              ))}
-            </div>
-          </div>
-        </div>
-      ))}
-    </main>
-
-    <script>
-      function clamp(min: number, input: number, max: number) {
-        return Math.max(min, Math.min(input, max))
-      }
-
-      function lerp(start: number, end: number, factor: number) {
-        return start + (end - start) * factor
-      }
-
-      document.querySelectorAll('.branch-wrapper').forEach((wrapper) => {
-        const slides = wrapper.querySelector('.branch-slides') as HTMLElement
-        const sections = slides?.querySelectorAll('section') as NodeListOf<HTMLElement>
-
-        if (!slides || !sections || sections.length <= 1) return
-
-        let currentX = 0
-        let targetX = 0
-        const damping = 0.18
-
-        const updateTarget = () => {
-          const rect = wrapper.getBoundingClientRect()
-          const wrapperHeight = wrapper.clientHeight
-          const vh = window.visualViewport?.height || window.innerHeight
-
-          const scrolledIntoWrapper = -rect.top
-          const scrollableDistance = wrapperHeight - vh
-
-          let progress = scrolledIntoWrapper / scrollableDistance
-          progress = clamp(0, progress, 1)
-
-          const slidesWidth = slides.scrollWidth
-          const maxX = slidesWidth - window.innerWidth
-          targetX = progress * maxX
-        }
-
-        const animate = () => {
-          currentX = lerp(currentX, targetX, damping)
-          slides.style.transform = `translateX(${-currentX}px)`
-          requestAnimationFrame(animate)
-        }
-
-        window.addEventListener('scroll', updateTarget, { passive: true })
-        window.addEventListener('resize', updateTarget)
-        updateTarget()
-        animate()
-      })
-    </script>
+<BaseLayout
+  title="About - University of Michigan Mars Rover Team"
+  description="Meet the subteams behind MRover: Mechanical, Science, Electrical, and Software."
+  darkPage={true}
+  showFooter={true}
+>
+  <div class="min-h-screen">
+    <AboutPage client:only="react" />
   </div>
 </BaseLayout>
 
-<style>
-  :global(html),
-  :global(body) {
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: auto;
-  }
-
-  :global(body) {
-    touch-action: pan-x pan-y;
-  }
-
-  .char {
+<style is:global>
+  .about-hero-title {
     opacity: 0;
-    transform: translateY(100%) rotateX(-90deg);
-    animation: char-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: calc(0.4s + var(--word-index) * 0.3s + var(--char-index) * 0.05s);
+    animation: about-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  }
+
+  .about-hero-sub {
+    opacity: 0;
+    animation: about-fade-up 0.7s ease 0.9s forwards;
+  }
+
+  @keyframes about-fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 </style>
