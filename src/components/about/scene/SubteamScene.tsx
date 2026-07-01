@@ -19,7 +19,7 @@ export function SubteamScene({ spec }: { spec: GltfSpec }) {
             path={spec.path}
             scale={spec.scale}
             wireframe={resolveWireframe(spec)}
-            baseYaw={spec.baseYaw}
+            rotation={spec.rotation}
             baseY={spec.baseY}
           />
         </Suspense>

@@ -10,6 +10,9 @@ import { Stars } from './scene/Stars'
 import { WireframedGLTF } from './scene/WireframedGLTF'
 import { SubteamScene } from './scene/SubteamScene'
 import { resolveWireframe, type GltfSpec } from './scene/wireframe'
+import { NavGrid } from './displays/NavGrid'
+import { TeleopMonitor } from './displays/TeleopMonitor'
+import { EswScope } from './displays/EswScope'
 
 export function AboutPage() {
   useEffect(() => {
@@ -42,7 +45,7 @@ export function AboutPage() {
                 path={heroSpec.path}
                 scale={heroSpec.scale}
                 wireframe={resolveWireframe(heroSpec)}
-                baseYaw={heroSpec.baseYaw}
+                rotation={heroSpec.rotation}
                 baseY={heroSpec.baseY}
               />
             </Suspense>
@@ -85,12 +88,13 @@ export function AboutPage() {
             </div>
 
             {branch.subteams.map((subteam, subIdx) => {
-              const flip   = subIdx % 2 === 1
-              const isGltf = subteam.scene.type === 'gltf'
+              const flip  = subIdx % 2 === 1
+              const scene = subteam.scene
+              const hasDisplay = scene.type !== 'none'
               return (
-                <div key={subteam.id} className={`relative z-20 max-w-6xl mx-auto px-6 md:px-12${isGltf ? '' : ' py-8 md:py-10'}`} data-fade-in>
-                  <div className={`grid items-center gap-10 md:gap-16 ${isGltf ? 'md:grid-cols-2' : 'max-w-2xl'}`}>
-                    <div className={flip && isGltf ? 'md:order-2' : ''}>
+                <div key={subteam.id} className={`relative z-20 max-w-6xl mx-auto px-6 md:px-12${hasDisplay ? '' : ' py-8 md:py-10'}`} data-fade-in>
+                  <div className={`grid items-center gap-10 md:gap-16 ${hasDisplay ? 'md:grid-cols-2' : 'max-w-2xl'}`}>
+                    <div className={flip && hasDisplay ? 'md:order-2' : ''}>
                       <h3
                         className="font-display text-2xl md:text-4xl uppercase leading-tight m-0 mb-4"
                         style={{ color: branch.accent }}
@@ -113,19 +117,21 @@ export function AboutPage() {
                       )}
                     </div>
 
-                    {isGltf && (
-                      /*
-                        HtmlView pattern: View creates the div and tracks itself.
-                        The Canvas (below) scissors content into the tracked position.
-                        The View fills this framed wrapper; the frame is a DOM overlay.
-                      */
+                    {hasDisplay && (
+                      // Framed square display. gltf models paint into the shared
+                      // Canvas (HtmlView pattern); other kinds are plain DOM overlays.
                       <div
                         className={`relative w-full z-10${flip ? ' md:order-1' : ''}`}
                         style={{ aspectRatio: '1 / 1' }}
                       >
-                        <View className="absolute inset-0" index={subIdx + 2}>
-                          <ErrorBoundary><SubteamScene spec={subteam.scene as GltfSpec} /></ErrorBoundary>
-                        </View>
+                        {scene.type === 'gltf' && (
+                          <View className="absolute inset-0" index={subIdx + 2}>
+                            <ErrorBoundary><SubteamScene spec={scene} /></ErrorBoundary>
+                          </View>
+                        )}
+                        {scene.type === 'widget' && scene.kind === 'nav' && <NavGrid accent={branch.accent} />}
+                        {scene.type === 'widget' && scene.kind === 'teleop' && <TeleopMonitor accent={branch.accent} />}
+                        {scene.type === 'widget' && scene.kind === 'esw' && <EswScope accent={branch.accent} />}
                         <ViewportFrame accent={branch.accent} />
                       </div>
                     )}

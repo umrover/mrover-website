@@ -10,7 +10,8 @@ export interface WireframeOpts {
 }
 
 export type SceneSpec =
-  | { type: 'gltf'; path: string; scale: number; wireframe?: WireframeOpts; baseYaw?: number; baseY?: number }
+  | { type: 'gltf'; path: string; scale: number; wireframe?: WireframeOpts; rotation?: [number, number, number]; baseY?: number }
+  | { type: 'widget'; kind: 'nav' | 'teleop' | 'esw' } // custom animated SVG display
   | { type: 'none' }
 
 export interface Subteam {
@@ -35,7 +36,7 @@ export const HERO_ROVER: SceneSpec = {
   wireframe: {
     color: '#0a7acc', threshold: 20, lineOpacity: 0.65, meshOpacity: 0.05,
   },
-  baseYaw: -Math.PI / 4, // rotated 45deg left
+  rotation: [0, -Math.PI / 4, 0], // rotated 45deg left
 }
 
 export const MISSION_STATEMENT =
@@ -71,7 +72,7 @@ export const BRANCHES: Branch[] = [
           wireframe: {
             color: '#0a7acc', threshold: 16, lineOpacity: 0.7, meshOpacity: 0.06,
           },
-          baseYaw: -Math.PI / 3,
+          rotation: [0, -Math.PI / 3, 0],
           baseY: 0.2,
         },
       },
@@ -97,13 +98,25 @@ export const BRANCHES: Branch[] = [
         id: 'science-payload',
         name: 'Science Payload',
         desc: 'Performs in-situ sampling with on-board science tests, environmental sensors, and external cameras for rock analysis, using a linear actuator-driven auger system.',
-        scene: { type: 'none' },
+        scene: {
+          type: 'gltf',
+          path: '/models/science_payload.glb',
+          scale: 1.9,
+          wireframe: { color: '#0a7acc', threshold: 15, lineOpacity: 0.7, meshOpacity: 0.06 },
+          rotation: [0, 0.5, 0],
+        },
       },
       {
         id: 'astrobiology',
         name: 'Astrobiology',
         desc: 'Develops tests analyzing soil and rock samples for life indicators, researching tests and implementing them on the rover for competition use.',
-        scene: { type: 'none' },
+        scene: {
+          type: 'gltf',
+          path: '/models/dna.glb',
+          scale: 1.3,
+          wireframe: { color: '#0a7acc', threshold: 10, lineOpacity: 0.7, meshOpacity: 0.06 },
+          rotation: [Math.PI / 2, 0, 0],
+        },
       },
     ],
   },
@@ -116,20 +129,39 @@ export const BRANCHES: Branch[] = [
         id: 'power',
         name: 'Power',
         desc: 'Provides rover power management and distributes electricity to key systems, currently improving custom battery design.',
-        scene: { type: 'none' },
+        scene: {
+          type: 'gltf',
+          path: '/models/battery.glb',
+          scale: 1.3,
+          wireframe: { color: '#0a7acc', threshold: 12, lineOpacity: 0.7, meshOpacity: 0.06 },
+          rotation: [0, -Math.PI / 4, 0],
+        },
       },
       {
         id: 'embedded-hardware',
         name: 'Embedded Hardware',
         desc: 'Designs custom circuit boards for actuator control, sensor signal reception, and data connections between electronics and external components.',
         docsUrl: 'https://docs.mrover.org/esw/',
-        scene: { type: 'none' },
+        scene: {
+          type: 'gltf',
+          path: '/models/pcb.glb',
+          scale: 1.4,
+          wireframe: { color: '#0a7acc', threshold: 5, lineOpacity: 0.7, meshOpacity: 0.06 },
+          rotation: [-Math.PI / 3, 0, 0],
+        },
       },
       {
         id: 'communications',
         name: 'Communications',
         desc: 'Ensures wireless RF communication between base station and rover through equipment testing and selection.',
-        scene: { type: 'none' },
+        scene: {
+          type: 'gltf',
+          path: '/models/radio_tower.glb',
+          scale: 2,
+          wireframe: { color: '#0a7acc', threshold: 20, lineOpacity: 0.7, meshOpacity: 0.06 },
+          rotation: [0, 0, 0],
+          baseY: 0.25,
+        },
       },
     ],
   },
@@ -143,42 +175,60 @@ export const BRANCHES: Branch[] = [
         name: 'Perception',
         desc: 'Identifies environmental features and objects as part of the Autonomy team using camera and sensor data.',
         docsUrl: 'https://docs.mrover.org/autonomy/perception/overview/',
-        scene: { type: 'none' },
+        scene: {
+          type: 'gltf',
+          path: '/models/nalgene.glb',
+          scale: 1.1,
+          wireframe: { color: '#0a7acc', threshold: 5, lineOpacity: 0.7, meshOpacity: 0.06 },
+          rotation: [-Math.PI / 2, 0, 0],
+        },
       },
       {
         id: 'navigation',
         name: 'Navigation',
         desc: 'Uses A* pathfinding to plan obstacle-avoiding routes as part of the Autonomy team.',
         docsUrl: 'https://docs.mrover.org/autonomy/navigation/overview/',
-        scene: { type: 'none' },
+        scene: { type: 'widget', kind: 'nav' },
       },
       {
         id: 'localization',
         name: 'Localization',
         desc: 'Determines rover position and orientation as part of the Autonomy team using sensor fusion and mapping.',
         docsUrl: 'https://docs.mrover.org/autonomy/localization/overview/',
-        scene: { type: 'none' },
+        scene: {
+          type: 'gltf',
+          path: '/models/satellite.glb',
+          scale: 1.3,
+          wireframe: { color: '#0a7acc', threshold: 20, lineOpacity: 0.7, meshOpacity: 0.06 },
+          rotation: [Math.PI / 4, 0.4, 0],
+        },
       },
       {
         id: 'drone',
         name: 'Drone',
         desc: 'Develops manual and autonomous drone capable of reading signs, locating objects, and communications support during delivery missions.',
         docsUrl: 'https://docs.mrover.org/drone/overview/',
-        scene: { type: 'none' },
+        scene: {
+          type: 'gltf',
+          path: '/models/drone.glb',
+          scale: 1.3,
+          wireframe: { color: '#0a7acc', threshold: 20, lineOpacity: 0.7, meshOpacity: 0.06 },
+          rotation: [-Math.PI * 2 / 5, 0, -Math.PI / 3],
+        },
       },
       {
         id: 'teleoperation',
         name: 'Teleoperation',
         desc: 'Builds the base station GUI with mission views, control interfaces for arm and drive systems, 3D visualization, and camera streaming.',
         docsUrl: 'https://docs.mrover.org/teleop/overview/',
-        scene: { type: 'none' },
+        scene: { type: 'widget', kind: 'teleop' },
       },
       {
         id: 'embedded-software',
         name: 'Embedded Software',
         desc: 'Writes low-level driver code abstracting manufacturer libraries in C and Python for other programming teams.',
         docsUrl: 'https://docs.mrover.org/esw/',
-        scene: { type: 'none' },
+        scene: { type: 'widget', kind: 'esw' },
       },
     ],
   },

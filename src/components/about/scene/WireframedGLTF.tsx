@@ -9,12 +9,14 @@ import { thresholdForMesh } from './wireframe'
 const DRACO_PATH = 'https://www.gstatic.com/draco/versioned/decoders/1.5.7/'
 
 // Loads a GLB and renders it as a wireframe (edge lines over a faint fill),
-// with a gentle showcase idle animation. `baseYaw`/`baseY` set the resting pose.
-export function WireframedGLTF({ path, scale, wireframe, baseYaw = 0, baseY = 0 }: {
+// with a gentle showcase idle animation. `rotation` sets the resting orientation;
+// on top of it the model bobs vertically and sways about the world vertical axis
+// (a turntable wobble that reads the same regardless of the resting tilt).
+export function WireframedGLTF({ path, scale, wireframe, rotation = [0, 0, 0], baseY = 0 }: {
   path: string
   scale: number
   wireframe: Required<WireframeOpts>
-  baseYaw?: number
+  rotation?: [number, number, number]
   baseY?: number
 }) {
   const groupRef = useRef<THREE.Group>(null)
@@ -73,13 +75,16 @@ export function WireframedGLTF({ path, scale, wireframe, baseYaw = 0, baseY = 0 
     // Showcase idle: bob slightly and sway a few degrees, no full rotation.
     const t = clock.getElapsedTime()
     groupRef.current.position.y = baseY + Math.sin(t * 0.8) * 0.04
-    groupRef.current.rotation.y = baseYaw + Math.sin(t * 0.3) * 0.2
+    groupRef.current.rotation.y = Math.sin(t * 0.3) * 0.2 // turntable sway about world vertical
   })
 
   return (
     <group ref={groupRef} scale={scale}>
-      <group ref={edgeRef} />
-      <group ref={fillRef} />
+      {/* Inner group holds the static resting orientation; the outer group sways. */}
+      <group rotation={rotation}>
+        <group ref={edgeRef} />
+        <group ref={fillRef} />
+      </group>
     </group>
   )
 }
