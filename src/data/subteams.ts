@@ -39,7 +39,7 @@ export const HERO_ROVER: SceneSpec = {
 }
 
 export const MISSION_STATEMENT =
-  "The Michigan Mars Rover Team designs, builds, and tests a Mars rover prototype to compete in the University Rover Challenge. Our interdisciplinary team of students pushes the boundaries of what's possible in student-led space exploration."
+  "The Michigan Mars Rover Team designs, builds, and tests a Mars rover prototype to compete in the University Rover Challenge. We pride ourselves on being one of the most friendly and professional student-led project teams on campus!"
 
 export const BRANCHES: Branch[] = [
   {

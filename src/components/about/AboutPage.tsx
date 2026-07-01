@@ -1,200 +1,15 @@
-import { useRef, useMemo, useEffect, Suspense, Component } from 'react'
-import type { ReactNode } from 'react'
-import { Canvas, useFrame, useLoader } from '@react-three/fiber'
+import { useEffect, Suspense } from 'react'
+import { Canvas } from '@react-three/fiber'
 import { View, PerspectiveCamera } from '@react-three/drei'
-import * as THREE from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { BRANCHES, HERO_ROVER, MISSION_STATEMENT } from '@/data/subteams'
-import type { SceneSpec, WireframeOpts } from '@/data/subteams'
-
-const DRACO_PATH = 'https://www.gstatic.com/draco/versioned/decoders/1.5.7/'
-
-class ErrorBoundary extends Component<{ children: ReactNode }, { errored: boolean }> {
-  state = { errored: false }
-  static getDerivedStateFromError() { return { errored: true } }
-  render() { return this.state.errored ? null : this.props.children }
-}
-
-type GltfSpec = Extract<SceneSpec, { type: 'gltf' }>
-
-function Stars({ count = 2000 }: { count?: number }) {
-  const ref = useRef<THREE.Points>(null)
-  const [positions, sizes, colors] = useMemo<[Float32Array, Float32Array, Float32Array]>(() => {
-    const pos = new Float32Array(count * 3)
-    const siz = new Float32Array(count)
-    const col = new Float32Array(count * 3)
-    for (let i = 0; i < count; i++) {
-      const theta = Math.random() * Math.PI * 2
-      const phi   = Math.acos(2 * Math.random() - 1)
-      const r     = 5 + Math.pow(Math.random(), 0.5) * 55
-      pos[i * 3]     = r * Math.sin(phi) * Math.cos(theta)
-      pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
-      pos[i * 3 + 2] = r * Math.cos(phi)
-      siz[i] = Math.random() * 0.08 + 0.02
-      const b = 0.6 + Math.random() * 0.4
-      col[i * 3] = b; col[i * 3 + 1] = b; col[i * 3 + 2] = b
-    }
-    return [pos, siz, col]
-  }, [count])
-
-  useFrame((_, delta) => {
-    if (!ref.current) return
-    ref.current.rotation.y += delta * 0.02
-    ref.current.rotation.x += delta * 0.01
-  })
-
-  return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-        <bufferAttribute attach="attributes-size"     args={[sizes, 1]} />
-        <bufferAttribute attach="attributes-color"    args={[colors, 3]} />
-      </bufferGeometry>
-      <pointsMaterial size={0.05} vertexColors transparent opacity={0.9} sizeAttenuation />
-    </points>
-  )
-}
-
-function WireframedGLTF({ path, scale, wireframe, baseYaw = 0, baseY = 0 }: {
-  path: string
-  scale: number
-  wireframe: Required<WireframeOpts>
-  baseYaw?: number
-  baseY?: number
-}) {
-  const groupRef = useRef<THREE.Group>(null)
-  const edgeRef  = useRef<THREE.Group>(null)
-  const fillRef  = useRef<THREE.Group>(null)
-
-  const gltf = useLoader(GLTFLoader, path, (loader) => {
-    const draco = new DRACOLoader()
-    draco.setDecoderPath(DRACO_PATH)
-    ;(loader as GLTFLoader).setDRACOLoader(draco)
-  })
-
-  useEffect(() => {
-    const edgeG = edgeRef.current
-    const fillG = fillRef.current
-    if (!edgeG || !fillG) return
-    while (edgeG.children.length) edgeG.remove(edgeG.children[0])
-    while (fillG.children.length) fillG.remove(fillG.children[0])
-
-    // Shared materials: one line + one fill program for the whole model.
-    const lineMat = new THREE.LineBasicMaterial({ color: wireframe.color, transparent: true, opacity: wireframe.lineOpacity })
-    const fillMat = new THREE.MeshStandardMaterial({
-      color: '#000814', transparent: true, opacity: wireframe.meshOpacity,
-      depthWrite: false, side: THREE.DoubleSide,
-      polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
-    })
-
-    const meshes: THREE.Mesh[] = []
-    gltf.scene.traverse((child) => { if (child instanceof THREE.Mesh) meshes.push(child) })
-
-    // EdgesGeometry is expensive; building every mesh in one pass froze the page.
-    // Spread the work across frames under a per-frame time budget so the main
-    // thread stays responsive and the wireframe fills in progressively.
-    let index = 0
-    let raf = 0
-    const buildChunk = () => {
-      const deadline = performance.now() + 8
-      while (index < meshes.length && performance.now() < deadline) {
-        const child = meshes[index++]
-        child.updateWorldMatrix(true, false)
-        const edge = new THREE.LineSegments(new THREE.EdgesGeometry(child.geometry, thresholdForMesh(child, wireframe)), lineMat)
-        edge.applyMatrix4(child.matrixWorld)
-        edgeG.add(edge)
-        const fill = new THREE.Mesh(child.geometry, fillMat)
-        fill.applyMatrix4(child.matrixWorld)
-        fillG.add(fill)
-      }
-      if (index < meshes.length) raf = requestAnimationFrame(buildChunk)
-    }
-    raf = requestAnimationFrame(buildChunk)
-    return () => cancelAnimationFrame(raf)
-  }, [gltf, wireframe.color, wireframe.threshold, wireframe.lineOpacity, wireframe.meshOpacity, JSON.stringify(wireframe.overrides)])
-
-  useFrame(({ clock }) => {
-    if (!groupRef.current) return
-    // Showcase idle: bob slightly and sway a few degrees, no full rotation.
-    const t = clock.getElapsedTime()
-    groupRef.current.position.y = baseY + Math.sin(t * 0.8) * 0.04
-    groupRef.current.rotation.y = baseYaw + Math.sin(t * 0.3) * 0.2
-  })
-
-  return (
-    <group ref={groupRef} scale={scale}>
-      <group ref={edgeRef} />
-      <group ref={fillRef} />
-    </group>
-  )
-}
-
-function resolveWireframe(spec: GltfSpec): Required<WireframeOpts> {
-  return {
-    color:       spec.wireframe?.color       ?? '#0a7acc',
-    threshold:   spec.wireframe?.threshold   ?? 20,
-    lineOpacity: spec.wireframe?.lineOpacity ?? 0.7,
-    meshOpacity: spec.wireframe?.meshOpacity ?? 0.06,
-    overrides:   spec.wireframe?.overrides   ?? [],
-  }
-}
-
-// Walk up the node tree; the nearest ancestor link name matching an override
-// sets the edge-angle threshold for this mesh, else the default.
-function thresholdForMesh(mesh: THREE.Object3D, wireframe: Required<WireframeOpts>): number {
-  for (let node: THREE.Object3D | null = mesh; node; node = node.parent) {
-    if (!node.name) continue
-    const override = wireframe.overrides.find((o) => node!.name.includes(o.match))
-    if (override) return override.threshold
-  }
-  return wireframe.threshold
-}
-
-// HUD frame overlaid on each isolated View — accent-tinted border, corner
-// brackets, and a monospace readout to sell the "self-contained viewport" feel.
-function ViewportFrame({ accent }: { accent: string }) {
-  const corners = [
-    'top-0 left-0 border-t-2 border-l-2',
-    'top-0 right-0 border-t-2 border-r-2',
-    'bottom-0 left-0 border-b-2 border-l-2',
-    'bottom-0 right-0 border-b-2 border-r-2',
-  ]
-  return (
-    <div className="pointer-events-none absolute inset-0 z-10">
-      <div className="absolute inset-0 border" style={{ borderColor: `${accent}22` }} />
-      {corners.map((c) => (
-        <div key={c} className={`absolute w-5 h-5 ${c}`} style={{ borderColor: accent }} />
-      ))}
-    </div>
-  )
-}
-
-// Scene content for a gltf view (camera + lights + model)
-function SubteamScene({ spec }: { spec: GltfSpec }) {
-  return (
-    <>
-      <color attach="background" args={['#0a0808']} />
-      <PerspectiveCamera makeDefault fov={45} position={[0, 0, 5]} near={0.01} far={1000} />
-      <ambientLight intensity={0.5} color={0xfff8f0} />
-      <directionalLight position={[3, 5, 3]} intensity={1.5} color={0xffeedd} />
-      <directionalLight position={[-2, 1, -2]} intensity={0.4} color={0x445566} />
-      <ErrorBoundary>
-        <Suspense fallback={null}>
-          <WireframedGLTF
-            path={spec.path}
-            scale={spec.scale}
-            wireframe={resolveWireframe(spec)}
-            baseYaw={spec.baseYaw}
-            baseY={spec.baseY}
-          />
-        </Suspense>
-      </ErrorBoundary>
-    </>
-  )
-}
+import { ErrorBoundary } from './ErrorBoundary'
+import { ViewportFrame } from './ViewportFrame'
+import { Stars } from './scene/Stars'
+import { WireframedGLTF } from './scene/WireframedGLTF'
+import { SubteamScene } from './scene/SubteamScene'
+import { resolveWireframe, type GltfSpec } from './scene/wireframe'
 
 export function AboutPage() {
   useEffect(() => {
@@ -220,10 +35,6 @@ export function AboutPage() {
         */}
         <View className="w-full max-w-5xl mx-auto h-[45vh] md:h-[55vh]" index={1}>
           <PerspectiveCamera makeDefault fov={50} position={[0, 2, 6]} near={0.01} far={1000} />
-          {/* <color attach="background" args={['#0a0808']} /> */}
-          {/* <fog attach="fog" args={['#0a0808', 20, 80]} /> */}
-          {/* <ambientLight intensity={0.4} /> */}
-          {/* <directionalLight position={[3, 5, 3]} intensity={1.5} /> */}
           <Stars count={3000} />
           <ErrorBoundary>
             <Suspense fallback={null}>
